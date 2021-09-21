@@ -1,0 +1,4 @@
+- psql meta commands (todo)
+  - \d : overview of available databases
+  - \d+ : overview with more information
+  - \! clear : clear screen

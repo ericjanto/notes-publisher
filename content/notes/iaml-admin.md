@@ -10,5 +10,9 @@ course:
 
 ## Study History
 
-- Week 1
-  - Maths and Probability, Review lecture: 250min
+All values below are in minutes.
+
+|        | Lecuture Watch & Written Notes | Quiz | Q&A Watch | Write-Ups | Write-Up Exs | Lab Work-Through | Total |
+| ------ | ------------------------------ | ---- | --------- | --------- | ------------ | ---------------- | ----- |
+| Week 0 | 250                            | 0    | 50        | 175       | 0            | 85               | 0     |
+| Week 1 | 160                            | 0    |           | 0         | 0            | 0                | 0     |
