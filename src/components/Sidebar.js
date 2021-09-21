@@ -9,7 +9,7 @@ import Filter from './Filter'
 
 export const Sidebar = () => {
   const location = useLocation()
-  const [dropdownOpen, setDropdownOpen] = useState({})
+  const [dropdownOpen, setDropdownOpen] = useState({}) // eslint-disable-line
   const data = useGetPosts()
   const posts = data.allMarkdownRemark.edges
 
@@ -49,7 +49,7 @@ export const Sidebar = () => {
       if (!selectedCourse) {
         return "Filter by: " + prettyPrintNotes(selectedNoteTypes)
       } else if (!selectedNoteTypes || selectedNoteTypes.length === 0) {
-        return selectedCourse
+        return "Filter by: " + selectedCourse
       } else {
         return `Filter by: ${selectedCourse}, ${prettyPrintNotes(selectedNoteTypes)}`
       }
@@ -140,7 +140,7 @@ export const Sidebar = () => {
                   }
                 }
               }
-              
+
               if (selectedNoteTypes.length !== 0 && selectedCourse) {
                 return sharesElement && (post.course || []).includes(selectedCourse);
               } else if (selectedNoteTypes.length !== 0) {

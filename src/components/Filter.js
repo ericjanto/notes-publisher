@@ -25,7 +25,7 @@ export default function Filter({ children, label }) {
     }, [dropdownRef, buttonRef]);
 
     return (
-        <div classname="filter"
+        <div classname="filter" aria-hidden="true"
             onMouseEnter={() => setIsOpen(!isOpen)}
             // For debug: comment out line below
             onMouseLeave={() => setIsOpen(!isOpen)}
