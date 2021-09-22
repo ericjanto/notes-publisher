@@ -14,4 +14,4 @@ All values below are in minutes.
 
 |        | Reading | Admin | Total |
 | ------ | ------- | ----- | ----- |
-| Week 1 | 0       | 65    | 0     |
+| Week 1 | 20      | 65    | 0     |
