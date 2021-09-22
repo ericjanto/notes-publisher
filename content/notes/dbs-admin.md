@@ -14,4 +14,5 @@ All values below are in minutes.
 
 |        | Lecture Pre-Notes | Lecture Watch | Refine Pre-Notes to Write-Up | Total |
 | ------ | ----------------- | ------------- | ---------------------------- | ----- |
-| Week 1 | 110               | 180           | 30                           | 0     |
+| Week 1 | 110               | 180           | 35                           | 325   |
+| Week 2 | 0                 | 0             | 0                            | 0     |
