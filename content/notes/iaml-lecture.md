@@ -214,6 +214,78 @@ to-heading: 6
       ![](../images/iaml-bivariate-vector-let.png)
       - $\Sigma$ is called a *covariance matrix*
       ![](../images/iaml-bivariate-gaussian-vector.png)
-  - Covariance and multivariate Gaussian
+  - Multivariate Gaussian
+    - More than 2 variables
+    - Instead of $p(x\in\mathbb{R})=\int p(x)dx$, we now look at multiple $x$s
+      - Express them using a vector $\vec{x}$:
+
+        ![Definition of a multivariate Gaussian](../images/iaml-multivariate-gaussian-def.png)
+      - $d$ is the number of elements in the vector (TODO: doesn't this number have a proper name similar to rank? dimension?)
+    - $\Sigma$ is the covariance matrix:
+      ![Covariance matrix](../images/iaml-covariance-matrix.png)
+      - $\Sigma$ is symmetric
+  - Estimation / Estimated distributions
+    - Estimated distributions are also called models
+    - Given some data, how do we estimate what the distribution is where that data came from
+    - What makes a good or bad estimation?
+      - One approach is to say that an estimated distribution is *good* if it increases the probability of the given data
+      - That's called the **Maximum Likelihood Approach**
+    - Maximum Likelihood Aproach / Estimate
+      - Likelihood of a model is given by:
+
+        ![](../images/iaml-maximum-likelihood.png)
+
+        - $D$ is the given data
+        - The probability of the data $D$ given a model $M$
+        - It's just the product of the probabilities of generating each data point individually, using our model
+      - Approach: try different $M$, pick the $M$ which maximises $p(D|M)$
+  - Estimating the Bernoulli Distribution
+    - Recall Bernoulli distributions
+      - Are relevant when we have experiments with multiple iterarions, and binary results (`true/false` or `1/0` etc)
+    - Example:
+      - We are given the below data $D$
+        - `[1,0,0,1,0,1,0,1,0,0,0,0,0,1,0,1,1,1,0,1]`
+      - (So we have `n=20` observations)
+    - Now we're trying to find an apt model (by guessing, for now). We come up with two hypotheses / models:
+      1. $M_1$: the data was generated from a fair coin. 1 is heads, 0 is tails
+      2. $M_2$: the data was generated from a die throw: 1 if die shows 1, 0 if it shows one of $\{2,3,4,5,6\}$
+    - Let's look at the likelihoof of data. Let $c$ = number of ones
+      ![](../images/iaml-bernoulli-estimate-die.png)
+      - $M_1$: $0.5^{20}=9.5\times 10^{-7} (o.5^9*0.5^{11}=0.5^{20})$
+      - $M_2$: $(\frac{1}{6})^9*(\frac{5}{6})^11=1.8\times 10^{-8}$
+    - So can now see which model is more likely
+  - More conceptual approach for testing models
+    - Let's take the same data $D$ as before
+    - Imagine a continuous range of hypotheses: $M=\theta$ where $\theta$ ranges from $0$ to $1$
+    - Likelihood of data: again, let c = number of tosses (data points)
+      ![](../images/iaml-max-likelihood-theta.png)
+      - To get the model $\theta$ which *maximises* the likelihood, differentiate with respect to $\theta$
+      - It's quite tricky to differentiate so we differentiate $logp(D|M)$ instead
+        - Since log is monotonically increasing, you can get the same maximum whether you work with the log or the original likelihood formula (TODO: I don't really get this, ask on Piazza)
+  - Estimating Gaussians
+    - Can do Maximum Likelihood Estimation for Gaussians too
+      - Consider a univariate Gaussian, with $\mu$ and $\sigma^2$ (that's our model)
+      - Then, with $n$ data points
+
+      ![](../images/iaml-univariate-gaussian-estimate.png)
+      ![](../images/iaml-multivariate-gaussian-estimate.png)
+
+        TODO: Work through these slides again, I didn't really get them *sad Eric:(*
 
 ## Week 1: Thinking About Data
+
+- What is Machine Learning (ML)?
+  - The way we use ML is like it's a "magic box that predicts stuff" for us
+    - You have some data $X$, a predictor (the "magic box") $f$
+      - $f$ is a deterministic function, i.e. it always returns the same result for the same input
+      - Output of $f$: the prediction for $X$, $f(x)$
+
+      ![](../images/iaml-ml-prediction-model.png)
+      - This course is about how we build that magic box predictor $f$
+- Learning Algorithms
+  - They're algorithms we put data into, and the ouput is a function that tried to predict something
+    - In short, they build predictors
+  - Input data: $x$ and $f^{*}(x)$
+    - $f^{*}(x)$ is the expected prediction for $x$
+    - This is called training examples
+- Prediction tasks

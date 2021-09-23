@@ -425,6 +425,11 @@ to-heading: 6
     ```
     - This makes sense if we recall the order in which SQL queries are executed: `FROM -> WHERE -> SELECT`
       - So when we're looking into the `WHERE` clause, the alises from `SELECT` are not in the namespace yet, hence we'd get an error
+  - Range variables and self-join
+    - Can use range variables in `FROM` to let table join with *themselves*
+      ```sql
+      FROM Customer C1, Customer C2
+      ```
   - Using SQL files
     - You can store schema definitions and the relation creation procedure in `.sql` files, like
       ```sql
