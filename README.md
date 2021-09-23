@@ -31,6 +31,5 @@ Lastly, if you find a mistake, I'd like to encourage you to [open an issue on Gi
 ### Roadmap for Notes
 - [ ] Include orbit: https://docs.withorbit.com/
 - [ ] Add srs system to entire notes (not read in… label + coloured & sorted in sidebar respectively)
-- [ ] Add backlinks -> could have differe
-- [ ] nt directory where you use [[]] and then tool creates new md files with the links in the frontmatter. Tool could also add randomised slugs! And then, use new zettel template to utilise markdown front matter field
+- [ ] Add backlinks -> could have different directory where you use [[]] and then tool creates new md files with the links in the frontmatter. Tool could also add randomised slugs! And then, use new zettel template to utilise markdown front matter field
 - [ ] Bullet points like in roam research
