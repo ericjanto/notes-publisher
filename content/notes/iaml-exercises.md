@@ -20,7 +20,7 @@ to-heading: 6
 
 ![](../images/iaml-pmf-exercise-2.png)
 - https://www.probabilitycourse.com/chapter3/3_1_3_pmf.php
-  - Add that N is $Z^{\+}$ (positive integer), instead of the other definition? or why would they add the other definition
+  - Add that N is $Z^{+}$ (positive integer), instead of the other definition? or why would they add the other definition
 
 ![]()
 - https://www.probabilitycourse.com/chapter3/3_1_3_pmf.php
