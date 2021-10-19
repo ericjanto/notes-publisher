@@ -14,11 +14,13 @@ Lastly, if you find a mistake, I'd like to encourage you to [open an issue on Gi
 
 ---
 
+- [ ] Use github issue system for stuff below
 - [ ] In metadata: `accessibility` field, w possible values `public` or `private`. If private, filtered out
   - [ ] https://docs.netlify.com/visitor-access/identity/registration-login/
 - [ ] Latex display mode: margin top and bottom, and centered
 - [ ] Disable auto-subtitle from meta title for images
-- [ ] Host on subdomain
+- [ ] Host on subdomain (netlify branch subdomains, maybe via git submodules?)
+- [ ] Fix table header line if tables are not full width (they still have full width)
 - [ ] Github issue link (in about + 404 page)
 - [ ] Roadmap link
 - [ ] Labels in sidebar (just coloured letters like a green F or red U) for status of a note
@@ -33,3 +35,10 @@ Lastly, if you find a mistake, I'd like to encourage you to [open an issue on Gi
 - [ ] Add srs system to entire notes (not read in… label + coloured & sorted in sidebar respectively)
 - [ ] Add backlinks -> could have different directory where you use [[]] and then tool creates new md files with the links in the frontmatter. Tool could also add randomised slugs! And then, use new zettel template to utilise markdown front matter field
 - [ ] Bullet points like in roam research
+- [ ] Make it generically usable -> not static, can edit from website, account system etc.
+  - This may require a redesign of the system architecture
+- [ ] [Native Anki support](https://pypi.org/project/AnkiServer/)?
+- [ ] Could highlight notes / text and then click on “create flashcard”
+	- Can click on “show cards”
+	- Highlight corresponding text if hover on card / card active
+- [ ] [Edward Tufte CSS](https://edwardtufte.github.io/tufte-css/)

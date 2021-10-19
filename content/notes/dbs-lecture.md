@@ -138,6 +138,7 @@ to-heading: 6
   - Most common SQL data types
     - Strings
       - `varchar(n)`, at most `n` characters
+      - `char(n)`, a fixed String of length `n`
     - Numbers
       - *Byte indications may differ for different programs, these are correct for PostgreSQL*
       - `smallint` (2 bytes)
@@ -459,5 +460,1247 @@ to-heading: 6
     - Always use range variables and fully qualify references to attributes
       - Improves readability of queries (range variables + qualified references)
       - More robust against schema changes (qualified references)
-
 ## Week 2: Relational Algebra
+
+- SQL
+  - Base on two languages: relational calculus and relational algebra
+    - The latter is a theoretical language
+- Data model refined
+  - A *relation* is a set of *records* over the same *set* of attribute names
+  - A *record* is a *total function* from attribute names to values
+    - Total means that the function is defined for all possible input values
+  - Schema
+    - Set of relation (table) names
+    - Set of distinct attributes for each table
+      - **Columns are not ordered**
+  - Instance
+    - Actual data (that is, the records in each relation)
+  - Difference to SQL data model
+    - Consider the tables below:
+
+      TABLE1
+      | A   | B   | C   |
+      | --- | --- | --- |
+      | 1   | 2   | 3   |
+      | 4   | 1   | 6   |
+
+    - And
+
+      TABLE2
+      | B   | C   | A   |
+      | --- | --- | --- |
+      | 2   | 3   | 1   |
+      | 1   | 6   | 4   |
+    - Even though they are different in the SQL data model, in the relational algebra data model they are precisely the same because a record is a function $$\{A \rarr 1, B \rarr 2, C \rarr 3\}$$, and another record $$\{A \rarr 4, B \rarr 1, C \rarr 6\}$$
+      - Those total functions must be over the same set of attributes!
+    - And a relation is just $$\{record_1, record_2\}$$
+      - I.e. a set of records
+- Relation algebra
+  - It's a procedural query language
+    - Q: This might be a trivial question but would you mind reminding me what it means for a language to be *procedural*?
+    - A: You can think of is as a program that takes relation(s) as input, applies operations, and outputs a relation. It's procedural.
+  - A relational algebra expression
+    - Takes as input one or more relations
+    - Applies a *sequence of operations*
+    - Returns a relation as output
+  - Operations
+
+    | Name         | Notation |
+    | ------------ | -------- |
+    | Projection   | $\pi$    |
+    | Selection    | $\sigma$ |
+    | Union        | $\cup$   |
+    | Intersection | $\cap$   |
+    | Product      | $\times$ |
+    | Difference   | $-$      |
+    | Renaming     | ρ        |
+
+  - The application of each operation results in a new virtual relation that can be used as input to other operations
+- Projection ($\pi$)
+  - *Vertical operation*
+    - So we choose some of the columns
+  - Syntax: $\pi_{a\ set\ of\ attributes}(relation)$
+  - $\pi_{A_1,...A_n}(R)$ takes only the values of attributes $A_1,...,A_n$ for each tuple in $R$
+    - Q: What does "for each tuple in $R$" mean?
+    - A: A tuple is a single row in a table. So it means "for each row in the relation".
+  
+  ![Example of a projection](../images/dbs-projection-example.png)
+- Selection ($\sigma$)
+  - *Horizontal operation*
+    - So we choose some of the rows satisfying some condition
+  - Syntax: $\sigma_{condition}(relation)$
+  - $\sigma_\theta(R)$ takes only the tuples in $R$ for which $\theta$ is satisfied
+    - $R$ is a single relation
+  - $term := attribute\ |\ constant$
+  - Condition: $\theta:=term\ op\ term$ with $op\in\{ =,\ne,>,<,≥,≤\}$
+    - Q: What would be an example of a constant?
+      > "A constant is whatever you use as a value in a database"
+      - If we write a condition A=B and R(A,B) there'd be no constant because we're only doing a comparison between attributes
+      - But can also do A='abc'
+  - Can combine conditions to clauses: $|\theta∧\theta|\theta∨\theta|\neg\theta$
+  - Example of selection
+
+    ![Example of selection](../images/dbs-selection-example.png)
+
+  - Efficiency (1)
+    - Consecutive selections can be combined into a single one:
+
+    ![Consecutive selections](../images/dbs-consecutive-selections.png)
+  
+    - Example:
+
+      ![Example of consecutive selections](../images/dbs-consecutive-selections-example.png)
+      - $Q_2$ is faster since $Q_1$ goes through customer twice
+  - Efficiency (2)
+    - Projection can be pulled in front of selection
+
+      ![Projection and selection](../images/dbs-projection-selection.png)
+
+      - **Only if all attributes mentioned in $\theta$ appear in $\alpha$**
+        - Q: In the logical equation, is it only the first expression on the left side that is only possible if all attributes mentioned in $\theta$ appear in $\alpha$, and would run into problems if not? Because we first select column-wise by projection and then evaluate $\theta$ to select rows. For the second expression, we still have all columns available when evaluating $\theta$ and then filter out the columns so we would not run into that problem?
+          - This would make sense since the first expression first projects (filters out) for various columns in $\alpha$, and from those columns we select rows that satisfy $\theta$.
+        - A: Opposite: well-formed expression is on the left so you can always go to the right
+          - But opposite direction needs to satisfy condition
+    - Example:
+
+      ![Efficiency Q1 vs Q2](../images/dbs-projection-selection-order-example.png)
+
+      - Answer: This depends on which query (q1 or q2) disregards more data first, which might change for different relations and different relational queries. $Q_1$ might be more efficient if there are few rows that satisfy $\theta$, and then selecting their attributes from $\alpha$ would be very quick. But then, assume that the selection operation yields almost all of the rows because most of them satisfy $\theta$. In that case, it might be more efficient to first filter out some columns using the projection operation so that when selecting almost all rows, less attributes fields per row are selected and "loaded" into the virtual table (since every single operation results in a virtual table).
+        - Both selection and projection can make table smaller, so just depends which one makes the table smaller first.
+- Cartesian product
+  - Assume we have two tables $A$ and $B$ (could also be more tables)
+  - $A\times B$ concatenates each tuple (row) of $A$ with all the tuples of $B$
+  - **N.B.** the relations must have **disjoint** sets of attributes
+    - This means that they must not share same attributes
+
+    ![Cartesian product of two relations](../images/dbs-cartesian-product.png)
+  - It's an expensive operation
+    - Because it does not reduce the output but makes it larger
+    - $card(A\times B)=card(A)*card(B)$
+      - Card is the number of rows
+        - Example: 2 * 3 = 6
+    - $arity(A\times B)=arity(A)+arity(B)$
+      - Arity is the number of attributes
+        - Example: 2 + 2 = 4
+  - For RA it doesn't make a difference whether $R\times S$ or $S\times R$
+    - In SQL it does!
+- Joining Relations
+  - Process of combining the Cartesian product and selection
+  - Consider the following schema defining two relations:
+    ```
+    Customer: ID, Name, Ciy, Address
+    ACcount:  Number, Branch CustID, Balance
+    ```
+  - We can join customers with the accounts they own as follows:
+
+    $$\sigma_{ID=CustID}(Customer\times Account)$$
+
+    - This takes the Cartesian product of `Customer` and `Account`
+    - Then, selects the rows which satisfy `ID=CustID`
+- Renaming
+  - Process of giving new names to some of the attributes of a relation
+  - Syntax:
+
+    $$ρ_{replacements}(relation)$$
+
+    - where a replacement has the form $A\rarr B$
+    
+  ![TODO](../images/dbs-replacement.png)
+
+  ![Advanced example with joining TODO](../images/dbs-replacement-and-joining.png)
+    - We first rename `CustID` to `CustID'`
+    - Then we compute the Cartesian product
+    - FInally, we horizontally select all rows that satisfy `CustID=CustID'`
+      - All of this makes sence since we'd otherwise have a 'CustID' name clash for comparison, so this is a possible resolution
+      - For this particular situation there's actually a better way of achieving this, see *Natural join*
+- Natural join
+  - Process of joining two tables on their *common attributes*
+
+    ![](../images/dbs-natural-join.png)
+
+    - That $\bowtie$ sign between `Customer` and `Account` notates the natural join operation
+    - It's logically equivalent to exactly what we did above and projecting the union of all attributes of `Customer` and `Account`
+      - TODO: Would this statement result in a table with both `CustID` *and* `CustID'`, whereas a cleaner solution would be to only have one of those attributes? The $X\cap Y$ statement does not get rid of this because `CustID` and `CustID'` are two different attributes if we only look at their names.
+        - Natural join removes the renamed version of the common attribute
+        - That's what the $\pi_{X\cup Y}$ is for
+  - If there are multiple common attributes, the condition of $\sigma$ will be a conjunction; all equalities will need to be true (TODOs)
+- From SQL to relational algebra
+  
+  ![TODO](../images/dbs-sql-relational-algebra.png)
+- Set operations
+  - **Work only on relations that have the same set of attributes**
+  - Union $A\cup B$
+    - Complements all elements in attribute $A$ with all elements in $B$ that are not already in $A$
+  - Intersection $A\cap B$
+    - Only shared elements
+  - Set Difference $A - B$
+    - Remove elements that are contained in both $A$ and $B$
+  - Example
+  
+    ![TODO](../images/dbs-union-and-renaming.png)
+- Full relational algebra
+  - Primitive operations: $\pi, \sigma, \times, \rho, \cup, -$
+    - They're the most basic operations in relational algebra, can't remove those / express them differently
+  - Derived operations
+    - They're derived from combinations of primitive operations
+    - $\bowtie$ can be expressed in terms of $\pi, \sigma, \times, \rho$
+    - $\cap$ can be expressed in terms of difference:
+
+      $$A\cap B\equiv A-(A-B)$$
+      - This makes sense since we take all the elements which are in B$ but not in $A$ ($A-B$) and remove them from $A$
+  - Other derived operations
+
+    ![TODO](../images/dbs-derived-operations.png)
+
+    - These operations mainly serve two purposes:
+      1. To write things more succinctly
+      2. They can be optimised independently
+         - TODO: example of individual optimisation?
+         - e.g. if we have a theta-join expression, it's easier to recognise and DBMS can develop algorithms just for that expression which optimise it
+- Division
+  - Assume we have two relations $R$ and $S$
+    - $R$ has a set of attributes $X$
+    - $S$ has a set of attributes $Y$
+  - Constraint: $Y\subset X$, so all attributes in $Y$ are also in $X$
+  - Let $Z=X-Y$
+    - So that'd be the set of attributes which contains all the attributes that are in $X$ but not $Y$
+  - Then,
+
+    ![TODO](../images/dbs-division.png)
+
+    - TODO: explain this line for line, after watching the lecture & actually understanding what's going on here wth
+    - Requirement: Y is a strict subset of X, so all attributes of S are included in X, but S does not have *all* of Xs attributes
+    - Z denotes the attributes that are unique to R
+      - The attributes that are in R but not in S
+    1. Division gives you all the attributes that are unique to R.
+    2. The relation returned by division will have those tuples from relation $X$ which are associated to every $S$'s tuple
+
+    ![TODO](../images/dbs-division-example.png)
+
+    - TODO: explain this step by step via the equation above
+- Can represent RA expression using a tree (TODO)
+  - ![TODO](../images/dbs-relational-alg-tree.png)
+## Week 3: Propositional Logic
+
+- Logic
+  - Logics are formal languages fro
+    - Representing *what we know* about the world
+    - Reasoning about this knowledge (draw conclusions from it)
+  - Logics consist of two components:
+    - *Syntax* defines the sentences in the language
+      - How they need to be structured / grammar
+    - *Semantics* defines the *meaning* of sentences
+- Families of logics
+  - There is not *one* logic, there are lots of families of logics
+    - E.g. modal logics, description logics, ...
+  - We are concerned with two *classical* logics
+    - Propositional logic
+    - First-order logic
+- Propositional logic: building blocks
+  - Atomic statements
+    - Cannot be further decomposed
+    - E.g.
+      - "It is raining"
+      - "The cat is on the table"
+      - "The sky is blue"
+    - Usually denoted with uppercase letters: $P,Q,...$
+      - Called *propositional variables*
+  - Logical connectives
+    - Conjunction: $\land$ (and)
+    - Negation: $\neg$ (not)
+- Propositional logic: syntax
+  - "Grammar" rules
+  ![TODO](../images/dbs-prop-logic-syntax.png)
+
+  - TODO: what are $\phi$ and $ψ$?
+    - both are formulae, different symbols because they may be distinct from each other?
+- Propositional logic: semantics
+  - Giving meaning to the language
+  - Informally
+    - Atomic statements can be either `true` ($t$) or `false` ($f$)
+    - The truth value of a formula is determined by the truth values of its atoms
+  - Formally
+    - A *truth-value assignment* is a function:
+
+      $$\alpha:\ Prop\rarr\{t,f\}$$
+
+      - Assigns a proposition to a `true` or `false`value
+  - Then, $\alpha$ *satisfies* a formula $\phi$ ($\alpha \models\phi$) as inductively as follows:
+    - TODO: what does *inductively* mean in this context?
+
+    ![TODO](../images/dbs-prop-logic-satisfaction.png)
+
+    1. "$\alpha$ satisfies $P$ iff $\alpha$ maps $P$ to $t$ (true)."
+    2. "$\alpha$ satisfies the negation of a subformula $\phi$ iff it does not satisfy the subformula."
+    3. "$\alpha$ satisfies the conjunction ($\land$) of two subformulas $\phi,\psi$ iff it satisfies both of them individually."
+- Truth tables
+  - They reflect the semantics of the connectives, e.g.:
+
+    ![TODO](../images/dbs-truth-tables.png)
+  
+  - How to use truth tables to find an $\alpha$  which $\alpha\models\phi$
+    1. Take the $n$ different $P$, write out all possible combinations of truth values. To do so, create $n$ columns, one for each of $P$. Then in the first column, start $\frac{2^n}{2}$ rows with $t$, the other half with $f$. In the second column, do the same but alternate the truth value every $\frac{2^n}{4}$, etc. This will give us all possible truth value assignments.
+    2. Dissassemble $\phi$ into easy-to-evaluate parts.
+    3. Take those parts and build more complicated parts from the formula.
+    4. Evaluate from left to right.
+
+    ![TODO](../images/dbs-truth-table-example-excs.png)
+
+    ![TODO (also png -> jpg)](../images/dbs-truth-excs-answ.png.jpg)
+
+  - Given $\alpha$ and $\phi$, checking whether $\alpha\models\phi$ can be done in *plynomial time* in the size of $\phi$
+    - TODO: what does "in the size of $\phi$" mean?
+    - TODO: Why is the above true?
+- Satisfiability and Validity
+  - A formula $\phi$ is
+
+    | Attribute     | Condition                                               |
+    | ------------- | ------------------------------------------------------- |
+    | satisfiable   | if there is some $\alpha$ that satisfies $\phi$         |
+    | unsatisfiable | if $\phi$ is not satisfiable, i.e. there is no $\alpha$ |
+    | falsifiable   | if there is some $\alpha$ that does not satisfy $\phi$  |
+    | valid         | if every $\alpha$ satisfies $\phi$                      |
+
+    - A valid formula $\phi$ is called a *tautology*
+  - Consequences
+    - $\phi$ is a tautology iff $\neg\phi$ is unsatisfiable
+    - $\phi$ is unsatisfiable iff $\phi$ is a tautology
+- Equivalence
+  - Two formulas are *logically equivalent* ($\phi\equiv\psi$) if for all $\alpha$
+
+    $\alpha\models\phi\iff\alpha\models\psi$
+
+    - I.e. there is no assignment that satisfies one formula but not the other
+  - Intuitive explanation
+    - Equivalent formulae have the same meaning even though they may differ syntactically
+    - They say the same thing in different ways
+- Propositional logic: extended language
+  - Syntax: new connectives
+
+    ![TODO](../images/dbs-pl-extended.png)
+
+    ![TODO](../images/dbs-truth-tables-new-connectives.png)
+
+- Expressive power
+  - Every formula in the extended language can be equivalently expressed using only $\land$ and $\neg$:
+
+    ![TODO](../images/dbs-extended-vs-simple-pl.png)
+    
+  - Hence, the new connectives do not add expressive power to the language, they're just *syntactic sugar*
+  - But useful to write formulae more succinctly
+    - Like derived operations in RA
+- Equivalences
+
+  ![TODO](../images/dbs-equivalences-1.png)
+  ![TODO](../images/dbs-equivalences-2.png)
+
+- Entailment
+  - We extend the satisfaction relationship $\models$ to sets $\Sigma$ of formulae:
+
+  ![TODO](../images/dbs-entailment.png)
+
+    - TODO: add explanation of the above expression
+      - An assignement of truth values $\alpha$ entails a set $\Sigma$ of formulae iff that asssignment entails every single formula $\phi$ in $\Sigma$, which is only the case iff that assignment also satisfies the conjunctive concatenation of all those formulae.
+    - That big tent $\land$ is like a sum sign $\Sigma$ but for "anding", i.e. connecting all $\phi$ with $\land$s
+  - Then we say that $\Sigma$ entails a formula $\phi$ if for all $\alpha$
+
+    $$\alpha\models\phi$$
+
+    whenever
+
+    $$\alpha\models\Sigma$$
+
+    - I.e. every assignment that satisfies $\Sigma$ also satisfies $\phi$
+- Properties of Entailment
+  - TODO: explain the below properly / provide examples
+
+    ![TODO](../images/dbs-entailment-properties.png)
+
+- Decision problems
+  - Definition
+    - Takes (one or more) inputs
+    - Answers a `yes/no` question
+  - Example
+    - The Boolean Satisfiability Problem (SAT)
+      - "Given a propositional formula $\phi$, is $\phi$ satisfiable?"
+        - I.e., can we find an assignment $\alpha$ such that $\alpha\models\phi$?
+  - A *decision procedure* is an algorithm that
+    - Always terminates
+    - Solves a decision problem
+  - A decision problem is *decidable* if there exists a decision procedure for it
+- Solving SAT
+  - Satisfiability in propositional logic is a *decidable* problem
+  - Naïve algorithm to solve SAT
+
+    ```md
+    1. Enumerate all possible assignments
+       (there are 2^n where n is the number of atoms in the formula)
+    2. For each assignment check whether the formula is satisfied:
+       1. if it is, stop and answer YES
+       2. otherwise, continue to next assignment
+    3. If there are no more assignments, stop and answer NO
+    ```
+
+    - This is rather similar to my explanation on how to use truth tables
+  - SAT is an NP-complete problem:
+    - A (candidate) solution can be verified in plynomial time
+      - Candidate solution = potentially satisfying assignment
+    - No known efficient (polynomial) way to locate a solution
+      - In the worst case, it requires exponential time
+- Reduction to satisfiability
+  - Validity, equivalence and entailment are decision problems
+    - If you formulate it like "is a given formula $\phi$ valid?"
+  - Those decision problems can be reduced to checking satisfiability:
+
+    ![](../images/dbs-reduction.png)
+
+  - A decision producedure for satisfiability is all we need
+- Additional terminology in PL
+  
+  | Terminology      | Meaning                 |
+  | ---------------- | ----------------------- |
+  | Atom             | atomic formula          |
+  | Literal          | atom                    |
+  | Positive literal | positive atom           |
+  | Negative literal | negated atom            |
+  | Clause           | disjunction of literals |
+  | Term             | conjunction of literals |
+  
+- Normal forms
+  - Formulae can be expressed in a standard syntactic form
+    - (Remember the "can say the same thing in different ways"? This is about saying a thing in a standardised way.)
+  
+  ![TODO](../images/dbs-normal-forms.png)
+
+    - So NNF is a less strict form then DNF and CNF
+
+- Converting to NNF, CNF and DNF
+  - For every formula there exist *equivalent* formulae in CNF, DNF and NNF
+  - First convert to NNF, then CNF or DNF:
+
+    ![TODO](../images/dbs-form-conversion.png)
+
+- Purpose of normal forms
+  - CNF helps us to determine whether a formula is *valid*:
+    - If all clauses contain complementary literals, then the formula is a tautology
+      - TODO: what are *complementary* literals?
+    - Otherwise, the formula is falsifiable
+  - DNF helps us to determine whether a formula is satifiable:
+    - If all terms contain complementary literals, then the formula is unsatisfiable
+    - Otherwise, the formula is satisfiable
+## Week 3: First-Order Logic / Predicate Logic
+- Motivation for predicate logic
+  - Atomic formulas of propositional logic are too atomic
+    - They are statements may be true or false
+    - But they have no internal structure
+      - Q: What do they mean by internal structure?
+      - A: It's difficult to express relationships between objects, so it'd be handy to be able to do that within atomic statements.
+  - First-Order Logic (FOL) introduced atomic formulas which are statements about *relationships between objects*
+- Predicates and constants
+  ```bash
+  # All of the below statements can be expressed as atomic propositions only in propositional logic
+  # Mary is female
+  # John is male
+  # Mary and John are sibling
+
+  mary-is-female
+  john-is-male
+  mary-and-john-are-siblings
+  ```
+  - In FOL atomic statements, we use *predicates*
+    - And *costants* are their arguments:
+    ```java
+    Female(mary)
+    Male(john)
+    Sibling(mary,john)
+    ```
+    - You can (kind of) think of predicates as as methods that take in parameters (the constants), and the method gives some meaning to the parameters
+  - Arity of a predicate: the number of arguments it takes
+    - The predicate is applied to those arguments
+- Variables
+  - Predicates may also have *variables* as arguments (not only constants)
+  - The values of the variables may be bound by *quantifiers*
+    | Quantifier  | Semantics             |
+    | ----------- | --------------------- |
+    | $\forall x$ | for all $x$           |
+    | $\exists x$ | there exists some $x$ |
+    - The $\forall$ symbol makes sense, it's an upside down $A$ (for $A$ll)
+    - The $\exists$ symbol makes sense, it's a mirrored $E$ for "there $E$xists"
+  - FOL expression examples:
+    - $\forall x(Male(x)\lor Female(x))$
+    - $\forall x(Male(x)\rarr\neg Female(x))$
+- Syntax of FOL
+  - Terms
+    - Countably infinite supply of
+      - **variable** symbols: $x,y,z,...$
+        - End of alphabet letters, by convention
+      - **constant** symbols: $a,b,c,...$
+        - Start of alphabet letters, by convention
+      - Predicate symbols: $P,Q,R,...$
+        - Uppercase letters, by convention
+    - Term
+
+      ![TODO](../images/dbs-fol-terms.png)
+
+      - A term consists of either a variable or a constant
+  - Formulas
+
+    ![TODO](../images/dbs-fol-formulas.png)
+
+    - Q: What does "if $x$ occurs free in $\phi$" mean?
+    - A: It means that $x$ cannot be bound by another quantifier already in order to be quantified by this quantifier. See next paragraph for the formal definition of *free* variables.
+- Free variables
+  - Variables that are not in the scope of of any quantifier
+  - A variable that is not free is *bound*
+  - Example:
+    ![TODO](../images/dbs-free-variables.png)
+    - How can we determine this for more complex formulas? $\rarr$ syntax trees 🤩
+- Syntax trees
+  - Way of dissecting a FOL formula into its atomic statements
+  ```bash
+  # How to create a syntax tree for any FOL formula
+  1. Look at the top-level operator (usually a quantifier).
+  2. Take that operator and create branches for each part it is applied to.
+  3. Repeat steps 1-2 until you have leaves with all the atomic statements.
+  ```
+  ![Syntax tree for the FOL statement from the free variable example (TODO: write this in `tree` command format)](../images/dbs-syntax-tree.jpg)
+
+  - Then, go through each leaf and go up the path to the root
+    - If at any point on that path, a quantifier mentions that variable, the variable is bound
+    - If not, it's free
+
+- Semantics of FOL: Interpretations
+  - A formula evaluates to either `true` or `false`
+    - Depends on a given *interpretation*
+  - A *First-order structure* is an interpretation for a FOL formula:
+  
+    $$\mathcal{I}=\langle\Delta,.^{\mathcal{I}}\rangle$$
+
+  - $\Delta$ is a non-empty domain of objects
+    - Also called universe
+    - Objects can be people, things, etc.
+  - $.^{\mathcal{I}}$ gives meaning to constant/predicate symbols:
+    
+    $$a^{\mathcal{I}}\in\Delta$$ 
+
+    $$R^{\mathcal{I}}\subseteq\Delta^n$$
+    - Interpretation $\mathcal{I}$ assigns an object from the universe $\Delta$ to a constant $a$
+    - Interpretation $\mathcal{I}$ assigns a set of objects from $\Delta^n$ to a predicate $R$, where $n$ is the arity (number of parameters) of $R$
+      - $\Delta^n=\Delta_0\times\Delta_1\times...\times\Delta_{n-1}$
+      - Results in a matrix of cardinality $n$ with all possible permutations of objects from $\Delta$
+      - So $\mathcal{I}$ chooses the "right" row out of that matrix for this specific interpretation
+  - Variable assignment $\nu$
+    - Maps each variable to an object in $\Delta$
+    - Notation: $\nu[x/d]$ assigns object $d$ to variable $x$
+    - If it's just $\nu$ by its own, it means that $v(x)$ would be an assignment of all possible objects to x, one by one (TODO: check this)
+- Semantics of FOL: terms
+  ![TODO](../images/dbs-interpretation-fol-terms.png)
+  - A term $x$ given an interpretation $\mathcal{I}$ and a variable assignment $\nu$ is to be interpreted as whatever object $\nu$ assigns to $x$: $v(x)$
+  - A constant $a$ given an interpretation $\mathcal{I}$ and a variable assignemnt $\nu$ is to be interpreted as whatever object $\mathcal{I}$ defines $a$ to be
+    - Can ignore $\nu$ since $a$ is not a variable
+- Semantics of FOL: formulas
+  ![TODO](../images/dbs-fol-formulas-semantics.png)
+  - The condition for the universal quantifier means that for every single object $d$ in the universe $\Delta$, the interpretation still needs to satisfy the formula $\phi$ if we assign that object  to the variable $x$
+  - For the $\exists$ quantifier: there needs to be at least one such object $d$ in $\Delta$
+- Equality
+  - Equality can be seen as a *special predicate*
+    ![TODO](../images/dbs-equality.png)
+    - $t_1=t_2$ is `true` under a given interpretation if and only if $t_1$ and $t_2$ refer to the same project
+- Examples of evaluating a FOL formula given a first-order structure $\mathcal{I}$
+  ![TODO](../images/dbs-fol-structure-example.png)
+  1. First formula
+     1. Recall that given a FOL structure, a constant just gets interpreted as the object specified in the FOL structure: $a^{\mathcal{I}}\in\Delta$.
+     2. So from $Block(a)$ we take $Block^{\mathcal{I}}=\{d_1\}$, and $a^{\mathcal{I}}=d_1$.
+     3. Since $d_1\in\{d_1\}$, $Block(a)$ evaluates to `true` given this interpretation.
+     4. Similar process for $Block(b)$ since $a=b$ under this interpretation ($a^{\mathcal{I}}=b^{\mathcal{I}}$ since $d_1=d_1$). Hence, also evaluates to `true`.
+     5. Intermediate state: $\top\land\top\land\neg(a=b)$
+     6. We already established that the equality predicate holds `true` for $a=b$ so $\neg(a=b)$ becomes $\neg\top$ which is $\bot$.
+     7. We end up with $\top\land\top\land\bot$ which evaluates to $\bot$, the interpretation does not satisfy the formula: $(\mathcal{I,\nu})\nvDash\phi$
+       - $\phi$ refers to the formula we dissected above, I couldn't be bothered to type it out
+       - Note how we did not pay any attention to $\nu$ since there occur no variables in the formula, only constants
+  2. Second formula
+     1. $Block(x)$ gets evaluated similarly to the first formula except now it's a variable assignment we need to consider: $x^{\mathcal{I},\nu}=\nu(x)=d_1$. And $d_1\in Block^{\mathcal{I}}\equiv\{d_1\}$ so $Block(x)\equiv_{\mathcal{I},\nu}\top$.
+     2. $Red(y)$: $d_2\in\Delta$ so $\top$.
+     3. $d_1\nvdash d_2$ so the entire formula is not satisfied.
+     4. Usually, you could just start with evaluating $x=y$ if you sense that it might be `false` since then you don't need to check the other subformulas (it's a conjunction).
+  3. Third formula
+     1. TODO: write this out
+     2. True since Red(x) refers to all elements in the universe and True -> True is true, and False -> X is always true (falsehood implies anything).
+  4. Fourth formula
+     1. TODO: write this out
+     2. It's a tautology because Block(c) evaluates to either $\top$ or $\bot$, and then its negation ($\neq$) is the opposite. Since the two atomic statements are $\lor$ed, in total it's always $\top$.
+- Satisfiability and validity
+  - An interpretation $(\mathcal{I},\nu)$ is a **model** of $\phi$ is $(\mathcal{I},\nu)\equiv\phi$
+  - Properties of a formula:
+    | Property      | Condition                                           | Remark                                                       |
+    | ------------- | --------------------------------------------------- | ------------------------------------------------------------ |
+    | satisfiable   | if it has model                                     | if there is some interpretation that can satisfy the formula |
+    | unsatisfiable | if it has no models                                 | there doesn't exist a single satisfying interpretation       |
+    | falsifiable   | if there is some interpretation that is not a model |                                                              |
+    | valid         | if every interpretation is a model                  | also called a tautology                                      |
+
+- Equivalence
+  - Don't think about this too much if you don't get it, it's not crucial for the exam
+  - ![TODO](../images/dbs-fol-formulas-equivalence.png)
+  - Questions:
+    1. No, we can come up with an interpretation where the variable assignment maps $x$ and $y$ to different values, one that is in $P^{\mathcal{I}}$ and one that is not in $P^{\mathcal{I}}$ so the interpretation would satisfy $P(x)$ but not $P(y)$
+    2. Yes, no matter which interpretation you take, if the interpretation is a model of one formula, it's also a model on the other one
+- TODO: add personal notes / write out the below paragraphs
+- Universal quantification
+  - ![TODO](../images/dbs-universal-quantification.png)
+- Existential quantification
+  - ![TODO](../images/dbs-existential-quantification.png)
+- Properties of quantifiers
+  - ![TODO](../images/dbs-quantifier-properties.png)
+- Quantifier duality
+  - ![TODO](../images/dbs-quantifier-duality.png)
+- Equivalences
+  - ![TODO](../images/dbs-equivalences-fol-1.png)
+  - ![TODO](../images/dbs-equivalences-fol-2.png)
+  - ![TODO](../images/dbs-equivalences-fol-3.png)
+## Week 3: Relational Calculus
+- Recall first-order logic where
+  ![TODO](../images/dbs-fol-syntax.png)
+  - $\bf{free(\varphi)}=\{$ variables that are not in the scope of any quantifier $\}$
+- Quantifiers bind until the end of the line
+  ![TODO](../images/dbs-quantifier-binding.png)
+- Relational calculus
+  - A relational calculus query is an expression of the form $\{\overline{x}|\varphi\}$
+    - The set of variables in $\overline{x}$ is $\bf{free}(\varphi)$
+
+    ![TODO](../images/dbs-rc-query-examples.png)
+  - Queries without free variables are called Boolean queries
+    ![TODO](../images/dbs-boolean-queries.png)
+- Data model
+  - Slightly different for relational calculus
+  - Relations are **sets** of tuples of the same length
+    - "Tables are sets of rows of the same length"
+  - Schema
+    - Set of relation names
+    - Arity of each relation name
+      - Arity = number of columns
+    - Columns are ordered but have no names
+      - Q: What does this mean?
+      - A: This means that Relational Calculus is a positional query language which does not care about column names but only about their respective position in a relation. This is because in RC queries, we use variables and not the specific column names, so the variables and their indexes conventionally correspond to the position their index indicates.
+        - E.g. $x_1$ corresponds to the first column
+  - Instance
+  - Each relation name of arity $k$ is associated with a $k$-ary relation
+    - That is, a set of tuples that are all of length $k$
+- Examples for the relational calculus data model
+
+![TODO](../images/dbs-rc-query-examples.png)
+
+  - Q1 remarks: Note that the existential quantification $\exists x,z$ is necessary since any customer which has a name $y$ should also have an ID and age, it should not be a partial customer
+  - Q3 remarks: the "in every branch" bit is tricky, it basically says "in all accounts, there exists one account with a number $u'$ associated with custID $x$, for all branches $w$.
+  - In general, existentially quantify $\exists$ variables you do not want to query $\rarr$ because then they won't be in the RA expression header since they are not free anymore
+- Interpretations
+  - Same first-order structure $\mathcal{I}$ applies:
+    ![TODO](../images/dbs-first-order-structure-rc.png)
+  - Additionally, we have the Standard Name Assumption (SNA) in relational calculus:
+    > Every constant is interpreted as itself: $c^{\mathcal{I}}=c$
+- Answers to queries
+  - Does this just say that the query answer consists of the variable assignments (i.e. object in the universe, i.e. database instances) and the database and the variable assignment must satisfy $\varphi$?
+  - TODO: https://piazza.com/class/ktn3wckjzhd2fv?cid=70
+  - The answer to a Boolean query is either the set of an empty tuple $\{()\}$ (`true`) or an empty set $\varnothing$ (`false`)
+- Safety
+  - A query if *safe* if:
+    1. It gives a *finite answer* on *all* databases
+    2. the query answer does not depend on the universe $\Delta$
+    ![TODO](../images/dbs-rc-unsafe-queries.png)
+    - Remark Q1: depends on domain $\Delta$, if 
+  - Whether a relational calculus query is safe is undecidable
+- Active domain
+  - Using the notion of an active domain allows us to write safe queries only
+  - It's called active domain because it's part of the universe that is actually being used by that database
+  - Notated using $Adom(R)$
+    - I.e. the active domain of a relation $R$
+  - Or $Adom(D)$
+    - That's the active domain of an entire database $D$
+  - The set of all distinct constants which occur in the passed parameter
+- Active domain semantics
+  - TODO: last two slides of Relational Calculus slides, add content if turns out to be relevant in exam questions
+## Week 4: Equivalence of Calculus and Algebra
+- TODO: main differences between RA and RC (in terms of data model)
+- RA = Relational algebra
+- RC = Relational calculus
+- Fundamental theorem of database theory:
+  > Relational algebra and safe relational calculus are equally expressive.
+  - For every query in safe relational calculus there exists an equivalent query in relational algebra
+  - For every query in relational algebra there exists an equivalent query in safe relational calculus
+- Assumption: We can use a hybrid data model
+  - Columns have names (don't have names in RC) and they are ordered
+    - So we could have a relation $R$ over $A,B,C$ which means the $1$st column is $A$, the $2nd$ is $B$, the $3$rd is $C$
+- From RA to RC
+  - Idea: first translate each RA expression $E$ into a FOL formula $\varphi$
+    - That formula is going to be the body of the RC expression 
+    - The free variables head of the RC expression can be done post-translation, that's easy
+  - Environment $\eta$
+    - Is an *injective* map from attributes to variables
+      - Q: What does injective mean again?
+      - A: Injective is an attribute for a function. An injective function maps no more than one object from the domain to one item in the range. So there can't be two domain objects which get mapped to the same range object.
+        ![Injection Visualisation](../images/dbs-injection.png)
+    - Unless stated otherwise, for an attribute $A$ we assume $\eta(A)=x_A$
+      - In general, the chosen variable names can be arbitraty though, so $\eta(A)=y_A$ would be as valid
+  - Base relation
+    - $R$ over $A_1,...,A_n$ is translated to $R(\eta(A_1),...,\eta(A_n))$
+      - The $A_i$s are the distinct attributes
+      - The relation gets translated by taking each $A_i$ and mapping it via the environment $\eta$
+    - Example
+      - ![TODO](../images/dbs-ra-to-rc-example.png)
+        - $A\mapsto x_A\equiv\eta(A)=x_A$
+  - Renaming
+    - $\rho_{old\rarr new}(E)$
+      - Recall: $E$ is our RAexpression
+      1. Translate $E$ to FOL formula $\varphi$
+      2. If there is no mapping for $new$ in $\eta$, add $\{new\mapsto x_{new}\}$
+      3. Replace every occurrence of $\eta(new)$ in $\varphi$ with a *fresh* variable
+         - TODO: what does fresh mean? just a new variable with a name that has not been used before?
+      4. Replace every free occurrence of $\eta(old)$ in $\varphi$ by $\eta(new)$
+      ![TODO](../images/dbs-renaming-example-ra-fol.png)
+  - Projection
+    - $\pi_{\alpha}(E)$ is translated to $\exists X\varphi$
+      - where:
+      - $\varphi$ is the translation of $E$
+      - $X=\bf{free}(\varphi)-\eta(\alpha)$
+        - I.e., attributes that are *not* pojected become quantified
+      ![TODO](../images/dbs-projection-translation.png)
+  - Selection
+    - $\sigma_{\theta}(E)$ is translated to $\varphi\land\eta(\theta)$
+    - Where:
+      - $\varphi$ is the translation of $E$
+      - $\eta(\theta)$ is obtained from $\theta$ by replacing each attribute $A$ by $\eta(A)$
+        ![TODO](../images/dbs-selectin-translation.png)
+  - Cartesian product, union, difference
+    ![Rules for cartesian product, union, difference](../images/dbs-pud-translation.png)
+    ![TODO](../images/dbs-translation-exercise.png)
+    - Recall what $\bowtie$ means:
+      - It's a natural join on common attributes, in this case on $CustID$
+      - Expressed in basic operations:
+        ![TODO](../images/dbs-natural-join-translation.png)
+      - Should be:
+
+        $$
+          x_{CustID}=x_{CustID'}\land Customer(x_{CustID},x_{Name})\land Account(x_{number},x_{CustID'})
+        $$
+
+      - And then map via $\eta$:
+        - Add $\{CustID'\mapsto x_4\}$:
+
+        $$
+          x_1=x_4\land Customer(x_1,x_2)\land Account(x_3,x_4)
+        $$
+
+      - Need to quantify $x_4$ since it's not an attribute of Account (at least initially) and all not-projected variables get quantified during the translation:
+
+
+        $$
+          \exists x_4.x_1=x_4\land Customer(x_1,x_2)\land Account(x_3,x_4)
+        $$
+
+  - Active domain in relational algebra
+    - For a relation $R$ over attributes $A_1,...,A_n$, the active domain $\bf{Adom}(R)$ is given by:
+
+      ![TODO](../images/dbs-active-domain.png)
+
+      - Rename all attributes to the same name ($A$) so that you can take the union of them. Will the set of all instances.
+    - Active domain of a dataset
+
+      $$\bf{Adom(D)}=\bigcup_{R\in D}\bf{Adom}(R)$$
+
+      - I.e. the union of all active domains of all relations in $D$
+    - On a database $D$, we denote by $\bf{Adom}_N$ the RA expression that returns a table
+      - with a single column named $N$
+      - consisting of all elements of $\bf{Adom}(D)$
+- From RC to RA:
+  - Translate each FOL formula $\varphi$ into an RA expression $E$
+  - Assumptions
+
+    ![TODO](../images/dbs-rc-to-ra-assumptions.png)
+
+  - Environment $\eta$
+    - Injective map from variables to attributes
+      - As opposed to an injective map from attributes to variables for RC $\rarr$ RA
+    - Unless stated otherwise, for a variable $x$ we assume $\eta(x)=A_x$
+      - We assume for a variable named $x$ that the environment maps it to attribute $A_x$
+    - But in general, the chosen attribute names can be arbitrary
+      - So a variable named $x$ could also be mapped to $A_y$ if stated explicitly
+  - Let relation $R$ be over attributes $A_1,...,A_n$
+  - Predicate Translation
+    ![TODO](../images/dbs-rc-to-ra-predicate-translation.png)
+    - A predicate $R$ is translated to a relation $R$ where each attribute is named according to $\eta(predicate\ inputs)$
+
+    ![TODO](../images/dbs-predicate-translation-example.png)
+  - Existential quantification translation
+    ![TODO](../images/dbs-existential-quantification-translation.png)
+    - Translate FOL formula $\varphi$
+    - Remove all columns corresponding to existentially bound variables
+
+    ![TODO](../images/dbs-existential-quantification-translation-example.png)
+  - Comparisons translation
+    - Recall that the following **op**erations are available for comparisons:
+      - op ∈ {=, <>, <, >, <=, >=}
+
+    ![TODO](../images/dbs-comparisons-translation.png)
+    - Take the crossproduct of the active domain of $\eta(x)$ (of whatever attribute $\eta$ maps to from $x$) and $\eta(y)$
+    - Select rows with the condition $\eta(x)\bf{op}\eta(y)$
+      - So it's comparising the fields of the two attributes row-wise and selecting rows
+
+    ![TODO](../images/dbs-comparisons-translation-example.png)
+      - The second line makes sense since $1$ is an identity of the crossproduct operation
+  - Negation translation
+    ![TODO](../images/dbs-negation-translation.png)
+    - Take the crossproduct of all the active domains of all free variables
+    - Subtract $E$
+
+    ![TODO](../images/dbs-negation-translation-example.png)
+  - Disjunction translation
+    ![TODO](../images/dbs-disjunction-translation.png)
+
+  - Conjunction translation
+    - Same as disjunction, but use $\bigcap$ instead of $\bigcup$
+  - Example combining all of above
+    ![TODO](../images/dbs-translation-all-example.png)
+    ![TODO](../images/dbs-equiv-example.jpg)
+## Week 4: Multisets and Aggregation
+- Multisets
+  > Sets where the *same element* can occur *multiple times*.
+  - So far, we considered relational algebra on *sets*
+  - SQL uses multisets, i.e. sets which allow duplicates
+  - Multisets are also called bags
+- Multiplicity
+  - The number of occurrences of an element is called its *multiplicity*
+    ![TODO](../images/dbs-multiplicity.png)
+- Relational Algebra on bags
+  - Relations are bags / multisets of tuples
+    - Recall: tuple = row = data instance
+  - Projection
+    ![TODO](../images/dbs-multiset-projection.png)
+  - Cartesian product
+    ![TODO](../images/dbs-multiset-cartesian-product.png)
+  - Selection
+    ![TODO](../images/dbs-multiset-selection.png)
+    - If there are $k$ occurrences of tuple $\bar{a}$ in relation $R$, then:
+      - If the tuple (and therefore everysingle occurrence of that tuple too) satisfies condition $\theta$ $\rarr$ all $k$ occurrences of $\bar{a}$ are included in the selection $\sigma_{\theta}(R)$
+      - If does not satisfy $\theta$: none of $\bar{a}$ are included in the selection
+  - Duplicate elimination $\varepsilon$
+    ![TODO](../images/dbs-duplicate-elimination.png)
+  - Union
+    ![TODO](../images/dbs-multiset-union.png)
+    - If there are $k$ instances of tuple $\bar{a}$ in relation $R$ and $n$ instances in $S$, in the union of $R$ and $S$ there are going to be $k+n$ instances
+  - Intersection
+    ![TODO](../images/dbs-multiset-intersection.png)
+    - If there are $k$ instances of tuple $\bar{a}$ in relation $R$ and $n$ instances in $S$, there will be $min(k,n)$ instances in the intersection of $R$ and $S$
+      - Whatever is smaller
+  - Difference
+    ![TODO](../images/dbs-multiset-difference.png)
+    - Can subtract up to all instances but no more
+- RA on sets vs RA on bags
+  - Equivalences of RA on sets do not necessarily hold on bags
+    ![TODO](../images/dbs-equivalences-1.png)
+    - On the other hand, using the $\varepsilon$ operator (duplicate eliminator), the equality holds again since it transforms multisets back into normal sets:
+    ![TODO](../images/dbs-equivalences-2.png)
+- Basic SQL queries 
+  ![TODO](../images/dbs-sql-queries-revisited.png)
+  - TODO: Tidy this up
+  - So far, only had `WHERE`, FROM and SELECT 
+  - Now we add
+    - DISTINCT
+      - This is optional (that's why it's in square brackets)
+      - This is duplicate elimination
+        - Remove duplicates from the output
+    - UNION
+      - Union under set semantics (without duplicates, removes them)
+      - UNION ALL
+        - Union under bags semantics (duplicates kept)
+    - INTERSECTION
+      - Intersection under set semantics
+      - INTERSECTION ALL  
+        - Intersection under bags semantics  
+    - EXCEPT
+      - Difference under set semantics
+        - EXCEPT ALL
+          - Difference under bags semantics
+- SQL and RA on bags compared
+  ![TODO](../images/dbs-sql-compared-ra.png)
+  - TODO: add explanation after having watched lecture
+  - Note that for set difference, we do not remove the from the right input, only from the left input
+    ![TOOD](../iamges/../images/dbs-set-bag-difference.png)
+- Duplicates and aggregation
+  - Aggregation includes operations where multpile instance (-fields) need to be aggregated to calculate some value
+    - E.g. to get the average ($\frac{1}{n}\Sigma_{i=1}^n x_i$)
+  - For some aggregation operations, we want to keep duplicates, for others, we want to discard duplicates using $\varepsilon$
+  - `Average
+    - Want to keep duplicates:
+      ![TODO](../images/dbs-aggregation-1.png)
+    - SQL keeps duplicates by default:
+      ```sql
+      SELECT AVG(age)
+      FROM   Customer ;
+      ```
+  - `COUNT`
+    - We want to remove duplicates:
+      ![TODO](../images/dbs-aggregation-2.png)
+    - SQL keeps duplicates by default, so we need to explicitly remove them:
+      ```sql
+      SELECT COUNT(DISTINCT branch)
+      FROM   Account ;
+      ```
+- Aggregate functions in SQL
+    | Aggregate Function | Purpose                               | Duplicates make difference? |
+    | ------------------ | ------------------------------------- | --------------------------- |
+    | `COUNT`            | Number of elements in a column        | Yes                         |
+    | `AVG`              | Average value of elements in a column | Yes                         |
+    | `SUM`              | Adds up all elements in a column      | Yes                         |
+    | `MIN`              | Minimum value of elements in a column | No                          |
+    | `MAX`              | Maximum value of elements in a column | No                          |
+    - Using `DISTINCT` with `MIN` and `MAX` makes no difference
+    - `COUNT (*)` counts all rows in a table
+    - `COUNT (DISTINCT *)` is **illegal**
+      - To count all distinct rows of a table $T$ use
+        ```sql
+          SELECT COUNT (DISTINCT T.*)
+          FROM   T ;
+        ```
+      - TODO: wathc lecture 51min -> explain why first query is illegal
+- Aggregation and empty tables
+  - Suppose table $T$ has a column (of numbers) called $A$
+    ```sql
+    SELECT MIN(A),MAX(A),AVG(A),SUM(A),COUNT(A),COUNT(*)
+    FROM   T
+    WHERE  1=2 ;
+    ```
+    - TODO:
+      - Q: What's `1=2`?
+      - A: A condition that is always false, so will select no rows?
+  - The above query will return: 
+    | min | max | sum | avg | count | count |
+    | --- | --- | --- | --- | ----- | ----- |
+    |     |     |     |     | 0     | 0     |
+    - TODO: tidy this
+      - min, max, sum, avg return NULL, an empty bag
+## Week 5: Aggregation with Grouping
+- General idea
+  - Consider the following table:
+  ![TODO](../images/dbs-aggregation-account.png)
+  - Want to query: How much money does *each* customer have in total *across all of his accounts*?
+  - Idea:
+    ```sql
+    1. Partition Account into groups (one per customer) of rows
+    2. Sum balances in each group separately
+    3. Take union of the results for each group
+    ```
+  ![TODO](../images/dbs-aggregation-grouping.png)
+- Grouping in SQL
+  - Can express the above query in SQL:
+    ```sql
+    SELECT   A.custid, SUM(A.balance)
+    FROM     Account A
+    GROUP BY A.custid ;
+    ```
+  - Answer:
+
+    | CustID | SUM     |
+    | ------ | ------- |
+    | 1      | 1780.00 |
+    | 2      | 1756.00 |
+- Grouping in SQL: another example
+  - Recall the `Account` table
+  - Query: how much money is there in total in each branch?
+
+    ```sql
+    SELECT    A.branch, SUM(A.balance)
+    FROM      Account A
+    GROUP BY  A.branch ;
+    ```
+  - Answer:
+    | Branch    | SUM     |
+    | --------- | ------- |
+    | London    | 3086.00 |
+    | Edinburgh | 450.00  |
+  - What's happening:
+    ![TODO](../images/dbs-sql-grouping.png)
+- Beware
+  - In queries with `GROUP BY`, attributes in `SELECT` **must**:
+    - Appear in the `GROUP BY`, or
+    - Be used in an aggregate function
+  - The following query gives an error:
+    ```sql
+    SELECT    A.custid, A.branch, SUM(A.balance)
+    FROM      Account A
+    GROUP BY  A.branch ;
+    ```
+    - Error because `A.custid` does not appear in `GROUP BY` or aggregation function
+- Filtering based on aggregation
+  - Query: What are branches with a total balance (across accounts) of at least `500`?
+    - $\rarr$ use `HAVING` keyword
+    ```sql
+    SELECT    A.branch, SUM(A.balance)
+    FROM      Account A
+    GROUP BY  A.branch
+    HAVING    SUM(A.balance) >= 500 ;
+    ```
+  - Anwer:
+    | Branch | SUM     |
+    | ------ | ------- |
+    | London | 3086.00 |
+- Order of evaluation in SQL queries
+  ```sql
+  1. Take rows from the (joined) tables listed in FROM
+  2. Discard rows not satisfying the WHERE condition
+  3. Partition rows according to attributes in GROUP BY
+  4. Compute aggregates
+  5. Discard rows not satisfying the HAVING condition
+  6. Output the values of expressions listed in SELECT
+  ```
+  - Q: What's the difference between `HAVING` and `WHERE`?
+  - TODO: tidy this up
+    - WHERE -> Decisdes which rows are fed into aggregation
+    - A: HAVING is similar to WHERE in the sense that it takes a condition and returns the rows which satisfy them. However the crucial difference is that HAVING is evaluated after aggregation -> decides which rows to keep from aggregation result
+- Aggregation and arithmetic (1)
+  - Consider the updated `Account` table below:
+    ![TODO](../images/dbs-account-aggregation-updated.png)
+  - Query: money available in total to each customer across his accounts
+    ```sql
+    SELECT    A.custid, SUM(A.balance - A.spend)
+    FROM      Account A
+    GROUP BY  A.custid ;
+    ```
+  - Answer:
+    | CustID | SUM     |
+    | ------ | ------- |
+    | 1      | 1530.00 |
+    | 2      | 1400.00 |
+  - What's happening?
+    ![TODO](../images/dbs-aggregation-arithmetic.png)
+- Aggregation and arithmetic (2)
+  - Consider the updated `Account` table from earlier
+  - Query: money available in total to each customer across his accounts
+    ```sql
+    SELECT    A.custid, SUM(A.balance) - SUM(A.spend)
+    FROM      Account A
+    GROUP BY  A.custid ;
+    ```
+  - Answer:
+    | CustID | ?column? |
+    | ------ | -------- |
+    | 1      | 1530.00  |
+    | 2      | 1400.00  |
+    - TODO: What is that `?column?` name?
+      - postReg uses aggregation name for the column by default
+        - But if we involve aggregation in combination with arithmetic, the default is `?column?`
+      - Good practice: give explicit name to such column where we use aggregation + arithmetic using `AS`
+  - What's happening?
+    ![TODO](../images/dbs-aggregation-arithmetic-2.png)
+## Week 5: Nested Queries
+- Aggregate results in `WHERE`
+  - It is possible to have nested queries, i.e. queries withing queries
+  - Recall the account table we've seen a couple of times already:
+
+    ![TODO](../images/dbs-aggregation-account.png)
+  - Then how can we express the following query in SQL:
+    > Accounts with a higher balance than the average of all accounts.
+    ```sql
+    SELECT A.number
+    FROM   Account A
+    WHERE  A.balance > ( SELECT AVG(A1.balance)
+                         FROM   Account A1 ) ;
+    ```
+  - Answer:
+
+    | Number |
+    | ------ |
+    | 111    |
+    | 222    |
+  - This would not work:
+    ```sql
+    SELECT A.number
+    FROM   Account A
+    WHERE  A.balance > AVG( SELECT A1.balance
+                         FROM   Account A1 ) ;    
+    ```
+    - It would not work because aggregate function **can only be used in `SELECT` and `HAVING`**
+- Comparisons with subquery results
+  ```sql
+  SELECT ...
+  FROM   ...
+  WHERE term op ( subquery ) ;
+  ```
+  - Allowed as long as `subquery` returns a *single value*
+
+  ```sql
+  SELECT ...
+  FROM   ...
+  WHERE (term1,...,termN) op ( subquery ) ;
+  ```
+  - Allowed as long as `subquery` returns a *single row* with $N$ columns
+    - If this confuses you, see *Comparisons between tuples* section for further clarification
+- The `WHERE` clase revisited
+  ![TODO](../images/dbs-where-revisited.png)
+  - TODO: Add explanations for below after lecture:
+    - (term,...,term) op ANY (query):
+      - The operator condition is true if there is one term and one attribute in query that is ture
+    - (term,...,term) op ALL (query):
+      - Every single must be true
+    - (term,...,term) op [NOT] IN (query):
+      - terms must appear in query
+    - EXISTS (query):
+      - query does not return empty bag
+- Comparisons between tuples
+  ![TODO](../images/dbs-tuple-comparison.png)
+  - Equality: every element must be equal to positionally same element in other tuple
+  - Inequality: at least one of the corresponding elements must not be equal so that the tuples are not equal
+  - Smaller than: TODO
+  - Smaller or equal than: TODO
+- `ANY`
+  - Recall
+    ```sql
+    (term, ..., term) op ANY ( query )
+    ```
+    - True if *there exists* at least one row $\overline{r}$ in the results of `query` such that (term, ..., term) $\bf{op}$ $\overline{r}$ is true
+    - ![TODO](../images/dbs-any-example.png)
+    - Last question: Error because query yields empty bag so comparison invalid
+      - TODO: verify this
+- `ALL`
+  - True if *for all* rows $\overline{r}$ in the results of `query`, (term, ..., term) $\bf{op}\overline{r}$ is true
+    ![TODO](../images/dbs-all.png)
+    - Last question: Again, error?
+      - TODO: answer from lecture
+- Examples with `ANY` and `ALL`
+  - Consider the following schema:
+    ```sql
+    Customer: ID, Name, City
+    Account: Number, Branch, CustID, Balance
+    ```
+  - Query: ID of customers from London who own an account
+    ```sql
+    SELECT C.id
+    FROM   Customer C
+    WHERE  C.city = 'London'
+      AND  C.id = ANY( SELECT A.custid
+                       FROM   Account A );
+    ```
+    - The `ANY` expression says "there exists at least one `A.custid` in the subquery which equals `C.id`"
+  - Customers living in cities without a branch
+    ```sql
+    SELECT *
+    FROM   Customer C
+    WHERE  C.city <> ALL( SELECT A.branch
+                          FORM   Account A );
+    ```
+- `IN` / `NOT IN`
+  - This one is fairly easy
+  ```sql
+  (term, ..., term) IN ( query )
+  -- same as
+  (term, ..., term) = ANY ( query )
+  ```
+  - So `IN` $\equiv$ `= ANY`
+  ```sql
+  (term, ..., term) NOT IN ( query )
+  -- same as
+  (term, ..., term) <> ALL ( query )
+  ```
+  - So `NOT IN` $\equiv$ `<> ALL`
+- Examples with `IN` and `NOT IN`
+  - Note how these examples relate to the examples from the section above, for comparison
+  - ID of customers from London who own an account
+    ```sql
+    SELECT C.id
+    FROM   Customer C
+    WHERE  C.city = 'London'
+      AND  C.id IN ( SELECT A.custid
+                     FROM   Account A );
+    ```
+  - Customers living in cities without a branch
+    ```sql
+    SELECT *
+    FROM   Customer C
+    WHERE  C.city NOT IN ( SELECT A.branch
+                           FROM   Account A );
+    ```
+- `EXISTS`
+  - `EXISTS ( query )` is true if the result of the `query` is non-empty
+  - (Trivial) Example: Return all the customers if there are some accounts in London
+    ```sql
+    SELECT *
+    FROM   Customer C
+    WHERE  EXISTS ( SELECT 1
+                    FROM   Account
+                    WHERE  branch = 'London' );
+    ```
+    - `SELECT 1` translates to TODO
+      - Maybe just select 1 row?
+- Correlated subqueries
+  - All nested queries can refer to attributes in the parent queries
+  - Example: Return customers who have an account in London
+    ```sql
+    SELECT *
+    FROM   Customer C
+    WHERE  C.id IN ( SELECT A.custid
+                     FROM   Account A
+                     WHERE  A.branch = 'London')
+    ```
+    - TODO: Would this also work?
+  - Better:
+    ```sql
+    SELECT *
+    FROM   Customer C
+    WHERE  EXISTS ( SELECT 1
+                     FROM  Account A
+                     WHERE A.branch = 'London'
+                       AND A.custid = C.id );
+    ```
+    - TODO: why better?
+- **parameters** = attributes of a subquery that refer to outer queries
+  - Like `C.id` in the example above
+- Examples with `EXISTS` / `NOT EXISTS`
+  - ID of customers from London who own an account
+    ```sql
+    SELECT C.id
+    FROM   Customer C
+    WHERE  EXISTS ( SELECT *
+                    FROM   Account A
+                    WHERE  A.custid = C.id );
+    ```
+  - Customers living in cities without a branch
+    ```sql
+    SELECT *
+    FROM   Customer C
+    WHERE NOT EXISTS ( SELECT *
+                       FROM   Account A
+                       WHERE  A.branch = C.city );
+    ```
+- Scoping
+  - A subquery has
+    - a *local scope* (its `FROM` clause)
+    - $n$ outer scopes (where $n$ is the *level of nesting*)
+      - These are the `FROM` clauses of the parent queries
+    - TODO: clarify this when you're less tired and not at 10.12pm at the library :(
+  - For each reference to an attribute
+    ```md
+    1. Look for a binding in the local scope
+    2. If no binding is found, look in the **closest** outer scope
+    3. If no binding is found, look in the next closest outer scope
+    4. ...
+    5. If no binding is found, give error
+    ```
+- Attribute binding
+  ```sql
+  SELECT *
+  FROM   table1
+  WHERE  EXISTS ( SELECT 1
+                  FROM   table2
+                  WHERE  A = B );
+  ```
+  - Above is a bad query: what `A`, `B` refer to depends on the attributes in `table1` and `table2`
+    - This is why we should always give **aliases** to tables
+    - Always prefix the attributes with the tables they refer to (i.e. fully reference them)
+  ```sql
+  SELECT *
+  FROM  table1 T1
+  WHERE EXISTS ( SELECT 1
+                 FROM   table2 T2
+                 WHERE  T2.A = T1.B );
+  ```
+- The `FROM` clause revisited
+  - 

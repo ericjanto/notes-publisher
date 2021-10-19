@@ -14,6 +14,8 @@ Use the filter function in the sidebar (`cmd + b`) to see only notes you're inte
 
 This is a prototyype, I don't know yet what this website will turn out to be eventually, some ideas are plotted on my [roadmap]().
 
+Most of my notes use images, especially if there are mathematical expressions which would be difficult to type in LaTeX. However, if you are a visually impaired person and cannot read the content from these images, please do [reach out to me](www.ericjanto.com/contact) so that we can find a solution.
+
 Lastly, if you find a mistake, I'd like to encourage you to [open an issue on GitHub](dummy-link).
 
 👋 [Eric](https://ericjanto.com)
