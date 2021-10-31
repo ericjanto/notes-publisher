@@ -601,10 +601,10 @@ to-heading: 6
     ```
     - Will talk about step 2 in detail later
     - Step 3: Splits into all possible values for this attribute, and each set contains only data instances which have that particular attribute value
-      ![TODO](../images/iaml-decision-tree.png)
+      ![Example of a decision tree without keeping track of +/- labels](../images/iaml-decision-tree.png)
 - After creating the branches
   - Replace the leaves (pure subsets of the data set) with decision labels (yes/no)
-    ![TODO](iaml/../../images/iaml-decision-tree-labels.png)
+    ![Same decision tree as before with labels](../images/iaml-decision-tree-labels.png)
   - Given new data, we can just follow the tree and choose the label at the leaf we end up at
 - Counts and pruning
   - We keep track of the counts (how pure/unpure the subset is, like `3 yes / 1 no`)
@@ -649,7 +649,7 @@ to-heading: 6
     - How many bits do we need to tell if $X$ is positive or negative
       - Entropy actually in $[0,1]$ so better to think of this as "how many fractions of a bit do we need"
     - It's weird to think of fractional bits but it basically just *quantifies the uncertainty* about whether a randomly picked item is positive or negative
-    ![TODO](../images/iaml-entropy-calc.png)
+    ![Example of how to calculate the entropy](../images/iaml-entropy-calc.png)
     ![Entropy plotted depending on the value of p_+: if there's 50% of positives, impurity is v high and entropy is 1. Note how the entropy plot is symmetric.](../images/iaml-entropy-plot.png)
   - Higher entropy value: more impure
   - Lower entropy value: more pure
@@ -658,7 +658,7 @@ to-heading: 6
     - For which subset should we calculate the entropy? Can't just choose one
     - Hence, we take the average for each of the subsets
     - We expect the entropy to drop after a split, called a *Gain*
-      ![TODO](../images/iaml-information-gain.png)
+      ![Information gain formula](../images/iaml-information-gain.png)
     - $\frac{|S_V|}{|S|}$ tells us how big each subset is
       - if it's small, it counts less into the subtraction because we want many items in pure sets
     - Why are we doing this?
@@ -685,7 +685,7 @@ to-heading: 6
     - No: Doesn't work on new data as well
   - Once we haev split up the data to a very fine-grained level and we have singleton subsets, we don't have confidence at all in our predictions
     - because really, all we're saying is any data point that falls into that leaf is positive just because we haev seen 1 positive example in our training data $\rarr$ seems foolish
-    ![TODO](../images/iaml-purity.png)
+    ![Infograhic shows that overfitted trees will not perform well on testing data](../images/iaml-purity.png)
       - Accuracy on training data keeps increasing with tree size
       - Test data not, after while, the accuracy will decrease with increasing tree size
         - Called **overfitting**
@@ -717,7 +717,7 @@ to-heading: 6
     - Attribute values we haven't seen before because we don't have a tree branch for them!
 - Gain Ratio: one solution for information gain bias
   - Penalises attributes with many values
-    ![TODO](../images/iaml-gain-ratio.png)
+    ![Gain ratio formula](../images/iaml-gain-ratio.png)
     - $SplitEntropy$ is the entropy of the split itself (without considering the positives or negatives)
       - Tells you "does this attribute give me lots of tiny attributes or not?"
         - High value if lots of tiny subsets
@@ -782,7 +782,8 @@ to-heading: 6
 - Recall the what the term *training data* refers to: $\{x_i,y_i\}$
   - We have data points $x_i$ and their true label $y_i$
     - A specific tuple of $x_i$ and $y_i$ is called an example, e.g. $\{x_1,y_1\}$
-      - TODO: is it actually the tuple or just x_i that is the example? -> Piazza
+      - Q: Is it actually the tuple or just x_i that is the example?
+      - A: The tuple. It's an example of what datapoint $x_i$ is classified as ($y_i$)
   - We use these examples to train our predictor
 - Future data: $\{x_i,?\}$
   - We have examples that our classifier has never seen before
@@ -809,7 +810,7 @@ to-heading: 6
         - Salient = non-trivial
     - Predictor $F$ underfits data if
       - We can find another predictor $F'$ which makes fewer mistakes both on training and future data set than $F$
-  ![TODO](../images/iaml-over-underfit.png)
+  ![Over- vs underfitting](../images/iaml-over-underfit.png)
     - For the training set, the more complex the predictor, the smaller the error rate
     - For future data, there's a sweetspot between too simplistic and too complex
       - Too complex will make error rate go up again because of captured noise in trainign data
@@ -824,14 +825,14 @@ to-heading: 6
   - Training error
     - The error the predictor gets on the training set
     
-    ![TODO](../images/iaml-training-error.png)
+    ![Training error formula](../images/iaml-training-error.png)
     - We sum up for each training example its individual error by evaluating how much different the predicted value $f_D(x_i)$ is from the true value $y_i$
       - The $error$ function is some measure which tells you how close the predicted value is to the true value
         - In classification it's just an equality test (same / not same)
         - Will talk about possible error functions later
   - Generalisation error
     - Measure of how well the predictor does on future data
-    ![TODO](../images/iaml-generalisation-error.png)
+    ![Generalisation error formula (cannot be used in practice)](../images/iaml-generalisation-error.png)
     - Problem: we don't know what $x_i$ there will be in the future, neither what true label $y_i$ it will have
       - Hence, **we can never directly compute the generalisation error**
     - But we do know all the possible values for $x$ and $y$ (their range)
@@ -840,7 +841,7 @@ to-heading: 6
   - Even though we cannot compute the generalisation error, we can *estimate* it
   - Can estimate it by computing a *testing error*
 
-    ![TODO](../images/iaml-testing-error.png)
+    ![Testing error formula](../images/iaml-testing-error.png)
   - Testing data
     - We have training data
       - We split off a certain part of it $\rarr$ called *test data* or testing set
@@ -855,11 +856,11 @@ to-heading: 6
   - We don't knoe exactly *how close* the $E_{test}$ will be to $E_{gen}$
     - Since it depends on the testing set size $n$
   - So we create a *confidence interval* such that $\%$ of future test sets fall within that interval
-    - E.g. $p=95$s
-    $E_{test}\pm\DeltaE$
+    - E.g. $p=95$
+    $E_{test}\pm\Delta E$
     - $\Delta E$ = a range of errors
 - True error rate
-  - $E_{test$} is an unbiased estimate of $E$, the true error rate
+  - $E_{test}$ is an unbiased estimate of $E$, the true error rate
     - Assuming the test set was sampled in a representative way
     - The true error rate $E$ is the probability that our predictor will misclassify a random instance
       - I.e. got a positive but classified as negative, or vice versa
@@ -874,8 +875,8 @@ to-heading: 6
     - $\mu=E$
     - $\sigma^2=\frac{E(1-E)}{n}$
   - The $p\%$ confidence interval for the future error is:
-    ![TODO](../images/iaml-future-error-ci.png)
-    ![TODO](../images/iaml-future-error-ci-calculation.png)
+    ![Future error](../images/iaml-future-error-ci.png)
+    ![Future error calculation](../images/iaml-future-error-ci-calculation.png)
 - Validation sets
   - Need a separate set of data to pick values for the "dials" of classifier
   - Recall:
@@ -908,7 +909,7 @@ to-heading: 6
     - Then, flip the sets around:
       - Build a classifier on the testing set and then run on training instances and compute the error rate on them
     - Why is this legal to do?
-      - We are still not using overlapped data because at each steop, we use each instance only in one way
+      - We are still not using overlapped data because at each step, we use each instance only in one way
         - Only once for training and once for testing
       - We effectively use every point both for testing and training but **never at the same time**
         - This reduces the chance of getting a biased testing set
@@ -917,7 +918,7 @@ to-heading: 6
       - $k=5$ or $k=10$ are conventional values for $k$
       - E.g. $5$-fold cross-validation would look like this:
 
-        ![TODO](../images/iaml-five-fold-validation.png)
+        ![Visualisation of how 5-fold cross-validation works](../images/iaml-five-fold-validation.png)
       - To get estimated error, avergae the results over $5$ folds
       - To build the final classifier we're going to use in practice, take $100\%$ of the data
         - Cannot compute estimated error for that classifier as there's no data left for testing
@@ -946,7 +947,6 @@ to-heading: 6
     ```
 - Evaluation measures
   - There are lots ways for deciding if
-
 ## Week 4: Linear Regression
 - The Regression Problem
   - Compare it to the classification problem:
@@ -964,7 +964,7 @@ to-heading: 6
 - The Linear Model
   - The linear model is shown below, the equation on the top:
   
-  ![TODO](../images/iaml-linear-model.png)
+  ![Linear regressoin model](../images/iaml-linear-model.png)
 
   - Equation explained
     - $\bf{x}$ is the input data
@@ -972,7 +972,7 @@ to-heading: 6
     - $w_0$ is the first model parameter
     - $D$ is the number of dimensions in the data
   - We can write that as the dot product of two vectors:
-    $$\phi(\bf{X})\times\bf{W}$$ (TODO: fix dot product symbol)
+    $$\phi(\bf{X})\cdotp\bf{W}$$
     - A row vector
     - It has the components $1$ and then the components of the input data $\bf{X}$
       - $\bf{X}$ is a column vector so we need to transpose it
@@ -1159,7 +1159,7 @@ to-heading: 6
     
     $$f(Z)=\sigma(Z)\equiv\frac{1}{1+exp(-Z)}$$
   
-    - As $Z$ goes from $-\infty$ to $\infty$, so $f$ goes fomr $0$ to $1$
+    - As $Z$ goes from $-\infty$ to $\infty$, so $f$ goes from $0$ to $1$
     - It has a "sigmoid" shape (i.e. S-like shape)
       ![Plot of the logistic function](../images/iaml-logistic-function.png)
       - If we have a factor $\alpha$ in front of $Z$, it affects the slope of the plot
@@ -1543,4 +1543,832 @@ to-heading: 6
         - Don't bother trying $2.0,3.0,7.0$
           - Q: Why?
           - A: We increase the values geometrically
-  
+## Week 5: Support Vector Machines
+- SVMs are one of the most effective and widely used classification algorithms
+- SVM are the combination of two ideas
+  1. Maximum margin classification
+  2. The "kernel trick"
+- SVMs are a linear classifier
+  - This means it's a linear combination of parameters
+  - Like logistic regression and preceptron
+    - TODO: What's perceptron
+- Linear algebra to remember:
+  ![TODO](../images/iaml-lin-alg.png)
+- Recall what a separating hyperplane is
+  - For any linear classifier
+    - We have training instances $(\bf{x}_i,y_i),i=1,...,n$
+      - The class $y$: $y_i\in\{-1,+1\}$
+        - Notice that for this topic we use $-1$ rather than $0$ for the negative class as it'll be convenient for the maths
+  - Then, we have a hyperplane $\bf{w}^T\bf{x}+w_0=0$
+    ![TODO](../images/iaml-sep-hyperplane.png)
+  - = decision boundary
+- SVM: Intuition
+  ![TODO](../images/iaml-hyperplanes-compared.png)
+  - Right one is crap because the minimum distance to the closest point is smaller $\rarr$ we want to maximise it
+  - Idea: **Maximise the margin**
+    - The margin is the distance between the decision boundary (the separating hyperplane) and the closest training point
+      ![TODO](../images/iaml-margin.png)
+  - Computing the margin
+    - The tricky part will be to get an equation for the margin
+    - We'll start by getting the distance from the origin to the hyperplane
+    - i.e., we want to  compute the scalar $b$ below
+      ![TODO](../images/iaml-margin-comp.png)
+    - Computing the distance to the origin
+      - Define $\bf{z}$ as the point on the hyperplane closest to the origin
+      - $\bf{z}$ must be proportional to $\bf{w}$ because $\bf{w}$ is *normal* to the hyperplane
+        - Normal = perpendicular
+      - By definition of $b$, we have the norm oof $\bf{z}$ given by
+        $$||\bf{z}||=b$$
+      - So
+        $$b\frac{\bf{w}}{||\bf{w}||}=\bf{z}$$
+    - We know that:
+      1. $$\bf{z}$$ is on the hyperplane
+      2. $$b\frac{\bf{w}}{||\bf{w}||}=\bf{z}$$
+    - (1) means $$\bf{w}^T{z}+w_0=0$$
+    - Substituting we get
+      ![TODO](../images/iaml-margin-subst.png)
+    - Remember $||\bf{w}||=\sqrt{\bf{w}^T\bf{w}}$
+    - Now  we have  the distance from the origin to the hyperrplane!
+    ![TODO](../images/iaml-distance-to-hyperplane.png)
+    - Now we want $c$, the distance from $\bf{x}$ to the hyperplane
+      - $\bf{x}$ is some random datapoint
+    - It's clear that $c=|b-a|$, where $a$ is the length of the projection of $\bf{x}$ onto $\bf{w}$
+      $$a=frac{\bf{w}^T\bf{x}}{||\bf{w}||}$$
+    - The perpendicular distance from a point $\bf{x}$ to the hyperplane $\bf{w}^T\bf{x}+w_0=0$ is
+      ![TODO](../images/iaml-perpendicular-dist-hyperplane.png)
+    - The **margin** is the distance from the **closest** training point to the hyperplane:
+      ![TODO](../images/iaml-margin-formula.png,)
+  - Removing the scale
+    - Note that $\bf{w},w_0$ and $(c\bf{w},cw_0)$ define the same hyperplane
+      - Because the hyperplane is defined by $\bf{w}$ which is a vector that is perpendicular to the hyperplane
+      - It doesn't matter, how long that vecotr is, the hyperplane will be the same
+      - The scale is arbitrary
+    - This is because we predict class $y=1$ if $\bf{w}^T\bf{x}+w_0≥0$
+      - That's the same thing as saying $c\bf{w}^T\bf{x}+cw_0≥0$
+    - To remove this freedom, we will put a constraint on $(\bf{w},w_0)$
+      ![TODO](../images/iaml-hyperplane-scaling.png)
+    - With this constraint, the margin is always $\frac{1}{||\bf{w}||}$
+  - Optimising the margin
+    - (Normal or norm vector = modulus of a vector)
+    - Here is a first version of an optimisation problem to maximise the margin
+      ![TODO](../images/iaml-margin-opt-1.png)
+      - **(1)** We're trying to maximise the margin
+        - I.e. maximise the minimum distance from the closest point
+        - The plane we're trying to achieve gives the greatest degree of separation of positive and negative classes
+      - **(2+3)** Subject to the positive class instances (where $y=1$) being on the right side of the hypeplane
+        - And the negative class instances (where $y=-1$) being on the left side of the hyperplane
+      - **(4)** We have defined this because of the scaling issue discussed earlier
+    - The first two constraints are too lose. It's the same thing to say
+      ![TODO](../images/iaml-margin-opt-2.png)
+    - Now the third constraaint is redundant
+    - The means we can simplify to
+      ![TODO](../images/iaml-margin-opt-3.png)
+        - We're trying to maximise the margin (1) subject to the two constraints
+    - And we can write the above a bit more compactly:
+      ![TODO](../images/iaml-margin-opt-4.png)
+      - This works because if $y_i=-1$ then it turns the inequality sign around
+    - Finially, note that maximising $\frac{1}{||\bf{w}||}$ is the same thing as minimising $||\bf{w}||^2$
+  - The SVM optiisation problem
+    - So the SVM weights are determined by solving the optimisation problem:
+      ![TODO](../images/iaml-svm-opt.png)
+    - Solving this will require maths that we don't have in this course, but will go through solution
+- Optimising the margin 2
+  - Many algorithms have been proposed to solve the above optimisation problem
+    - One or the earliest algorithms is called SMO
+  - Finding the optimum
+    - If you go through some advanced maths (Lagrange multipliers, etc.), it turns out that you can show something remarkable: Optimal parameters look like
+      
+      $$\bf{w}=\Sigma_i\alpha_i y_i\bf{x}_i$$
+
+      - This is saying that the solution weight vector is a linear function of the input data (training vector x an class label y)
+
+    - Furthermore, the solution is sparse
+      - Means that the optimal hyperplane is determined by just a few examples
+      - Call these few examples **support vectors**
+        - They provide support for the solution
+          - The other vectors don't
+  - Why does a solution always have this form?
+    - If you move the points that are not on the marginal hyperplanes, the solution doesn't change
+      - Therefore, those points don't matter
+    ![TODO](../images/iaml-margin-hyperplane.png)
+  - Back to finding the optimum 
+    - $\alpha_i=0$ for non-support patterns
+      - This makes them irrelevant because $\alpha_i$ is a factor so that'll make it function as an absorber
+    - It is an optimisation problem to find $\alpha_i$ has no local minima (like logistic regression)
+    - Prediction on new data point $\bf{x}$:
+      ![TODO](../images/iaml-svm-prediction.png)
+      - The prediction is based on the dot product of the new data point with the support vectors
+- Non-separable data
+  - Non-separable training sets
+    - If data set is not linearly separable, the optimisation problem that we have given has no solution:
+      ![TODO](../images/iaml-svm-opt.png)
+    - Why?
+    - Solution: don't require that we classify all points correctly $\rarr$ give **slack**
+      - Allow the algorithm to choose to ignore some of the points
+    - This is obviously dangerrous (algorithm could just ignore all of them) so we need to give a penalty for doing so
+    - Slack
+      ![TODO](../images/iaml-svm-penalty.png)
+        - There is an O that is on the wrong side of the decision boundary
+        - We want to move it to the right side
+      - The solution is to add a "slack" variable $\xi ≥ 0$ ($\larr$ that's a xi) for each training example
+      - If the slack variable is high, we get to relax the constraint, but we pay a price
+      - New optimisation problem is to minimise
+
+        ![TODO](../images/iaml-svm-new-opt.png)
+          - Most of the slack variables are going to be $0$, only non-zero for the points we need to move
+        - subject to the constraints:
+        
+        ![TODO](../images/iaml-svm-new-opt-constraints.png)
+          - We essentially say that we can adjust the constraint be the amoung we move points
+      - Usually set $k=1$
+      - $C$ is a trade-off parameter
+        - It says "how important do we consider these slcak vairables compared to the norm of the weight vector
+      - Large $C$ gives a large penalty to errors
+      - Solution has some form, but support vectors also include all where $\xi_i\neq 0$
+- Regularisation
+  - Recall ridge regression
+  - Our max margin + slack optimisation problem is to minimise
+    ![TODO](../images/iaml-svm-new-opt.png)
+  - This looks even more like rideg regression than the non-slack problem:
+    - $C(\Sigma_{i=1}^n\xi_i)^k$ measures how well we fit the data
+    - $||\bf{w}||^2$ penalises weight vectors with a lagrge norm
+  - So $C$ can be viewed as a regularisation parameter
+    - Like $\lambda$ in ridge regression or regularised logistic regression
+  - We need to make this tradeoff if data set not linearly separable
+  - You're allowedd to make this tradeoff even when the data set is separable!
+    - Why you might want slack in a separable data set
+      ![TODO](../images/iaml-separable-slack.png)
+- Optimmisation problems: comparing the SVM and logistic regression
+  - TODO: write this out later:
+    ![TODO](../images/iaml-opt-compare-1.png)
+    ![TODO](../images/iaml-opt-compare-2.png)
+    ![TODO](../images/iaml-opt-compare-3.png)
+    ![TODO](../images/iaml-opt-compare-4.png)
+    ![TODO](../images/iaml-opt-compare-5.png)
+- Non-linear SVMs
+  - SVMs can be made nonlinear just like any other linear algorithm we've seen
+    - Using basis expansion
+    - But in an SVM, the basis expansion is implemented in a very special  way, using something called a *kernel*
+    - The reason for this is that kernels can be faster to compute with if the expanded feature space is very  high dimensional (even infinite!)
+    - This is aa fairly advanced topic mathematically, so we will just go through a high-level version
+  - Kernel
+    - A kernel is in some sense an alternate "API" for specifying to the classifier what your expanded feature space is
+    - Up to now, we have always given the classifier a new set of training vectors $\phi(\bf{x}_i)$ for all $i$
+      - E.g. just as a list of numbers
+      ![TODO](../images/iaml-r.png)
+      - We transform from one dimension $d$ to another dimension $D$
+      - If $D$ is large, this will be expenive; if $D$ is infinite, this will be impossible
+        - D is the dimension
+  - Recall what we do when we expand into a new feature-space:
+    - Transform $\bf(x)$ to $\phi(\bf{x})$
+    - Linear algorithm depends only on the dot product of the input with the support vector: $\bf{x}^T\bf{x}_i$
+      - Hence, the transformed algorithm depends only on $\phi(\bf{x})^T\phi(\bf{x}_i)$
+    - Use a kernel function $k(\bf{x}_i,\bf{x}_j)$ such that
+      $$k(\bf{x}_i,\bf{x}_j) = \phi(\bf{x})^T\phi(\bf{x}_i)$$
+      - This is called the "kernel trick" and can be used with a wide variety of learning algorithms, not just max margin
+- Kernels for SVMs
+  - Here's an example of computing a kernel for a two-dimensional input space:
+    - Define a transform first:
+    ![TODO](../images/iaml-kernel.png)
+    - Recall the kernel trick
+  - The Euclidean distance squared between two vectors can be computed using dot products
+    ![TODO](../images/iaml-vector-distance.png)
+  - Using a linear kernel $$k(\bf{x}_i,\bf{x}_j) = \bf{x}^T\bf{x}_i$$ we can rewrite this as:
+    ![TODO](../images/iaml-vector-distance-rewrite.png)
+  - Any kernel gives you an associated distance measure this way
+    - Think of a kernal as an indirect way of specifyying distances
+    - In our new feature space you can think of the kernel as telling the classifier "I've got two points, tell me how far apart they are in the transformed feature space" and the kernel gives a measure of that
+    - Works on infinite feature spaces because we never really deal with the infinite number if we're using kernels, they allow us to only focus on a very specialised part of it
+- Kernelised max margin
+  - A **support vector machine** is a kernelised maximum margin classifier
+  - For max margin remember that we had the magic property
+    $$\bf{w}=\Sigma_i\alpha_i y_i\bf{x}_i$$
+  - This means we would predict the label of a test example $\bf{x}$ as
+    ![TODO](../images/iaml-svm-prediction-2.png)
+  - Kernelising this we get:
+    ![TODO](../images/iaml-svm-kernelised.png)
+- Prediction on a new example
+    ![TODO](../images/iaml-svm-prediction-new-example.png)
+    - This is recognising hand-written digits
+    - In the red, these are the instances that have been picked as support vectors
+    - Black: new input vector
+    - We feed the inpnut vector and each of the support vectors to the kernel k and that produces some result $\lambda$
+      - We used $\alpha$ to notate that result
+    - We then use these for our classification
+    ![TODO](../images/iaml-feature-space-transform.png)
+  - Example 2
+    ![TODO](../images/iaml-svm-example-2.png)
+    - In this case the dimension of $\phi$ is infinite
+    - I.e. it can be shown that no $\phi$ that maps into a finite-dimensional space will give you this kernel
+    - We can *never* calculate $\phi(\bf{x})$ but the algorithm only needs us to calculate $k$ for different pairs of points
+- SVMs in practice
+  - There are theoretical results but we don't ocver them
+  - However, in practice, cross-validation methods are commonly used
+  - Example applications
+    - Digit recognition
+    - Text categorisation
+    - Face detection
+    - DNA analysis
+  - SVM summary and comparisone
+    - Comparison with linear and logistic regression
+      - Underlying basic idea of linear prediciton is the same, but error functions differ
+      - Logistic regression (non-sparse solutions) vs SVM (sparse solution, "hinge loss")
+    - Linear regression (squared error) vs $\epsilon$-insensitive error
+    - Linear regression and logistic regression can be "kernelised" too
+  - SVM summary
+    - SVMs are the combination of the max-margin and the kernel trick
+    - Leran linear decision boundaries (like logistic regression, perceptrions)
+      - Pick hyperplane that maximises margin
+      - Use slack variables to deal with non-separable data
+      - Optimal hyperplane can be written in terms of support patterns
+    - Transform to higher-dimensional space using kernel functions
+    - Good empirical results on many  problems
+    - Appears to avoid overfitting in high dimensional spaces
+## Week 6: Ethics and Machine Learning
+- ML and AI are increasinnngly in use for problems that affect people
+  - Applications in healthcare, law enforcement, ..., which may have direct effects on people's lives
+- Going to talk about:
+  1. Ethical benefits and harms linked to data practices
+  2. Ethical issues in ML
+     1. Fairness
+     2. Accountability
+     3. Transparency
+- Ethical **benefits** linked to data practices
+  - Increasing human understanding of nature, society and our personal lives
+    - The more we understand about the world and how it works, the more intelligently we can act in it
+  - Social, institutional and economic efficiency
+    - Reduce waasted effort and resources, and improve alighnemtn between a social system or institution's policies/processes and our goals
+    - Predictive accuracy and personalisation
+      - More precisely tailor actions to be effective in achieving good outcomes for specific individuals and groups
+      - Potential to remove human biases from decision making
+- Ethical **harms** linked to data practices
+  - Harms to fairness and justice
+    - Arbitrariness; avoidable errors and innaccuracies; unjust and often hidden biases
+  - Harms to transparency and accountability
+      - Can you explain how the system works, and who is responsible for it
+        - Often, ML predictor functions are "magic block boxes" which are impossible to understand by humans
+  - Harms to privacy and security
+    - E.g. youuur personaal data may be part of data proofiles constructed and stored somewhere unknown to you, often without your knowledge or informed consent
+- Common ethical challenges for data practitioners and users
+  - Appropriate data collection and use
+  - Data storage, security and responsible data stewardship
+  - Data cleanliness and data relevance
+  - Identifying and addressing ethically harmful data bias
+  - Validation and testing of data models and analytics
+  - Human accountability in data practices and systems
+  - Understanding personal, social, and business impacts of data practice
+- Is technology netural?
+  - Technologies are not ethically neutral, they reflect the values
+that we “bake in” to them with our design choices, as well as
+the values which guide our use of them
+- Questions to ask about your technology
+  - **Ethics is not a checklist**. It is an ongoing conversation, and requires you to questionn possible outcomes
+    - Who are the stakeholders? This includes anyone who funds, develops, or uses your technology, and anyone it is used upon
+    - Who benefits from the technology? How?
+    - Who could be harmed by the technology? How?
+  - These are questions you must ask yourself and all of the stakeholders
+- Ethical Issues in ML: FAT
+  - Fairness
+    - Data fairness, outcome fairness
+  - Accountability
+  - Transparency
+    - Process transparency, outcome transparency
+- Defining fairness
+  - In a legal context fairness means that people are not discriminated against based on their membership of a *protected* group or class, such as race, gender, sexual orientation etc
+  - Avoiding *disparate impact*:
+    - Where a decision dispropoortionately harms people with certain protected attributes
+- Data fairness: sampling bias in data collection
+  - If a group is more stringently or frequently monitored, more errors will be observed in that group
+  - This can lead to a feedback loop whereby the group is subject to further monitoring because of the apparent higher rate of mistakes
+  - Danger of this bias in predictive policing, where minority communities are often more highly policed
+- Data fairness: bias in labelling
+  - Supervised learning requires labels
+  - Example: predict who is a "good worker" based on CVs
+  - If we train such a system on the existing workforce, and there were biases in their hiring, then these will be perpetuated by the trained system
+- Outcome fairness
+  - Example: predicting loan repayments
+  - This data is used to train a model to predict loan repayment based on the three attributes
+    ![Here, gender is a protected attribute](../images/iaml-outcome-fairness.png)
+    - Protected attribute = should not count into the outcome
+- Fairness through unawareness?
+  - Can we simply omit the protected attribute from our predictor to ensure fairness?
+  - NO, there may be other attributes (known as *proxies*) correlated with a protected attribute
+    - E.g. the credit score may be correlated with gender, so we can predict gender from other (unprotected) features
+- Assessing fairness
+  - Compare ROC curves for each protected group–do they differ?
+    ![TODO](../images/iaml-roc-fairness.png)
+  - There are several definitions of statistical (or group) fairness, with names like demographic parity, equal opportunityy etc
+    - These consider different aspects of the TP/FP/TN/FN distribution, conditioned on the protected attribute(s)
+  - Different definitions of fairness can be mutually inconsistent, so need to assess which of them is most suitable for a given use case
+  - Imposing fairness constraints can lead to a drop in predictive accuracy
+- Accountability
+  - Human agents can be called upon to account for their judgements and decisions
+  - *Accountability gap*: statistical models are not responsible in the same morally relevant sense
+  - Requires clear human **answerability**
+  - **Auditability**:  *how* are the designers and implementers of AI systems are to be held accountable?
+  - *Document* every step of the process of designing and implementing the project
+  - *Document* the monitoring of data provenance and analysis from collection pre-processing, and modelling to training, testing, and deployment
+- Transparency
+  - **Outcome transparency**: The ability to know how and why a model performed the way it did in a specific context and therefore to understand the rationale behind its decision or behaviour (opening the "black box")
+  - Note: we may not always know why humans made a decision (and sometimes they make *post hoc* rationalisations)
+  - **Process transparency**: the justifiability of the processes that go into its design and implementation of a system's outcomes
+## Week 6: Nearest Neighbour Method
+- Overview
+  - Nearest neighbour method
+    - Also called kNN for $k$ Nearest Neighbours
+    - Can be used for classification and regression
+    - Practical issues: find parameter $k$, distance, ties, missing values
+    - Optimality and assumptions
+  - Making kNN fast:
+    - K-D trees
+    - inverted indices
+    - fingerprinting
+- Intuition for kNN
+  ![TODO](../images/iaml-knn-intuition.png)
+  - We have a set of points defined by $(x,y)$
+    - These points are divided into two classes, red and blue
+  - We want to determine whether the box is red or blue
+    - This is classification
+    - Can tell by looking at it that it's red
+  - How did we do it?
+    - Bayes rule?
+    - Decision tree?
+    - Hyperplane?
+    - Nope, probably looked at proximity
+  - Nearby points are red
+    - Use this as a basis for a learning algorithm
+- Nearest-neighbor classification
+  - Use the intuition to classify a new point $x$
+    - Find the most similar training example $x'$
+    - Predict its calss $y'$
+  - Voronoi tessellation
+    ![TODO](../images/iaml-knn-voronoi.png)
+    - We *partition* the entire space into regions
+    - For that, we use a *boundary*
+      - The tile boundaies consist of points (not datapoints, just points that make up the boundary line) that are at the same distance from two different training examples
+    - Decision boundary 
+      - Is made up of the above boundaries between training examples
+        - Only those that are between cells that are associated with different classes
+      - Non-linear, reflects classes well
+      - Compare to NB, DT, logistic
+      - Impressive given that it's a simple method
+- Nearest neighbour: outliers
+  ![TODO](../images/iaml-knn-outlier.png)
+  - The algorithm is sensitive to outliers
+    - Single mislabeled example dramatically changes boundary
+    - There is no confidence $P(y|x)$
+      - Q: What does this mean?
+      - A: There is no notion of a prior (one class is much more prominent than another class). kNN does not take that into account.
+    - Insensitive to class prior
+    - Idea:
+      - Use more than one nearest neighbour to make decision
+      - Count class labels in $k$ most similar training examples
+        - Many "triangles" will outweigh single "circle" outlier
+- kNN classification algorithm
+  - Given:
+    - Training examples $\{x_i,y_i\}$
+      - $x_i$ = attribute-value representation of examples
+      - $y_i$ = class label: $\{ham,\ spam\}$, digit $\{0,1,...,9\}$ etc.
+    - Testing point $x$ we want to classify
+      - This is the input
+  - Algorithm:
+    ```python
+    1. Compute the distance D(x,x_i) from input x to every training example x_i
+    2. Select k clostest instances x_i1...x_ik and their labels y_i1...y_ik
+    3. Output the class y* which is most frequent in y_i1...y_ik
+    ```
+    - Most frequent label / class is also called *mode*
+    - There is no training process, we directly start computing distances to testing instance
+- kNN regression algorithm
+  - Given:
+    - Training examples $\{x_i,y_i\}$
+      - $x_i$ = attribute-value representation of examples
+      - $y_i$ = real-valued target (profit, rating on YouTube, etc)
+    - Testing point $x$ for which we want to predict the target
+  - Algorithm:
+    ```python
+    1. Compute distance D(x,x_i) from input x to every training example x_i
+    2. Select k closest instances x_i1...x_ik and their labels y_i1...y_ik
+    3. Output the mean of y_i1...y_ik
+    ```
+    - Mean of $y_{i1}...y_{ik}$:
+      $$\hat{y}=f(x)=\frac{1}{k}\Sigma_{j=1}^ky_{i_j}$$
+      - TODO: explain this in own words
+- Example: kNN regression in a one-dimensional space
+  ![TODO](../images/iaml-knn-regression.png)
+  - Suppose the green line is the function we're trying to predict values for (we don't know this function)
+  - We have some observations from this function (blue)
+    - That's the training set
+    - The algorithm only sees the points, not the function
+  - Suppose we want to predict the value/label for $x=4$
+    - We look for the nearest neighbour in the x space
+    - That's 3.2
+    - If we were using a 1-nn algorithm, the prediction for x=4 would just be the y value of x=3.2
+    - That's pretty far from the actual function value for x=4
+    - So let's look at 2-nn
+      - 3.2 and 5, so avg(6,3)=4.5
+  - For x=0, there is no good value for $k$, all the predictions are going to be really bad
+    - This is happening because there is a fundamental difference between 4 and 0
+      - 4 lies in the middle of the training examples
+        - Interpolation: we're predicting a value for a point which is in the range of your training examples
+      - 0 lies outside of the range of the training examples we have
+        - Extrapolation: we're predicting outside of the range of what we have examples for
+- Choosing the value of $k$
+  - The value of $k$ has a strong effect on the kNN performance
+    - Large value $\rarr$ everything will be classified as the most likely class: $P(y)$
+    - Small value $\rarr$ highly variable, unstable decision boundaries
+      - Small changes to training set $\rarr$ large changes in classification
+    - Affects "smoothness" of the boundary
+  ![TODO](../images/iaml-knn-choosing-k.png)
+  - Selecting the value of $k$
+    - Use cross-validation
+    - Set aside a portion of the training data (validation set)
+      - It's critical to use a separate set of validation set (and not use training data as validation data) because otherwise we'll just get $k=1$ because for the training data set there is always going to be one example that is going to be near the input which has exactly the correct class label, that is the example itself
+        - Higher k will never give better prediction because neighbours could be another class 
+    - Vary $k$, observe training $\rar$ validation error
+    - Pick $k$ that gives best generalisation performance
+- Distance measures
+  | Measure   | Data               |
+  | --------- | ------------------ |
+  | Eucledian | Numeric attributes |
+  | Hammer    | Categorical        |
+  - Key component of the kNN algorithm
+    - Defines which examples are similar and which aren't
+    - Can have strong effect on performance
+  - Euclidean distance (use for numeric attributes):
+    ![The Euclidean distance formula. Determines the distance between numeric points](../images/iaml-euclidean.png)
+    - Symmetric, spherical, treats all dimensions equally
+  - Hamming distance (categorical attributes):
+    ![The Hamming distance formula. Determines the "distance" between categorical attributes](../images/iaml-hamming.png)
+    - Basically just counts the number of attributes where $x,x'$ differ
+      - If they are equal, it's 0
+  - Minkowski distance (p-norm)
+    ![The Minkowski distance formula](../images/iaml-minkowski.png)
+    - Dependent on value of $p$:
+      - $p=2$: Euclidean distance
+      - $p=1$: Manhattan
+        ![Manhattan distance visualisatio](../images/iaml-manhattan.png)
+      - $p\rarr\infty$: $\bf{max}_d|x_d-x'_d|$
+        - If we raise sth to a very large power, the distance that is the biggest will dominate so if we take the root it's like taking the biggest distance
+      - $p\rarr 0$: number of non-zero differences
+        - Similar to Hamming distance
+    - ![TODO: explain this](../images/iaml-p-norm.png)
+      - We might have an input point A, and test points B, C, D, E
+      - The Eucledian distance are the dashed circles, will give same distance for B and C
+      - The solid lines are the distance for p=0.7
+        - B is closer to A than C
+        - C and D have same distance
+    - We take away: if we take small p, we suffer more from variables differing on more dimensions than 1
+  - And then there are lots of custom distance measures, depending on the domain
+    - E.g. for test, or distributions
+- kNN: practical issues
+  - Resolving ties:
+    - A ties occurs when there is a equal number of positive and negative neighbours
+    - One solution is to use odd $k$
+      - This doesn't solve multi-class
+        - Q: Why?
+        - T: Because we could have an odd number of classes.
+    - Another solution is to break ties
+      - Random: flip a coin to decide positive / negative
+      - Prior: pick class with greater prior
+      - Nearest: use 1-nn classifier to decide
+  - Missing values
+    - Have to "fill in", otherwise can't compute distance
+    - Key concern: should affect distance as little as possible
+    - Reasonable choice: average value across entire dataset
+- kNN, Parzen windows and kernels
+  - kNN algorithms are closely related to a powerful family of algorithms based on kernels
+  ![TODO](../images/iaml-knn-comparison.png)
+  - Left: We have our training data (blue and red classified training examples) and we are looking at two different testing points (yellow crosses)
+    - Suppose we run a 3-NN algorithm
+    - For the first testing point, the left one, it finds 2 blue and 1 red point, so classify as blue
+    - For the second one, also 3 nearest neighbours but they radius of the circle area we are looking at is much smaller, all the poitns are nearby
+      - kNN always looks at fixed number of neighbours regardless of how big/small search area
+  - Parzen window algorithm
+    - Instead of looking for a fixed numbers of neighbours, we look at **regions of fixed area/volume**
+    - We look at a region of a fixed radius $R$
+    - Now, the right testing point gets lots of more training examples to base the prediction on
+  - Notion of neighbourhood
+    - Assume for each positive label, assign +1
+    - For each negative label, assign -1
+    - It finds the neighbourhood R(x)
+    - Within that neighbourhood, it adds up all the labels $y_i$
+    - Overall, the prediction is the sign ($sgn$) of the sum of the labels for the points x_i within the neighbourhood $R(x)$
+    - Can rewrite it is as a sum that goes over all the training instances
+      - But add an indicator function which is 1 if an instance is in the neighbourhood, and 0 if not
+    - "distance from x" graph explained: kNN, Parzen windows and kernels video, from min 7.30
+- kNN pros and cons
+  - Pros
+    - Almost no assumptions about the data
+      - Smoothness: neraby regions of space $\rarr$ same class
+      - Assumptions implied by distance function (only locally!)
+        - TODO: what does this mean
+      - Non-parametric approach: "let the data speak for itself"
+        - Nothing to infer from the data, except $k$ and possible $D()$
+        - Easy to update in online setting: just add new item to training set
+          - TODO: what's an online setting?
+  - Cons
+    - Need to handle missing data: fill-in or create a special distance
+    - Sensitive to class-outliers (mislabeled training instances)
+    - Sensitive to lots of errelevant attributes (they affect the distance)
+      - Similar to Naive Bayes, DTs are not as prone to it
+    - Computationally expensive
+      - Spcace: need to store all training examples
+      - Time: need to compute distance to all examples: $O(nd)$
+        - $n$ = number of training examples, $d$ cost of computing distance
+        - As $n$ grows $\rarr$ system will become slower and slower
+        - Expense is at *testing*, not *training* time
+          - This is bad
+          - For every input, it's expensive rather for that one time we train a model
+- Summary: kNN
+  - Key idea: nearby points $\rarr$ same class
+    - Important to select good distance function
+  - Can be used for both classification and regression
+  - Simple, non-linear, asymptotically optimal
+    - Does not make assumptions about the data
+    - "Let the data speak for itself"
+  - Select $k$ by optimising error on held-out set
+    - Held-out set = validation set
+  - Naive implementations are slow for big datasets
+    - Use K-D trees (in low dimensions) or inverted lists (high dimensions)
+- Why is kNN slow?
+  ![TODO](../images/iaml-knn-slow.png)
+- Making kNN fast
+  - Training $O(d)$ but testing: $O(nd)$
+    - TODO: Where is this difference coming from?
+  - *Reduce d*: dimensionality reduction
+    - Simple feature selection, other methods $O(d^3)$
+  - *Reduce n*: don't compare to **all** training examples
+    - Idea: quickly identify $m<<n$ potential near neighbors
+      - Instead of n, only m comparisons which is much smaller
+      - Compare only to those, pick $k$ neaerest neighbours $\rarr O(md)$ time
+      - Reducing n:
+        | Method                     | When to use                                                           | Note                                                                      |
+        | -------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+        | K-D trees                  | Low-dimensional, real-valued data                                     | $O(d log_2 n)$, only works when $d<<n$, inexact: can miss neighbors       |
+        | Inverted lists:            | High-dimensional, discrete (sparse) data (sparse = most values are 0) | $O(n'd') where $d'<<d,n'<<n$, only for sparse data (e.g. text) exact      |
+        | Locality-sensitive hashing | High-dimensional, real-valued or discrete data                        | $O(n'd),\ n'<<n$ = bits in fingerprint, inexact: can miss near neighbours |
+- K-D tree example
+  - We build a data structure that organises a given data set as a tree
+  - And then, if we want to find nearest neighbours of an input point, we navigate down the tree to the region that will hopefully contain most of the near neighbours
+  - How to build a K-D tree from training data:
+    ```python
+    1. Take all of the training instances
+    2. Pick a random attribute. (In example either x_1 or x_2)
+    3. Find the median for that attribute (in example: 6)
+    4. Use that median to split the dataset, half the points on side, the other half on the other side (vertical cut in example image)
+    5. Repeat process with subsets, picking another attribute.
+    6. Keep doing it until we end up with a predetermined number of points in each branch of the tree. 
+    ```
+    - Depth of tree cannot be larger than $log_2(n)$ where $n$ is the total number of instances
+      - Because there is no point in splitting further than singletons / it's impossible
+  - Find nearest neigbours for new point $(7,4)$
+    - Find region containing $(7,4)$
+    - Compare to all points in region
+  - ![TODO](../images/iaml-k-d-tree.png)
+    - Note that we can easily miss nearest neighbours (like the point to the left of the input $\bf{x}$, it's in the nearest neighbour circle but not in the same tree branch)
+- Locality-sensitive hashing (LSH)
+  - At a high-level, it operates similarily to K-D trees, we divide the space into region
+  - Construct random hypeplanes $\bf{h}_1,...,\bf{h}_k$
+    - Space is sliced into $2^k$ regions (polytopes)
+    - Compare $x$ only to training points in the same region $R$
+  - Complexity:
+     ![TODO](../images/iaml-knn-lsh.png)
+    - O(dn) is the kNN brute-force approach $\rarr$ much worse
+- Inverted list example
+  - Inverted list is a data structure used by search engines (Google, etc)
+    - List all training examples that contain a particular attribute
+    - Asusmption: most attribute values are zero (sparseness)
+  - Given a new testing example:
+    - Merge inverted lists for attributes present in new example
+    ![TODO](../images/iaml-knn-inverted-lists.png)
+      - If data is not sparse, the inverted lists are just going to be as long as the number of elements in examples so would not be any benefit using inverted lists
+## Week 7: K-Means
+- Clustering
+  - About discorver the underlying structure of the data
+    - Unsupervised task, not predicting anything specific
+    - We're trying to understand the data
+  - What sub-populations exist in the data? Can answer one family of questions which have to do with subpopulations of the data
+    - How many sub-populations are there?
+    - What are their sizes?
+    - Do elements in a sub-population have any common properties?
+    - Are sub-populations cohesive? Can they be further split up?
+    - Are there outliers?
+- Types of clustering methods
+  - Difference in goal:
+    - **Monothetic**: cluster members have some common property
+      - E.g. all are males aged 20-35
+    - **Polythetic**: cluster members are similar to each other
+      - There is no single common property, they are just similar, or at least we cannot guarantee it / put a finger down on an attribute that unifies all individuals
+        - How you define similarity may vary, sometimes you don't know why the individuals are similar
+  - Overlap:
+    - Hard clustering: clusters do not overlap
+      - Element either belongs to a cluster or not
+    - Soft clustering: clusters may overlap
+      - "strength of association" between element and cluster
+  - Flat or hierarchical
+    - Set of groups vs. taxonomy
+    ![Example of a hierachical cluster (taxonomy)](../images/iaml-cluster-taxonomy.png)
+      - Taxonomy: can define higher-level /broader groups
+- Methods we will talk about
+  - K-D trees (see k-NN material)
+    - Takes data set and partitions it into number of groups
+    - Monothetic, hard boundaries, hierarchical
+      - Monothetic because K-D trees cut the dataset at every step so going to cut in half until we get to final level
+      - When we try to describe one instance in a cluster in a K-D tree we have a very short description of why every point landed in its region, so it's probably closer to being monothetic than polythetic
+      - Hard because a point falls only into one and only one
+      - Hierarchical because we can cut the tree at different levels which leads to different clusterings which are all nested in each other
+  - K-means clustering
+    - Splits data into a specified number of populations
+    - Polythetic, hard boundaries, flat
+  - Gaussian mixtures (EM algorithm)
+    - Fits a mixture of K Gaussians to the data
+    - Points will be associated to all clusters to certain degrees
+    - Polythetic, soft boundaries, flat
+  - Agglomerative clustering
+    - Creates an "ontology" of nested sub-populations
+      > Ontology: a particular theory about the nature of being or the kinds of things that have existence.
+    - Polythetic, hard boundaries, hierarchical
+- K-means clustering
+  - K-means takes your dataset and partitions it into K subpopulations
+  - K is something we need to specify in advance
+  - Produces hard, flat, polythetic clusters
+    - Data partitioned into $K$ sub-populations (need to know/specify $K$)
+    - Partitions data by associating the points in each subpopulation with something called a "centroid"
+      - So for each subpopulation it creates this notion of a centroid
+      - Centroid is sort of a prop
+      - Centroid = attribute-value "representation" of a cluster
+      - Centroid is sort of a "propotypical" individual in a sub-population, some representation of a prototypical child of a cluster
+  - Uses:
+    - Discover classes in an unsupervised manner
+      - E.g. cluster images of handwritten digits (with $K=10$ for 10 digits)
+    - Smoothness over space
+      - In the same cluster $\rarr$ similar representations / class labels / ...
+    - Used for dimensionality reduction: clusters = "latent factors"
+      - Often we need to deal with data that is not well-behaved
+      - We take data and try to run SVM on it or sth else and it comes up with dodgy and bad results
+      - We can use K-means to regularise the data
+      - Replace representation of each data point with its cluster number, take these instead of their original attribute values
+      - Assumes all pertinent qualities reflected in cluster membership
+      - Related to basis / kernels in linear classifiers
+- K-means clustering algorithm
+  ![K-means clustering algorithm](../images/iaml-clustering-algorithm.png)  
+  - Input:
+    - n instances $x_1,...,x_n$, each instance is a vector in d dimensinal space
+    - K, number of clusters
+  - Place centroids $c_1,...,c_k$ at random locations
+    - One for each cluster
+  - Repeat the following two steps until convergence
+    - TODO: what does convergence mean?
+      - Probably if the steps don't have any affect anymore / centroids don't change anymore
+    - For each point $x_i$ that we have in the dataset:
+      1. Find nearest centroid $c_j$
+        - This involves taking data point $x_i$, comparing it to every centroid $c_j$ and take the one with the minimum distance, the nearest one
+        - Assign the point $x_i$ to cluster j
+        - After this step we will have assigned every point to a cluster
+      2. For every cluster $j=1...K$, update each centroid
+   - New centroid $c_j=$ mean of all points $x_i$ that were assigned to cluster $j$ in previous step
+   - Stop when none of the cluster assignments change
+   - Performance / efficiency: O(#iterations * #clusters * #instances * #dimensions)
+   - For large datasets we don't do it until convergence, just for however many iterations you have time for
+  ![K-means clustering example](../images/iaml-k-means-example.png)
+  - Only look at top left visualisation first
+    - Let's say we have two attributes
+    - White circles are data points
+    - We assign to centroids to two randomly chosen points (not necessarily individuals, just any random point in the space)
+    - For every datapoint, we're going to figure out which centroid to assign to
+    - If using Euclidean distance, it's easy:
+      1. Draw a line that perpendicularly bisects the line between the centroids
+      2. Every point on that line is equal distance
+      3. All the points above and to the right are closer to yellow, all others to the left to red.
+    - Then, look at mean of new clusters and re-evaluate where centroids should be for each cluster, move them to new individuals
+      - Centre of mass
+    - Once new assignment of centroids doesn't change the cluster of a single datapoint $\rarr$ we know we can stop the algorithm
+- K-means properties
+  - Minimises aggregate intra-cluster distance $\underset{j}{\Sigma}\underset{x_i\rarr c_i}{\Sigma}D(c_j x_i)^2\$
+    - Total squared distance from a point to the centre of its cluster
+      - Summed up over all the data points assigned to cluster j and then summed up over all the centroids j
+      - Only care about distance within cluster, not to other clusters in this method
+    - Same as variance if Euclidian distance is used
+  - Converges to a local minimum
+    - Different starting points $\rarr$ very different results
+      - Pick clustering that yields smalles aggregate distance
+  - Nearby points may not end up in the same cluster
+    - The following clustering is a stable local minimum
+      ![Stable local minimum](../images/iaml-k-means-stable.png)
+- Optimal number of clusters
+  - How many clusters are there in your data?
+    - K-means cannot answer this for you, expects you to say it
+    - Class labels may suggest the value of $K$ (e.g. digits 0..9)
+  - Optimise distance $V$ for $K=2,3,...$
+    - That is, the "variance", the interclusteral distance for all clusters
+      - Want each point to be as close to its centroid as possible
+    - Run K-means, record distance
+    - Problem: V minimised when $K=n$
+      - Because if every instance has it's own centroid, that's when the overall variance is the smallest (0) (╯°□°）╯︵ ┻━┻
+     ![Cluster comparison, > K minimises aggregate distance](../images/iaml-cluster-comp.png)
+      - What if we use a validation set? $\rarr$ still doesn't help
+        - Revision TODO: why? video "optimal number of clusters" 2.37min
+    - One solution: Minimum Description Length
+      - After clustering we compress the data, the k different cluster centroids and going to look at the deltas, the distance between the centroids and the datapoints assigned to it
+      - Then look for some value of K that leads to the smalles possible description length
+      - Total bits to encode K centroids + V
+      - But dependent on encoding of values, so not good option in practice
+    - In practice do it visually from scree plot:
+      - Look at scree plot below, it will always decrease and have similar shape
+        - Decrease quickly at first
+      - Point where "mountain" ends, "rubble" begins
+        - That's where it stops decreasing steeply and flat decrease begins
+      - Elbow method: maximise 2nd derivative of V: point where rate of decline changes the most
+    ![Scree distance plot](../images/iaml-scree-plot.png)
+    - As we increase the number of clusters, the interclusteral distance (aggregat distance) of the datapoints to their respective centroid decreases
+- Evaluating clustering algorithms
+  - K-means itself cannot tell us whether different Ks lead to better or worse clusters
+  - Want to answer question if clusters are any good
+  - There are two large families of attempts at answering that question
+  - **Extrinsic**: (helps us solve another problem)
+    - Take some algorithm and try to see if it's useful to solve some other task that you typically solve with another algorithm
+      - Example
+        - Represent images with cluster features
+          - Instead of using pixels or some other features
+        - Train different classifier for each sub-population
+        - See if we get better accuracy
+  - **Intrinsic**: (useful in and of itself)
+    - Trying to see if clustering is useful by themselves
+    - Can either have quantitative of qualitative methods to determine this
+    - Helps understand the makeup of our data (qualitative)
+    - For example, if we really had a classification task, e.g. bitmaps -> digits, could choose to solve this task by using k-means with k = 10
+      - Then could see how well these 10 clusters correspond to the 10 classes (digits $\rarr$ 10 clusters)
+      - Align, evaluate as you would a normal classifier
+    - Compare to human judgement
+      - Can't ask humans to "cluster" a dataset manually
+      - Sample pairs $x_i,x_j$ ask humans if they "match"
+- Intrinsic Evaluation 1
+  - System produces K clusters $C_1,C_2,...,C_K$
+  - Let's say we have reference clusters (e.g. digit classes) $R_1,R_2,...,R_N$
+    - Number of clusters K and number of reference clusters N doesn't need to be the same
+  - Align up / pair up $R_i\iff C_j$
+    - Once we have our pairs, we can measure accuracy, F1, any other kind of evaluation metric we have seen before
+  - Many differet ways to align:
+    - Can't just connect c1 to r1 because c1 has no idea what elements it contains, it's completely arbitrary
+    - E.g. $C_j\rarr R_i$ with max overlap
+      ![Intrinsic Evaluation](../images/iaml-k-means-intrinsic.png)
+      - Matrix: count elements that are in both classes (overlap)
+        - Then choose alignment based on maximum overlap
+          - Go over each cluster and pick the class which has the highest overlap with that cluster
+          - Since in exapmle, C2 and C3 have been both assigned to R3, and C1 and C4 $\rarr$ R2, we reassign to avoid multiple assignments
+        - To get around that, we reassign so that we loose the least amount of overlap points
+          - C2 -> from R3 to R1 would be only 1 point loss
+          - C4 can't be moved anymore, can either not assign C1 or C4 at all, dropping C4 will only lose 2 points
+          - To compute accuracy, just add up TP (numbers within matrix) over entire set of clusters and divide by total number of elements in dataset
+    - If many $C_j\rarr$ same $R_i$:
+      - Re-assign in a greedy manner
+      - Non-greedy not really possible in practice: $\frac{K!}{(N-K)!}$ ways (very slow, too many possibilities to iterate over)
+    - Can we have multiple $C_j\rarr$ same $R_i$?
+      - In matrix: two assignments in one column
+      - No. But why can't we allow multiples clusters to be assigned to the same reference class?
+        - We can come up with a very simple clustering strategy that will come up with 100%
+          - If we have a cluster for every single instance
+          - Singleton clusters are not useful
+    - Can we have multiple $R_i\rarr$ same $C_j$?
+      - In matrix: two assignments in one row
+      - No. We can put all the instances in one huge group
+        - Matrix will have one row only
+        - We allow multiple selections of Rs within row so we select all of them
+        - $\rarr$ 100% accuracy
+        - Not good, cheatable system, only looks good on paper
+    - Can we have overlapping clusters?
+      - Suppose our clustering system outputs the *powerset* of our dataset
+        - That's the set of all possible subsets
+        - For every element in that set there is a class that corresponds to exactly that set
+        - So we'd get 100% accuracy
+  - Intrinsic Evaluation 2
+    - Other intrinsic evaluation: ask humans to help
+    ![TODO](../images/iaml-intrinsic-1.png)
+    - Sample pairs $x_i,x_j$
+      - Ask human if $x_i,x_j$ should be in the same cluster
+      - Easy task (cognitively)
+      - Can't ask them to "cluster" dataset manually
+    ![TODO](../images/iaml-intrinsic-2.png)
+    - System produces clusters
+    - Count howm any errors we made with respect to human guideline, compute accuracy, $F1$, or other error metrics
+      - False negatives FN: matching pairs $x_i,x_j$ that are in different cluster (e,h)
+      - False positives: non-matching pairs $x_i,x_j$ that are in same cluster (c,d)
+    - Doesn't require a pairing strategy
+    - Can handle overlapping clusters (a bit tricky though)
+      - Same pair can count as both TN and FP (g,h = No)
+    - Can generate pairs from classes, so don't need humans
+- Summary
+  - Clustering: want to discover underlying sub-populations / -structures in data
+  - K-means
+    - Fast, iterative method: $O(i*K*n*d)$
+    - Converges to a local minimum
+      - So need to run several times with different starting poitns
+    - Need to pick $K$: use scree plot
+    - Need to pick distance function (Euclidean)
+    - Nearby points may end up in different clusters
+  - Application: image representation
+    - Cluster image patches based on visual similarity
+    - Cluster numbers (vis-terms) becomes attributes
+      - TODO: what?
+  - Evaluation: intrinsic vs. extrinsic

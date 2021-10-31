@@ -605,9 +605,9 @@ to-heading: 6
 
     - where a replacement has the form $A\rarr B$
     
-  ![TODO](../images/dbs-replacement.png)
+  ![Replacement example](../images/dbs-replacement.png)
 
-  ![Advanced example with joining TODO](../images/dbs-replacement-and-joining.png)
+  ![Advanced example with joining](../images/dbs-replacement-and-joining.png)
     - We first rename `CustID` to `CustID'`
     - Then we compute the Cartesian product
     - FInally, we horizontally select all rows that satisfy `CustID=CustID'`
@@ -620,13 +620,12 @@ to-heading: 6
 
     - That $\bowtie$ sign between `Customer` and `Account` notates the natural join operation
     - It's logically equivalent to exactly what we did above and projecting the union of all attributes of `Customer` and `Account`
-      - TODO: Would this statement result in a table with both `CustID` *and* `CustID'`, whereas a cleaner solution would be to only have one of those attributes? The $X\cap Y$ statement does not get rid of this because `CustID` and `CustID'` are two different attributes if we only look at their names.
-        - Natural join removes the renamed version of the common attribute
-        - That's what the $\pi_{X\cup Y}$ is for
-  - If there are multiple common attributes, the condition of $\sigma$ will be a conjunction; all equalities will need to be true (TODOs)
+      - Q: Would this statement result in a table with both `CustID` *and* `CustID'`, whereas a cleaner solution would be to only have one of those attributes? The $X\cap Y$ statement does not get rid of this because `CustID` and `CustID'` are two different attributes if we only look at their names.
+      - A: Natural join removes the renamed version of the common attribute
+  - If there are multiple common attributes, the condition of $\sigma$ will be a conjunction; all equalities will need to be true
 - From SQL to relational algebra
   
-  ![TODO](../images/dbs-sql-relational-algebra.png)
+  ![SQL to RA translation](../images/dbs-sql-relational-algebra.png)
 - Set operations
   - **Work only on relations that have the same set of attributes**
   - Union $A\cup B$
@@ -637,7 +636,7 @@ to-heading: 6
     - Remove elements that are contained in both $A$ and $B$
   - Example
   
-    ![TODO](../images/dbs-union-and-renaming.png)
+    ![Rename mother -> parent and father -> parent so that we can take the union of the two attributes](../images/dbs-union-and-renaming.png)
 - Full relational algebra
   - Primitive operations: $\pi, \sigma, \times, \rho, \cup, -$
     - They're the most basic operations in relational algebra, can't remove those / express them differently
@@ -650,13 +649,13 @@ to-heading: 6
       - This makes sense since we take all the elements which are in B$ but not in $A$ ($A-B$) and remove them from $A$
   - Other derived operations
 
-    ![TODO](../images/dbs-derived-operations.png)
+    ![Derived relational algebra operations. Only syntactic sugar](../images/dbs-derived-operations.png)
 
     - These operations mainly serve two purposes:
       1. To write things more succinctly
       2. They can be optimised independently
-         - TODO: example of individual optimisation?
-         - e.g. if we have a theta-join expression, it's easier to recognise and DBMS can develop algorithms just for that expression which optimise it
+         - Q: What would be an example of individual optimisation?
+         - A: If we have a theta-join expression, it's easier to recognise and DBMS can develop algorithms just for that expression which optimise it.
 - Division
   - Assume we have two relations $R$ and $S$
     - $R$ has a set of attributes $X$
@@ -666,9 +665,8 @@ to-heading: 6
     - So that'd be the set of attributes which contains all the attributes that are in $X$ but not $Y$
   - Then,
 
-    ![TODO](../images/dbs-division.png)
+    ![Division between two relations (Relational Algebra)](../images/dbs-division.png)
 
-    - TODO: explain this line for line, after watching the lecture & actually understanding what's going on here wth
     - Requirement: Y is a strict subset of X, so all attributes of S are included in X, but S does not have *all* of Xs attributes
     - Z denotes the attributes that are unique to R
       - The attributes that are in R but not in S
@@ -968,7 +966,6 @@ to-heading: 6
   - Then, go through each leaf and go up the path to the root
     - If at any point on that path, a quantifier mentions that variable, the variable is bound
     - If not, it's free
-
 - Semantics of FOL: Interpretations
   - A formula evaluates to either `true` or `false`
     - Depends on a given *interpretation*
@@ -1002,6 +999,7 @@ to-heading: 6
   ![TODO](../images/dbs-fol-formulas-semantics.png)
   - The condition for the universal quantifier means that for every single object $d$ in the universe $\Delta$, the interpretation still needs to satisfy the formula $\phi$ if we assign that object  to the variable $x$
   - For the $\exists$ quantifier: there needs to be at least one such object $d$ in $\Delta$
+  ![Quantifier transformation between existential and universal](../images/dbs-quantifier-trans.png)
 - Equality
   - Equality can be seen as a *special predicate*
     ![TODO](../images/dbs-equality.png)
@@ -1038,7 +1036,6 @@ to-heading: 6
     | unsatisfiable | if it has no models                                 | there doesn't exist a single satisfying interpretation       |
     | falsifiable   | if there is some interpretation that is not a model |                                                              |
     | valid         | if every interpretation is a model                  | also called a tautology                                      |
-
 - Equivalence
   - Don't think about this too much if you don't get it, it's not crucial for the exam
   - ![TODO](../images/dbs-fol-formulas-equivalence.png)
@@ -1058,6 +1055,7 @@ to-heading: 6
   - ![TODO](../images/dbs-equivalences-fol-1.png)
   - ![TODO](../images/dbs-equivalences-fol-2.png)
   - ![TODO](../images/dbs-equivalences-fol-3.png)
+- Implication in plain English: "if...then"
 ## Week 3: Relational Calculus
 - Recall first-order logic where
   ![TODO](../images/dbs-fol-syntax.png)
@@ -1172,6 +1170,9 @@ to-heading: 6
         ![TODO](../images/dbs-selectin-translation.png)
   - Cartesian product, union, difference
     ![Rules for cartesian product, union, difference](../images/dbs-pud-translation.png)
+    - For intersection $\cap$:
+      - Just take $\land$
+        - See translation exercises
     ![TODO](../images/dbs-translation-exercise.png)
     - Recall what $\bowtie$ means:
       - It's a natural join on common attributes, in this case on $CustID$
@@ -1549,7 +1550,13 @@ to-heading: 6
   ![TODO](../images/dbs-tuple-comparison.png)
   - Equality: every element must be equal to positionally same element in other tuple
   - Inequality: at least one of the corresponding elements must not be equal so that the tuples are not equal
-  - Smaller than: TODO
+  - Smaller than:
+    1. We compare the first two elements
+       1. If A > B, it's true overall
+       2. If A < B, it's false overall
+       3. If A = B, we move on to compare the next element with the same rulesss
+       4. ...
+       5. If last two elements, not move on with = , it's false then
   - Smaller or equal than: TODO
 - `ANY`
   - Recall
@@ -1560,11 +1567,13 @@ to-heading: 6
     - ![TODO](../images/dbs-any-example.png)
     - Last question: Error because query yields empty bag so comparison invalid
       - TODO: verify this
+        - Subquery does give you an empty set
+        - Evaluates for false because "is there a row that makes the comparison true" must be answered with false because there is no row
 - `ALL`
   - True if *for all* rows $\overline{r}$ in the results of `query`, (term, ..., term) $\bf{op}\overline{r}$ is true
     ![TODO](../images/dbs-all.png)
-    - Last question: Again, error?
-      - TODO: answer from lecture
+    - Last question: True
+      - TODO: We cannot find any row that makes the comparison false.
 - Examples with `ANY` and `ALL`
   - Consider the following schema:
     ```sql
@@ -1628,8 +1637,9 @@ to-heading: 6
                     FROM   Account
                     WHERE  branch = 'London' );
     ```
-    - `SELECT 1` translates to TODO
-      - Maybe just select 1 row?
+    - `SELECT 1` translates to "get value 1 for each row that matches the condition"
+      - It's often used to check that a table is not empty, in combination with `EXISTS` because we don't care about the
+        actual row values, just if they exist (so we discard the row values)
 - Correlated subqueries
   - All nested queries can refer to attributes in the parent queries
   - Example: Return customers who have an account in London
@@ -1638,7 +1648,7 @@ to-heading: 6
     FROM   Customer C
     WHERE  C.id IN ( SELECT A.custid
                      FROM   Account A
-                     WHERE  A.branch = 'London')
+                     WHERE  A.branch = 'London' );
     ```
     - TODO: Would this also work?
   - Better:
@@ -1646,9 +1656,9 @@ to-heading: 6
     SELECT *
     FROM   Customer C
     WHERE  EXISTS ( SELECT 1
-                     FROM  Account A
-                     WHERE A.branch = 'London'
-                       AND A.custid = C.id );
+                    FROM  Account A
+                    WHERE A.branch = 'London'
+                      AND A.custid = C.id );
     ```
     - TODO: why better?
 - **parameters** = attributes of a subquery that refer to outer queries
@@ -1703,4 +1713,448 @@ to-heading: 6
                  WHERE  T2.A = T1.B );
   ```
 - The `FROM` clause revisited
-  - 
+  ![TODO](../images/dbs-from-revisited.png)
+  - TODO: add explanation after lecture
+    - [[AS] T1] means we can give the table a reference name
+      - don't need to explicitly write `AS`
+    - table is either
+      - base-table (what we defined in our schema)
+      - join-table
+      - query
+        - this is new!
+    - join-table is a table we constructed using the explicit `JOIN` syntax
+      - NATURAL JOIN and CROSS JOIN are irrelevant for this course, can just write them out ourselves
+- Subqueries in `FROM`
+  - Must always be given a name
+    ```sql
+    -- ERROR: subqeury in FROM must have an alias
+    SELECT * FROM ( SELECT * FROM R );
+    ```
+  - Cannot refer to attributes of other tables in the same `FROM` clause
+    ```sql
+    -- ERROR: invalid reference to FROM-clause entry for table "r"
+    SELECT *
+    FROM   R, ( SELECT * FROM S WHERE S.a=R.a ) S1 ;
+    ```
+- Example of avoiding `HAVING`
+  - Branches with a total balance (across accounts) of at least 500
+    ```sql
+    SELECT   A.branch
+    FROM     Account A
+    GROUP BY A.branch
+    HAVING   SUM(A.balance) >= 500 ;
+    ```
+  - Same query without `HAVING`
+    ```sql
+    SELECT   subquery.branch
+    FROM     ( SELECT   A.branch, SUM(A.balance) AS total
+               FROM     Account A
+               GROUP BY A.branch ) AS subquery
+    WHERE    subquery.total >= 500 ;
+    ```
+- Example: Aggregation on aggregates
+  - Average of the total balances accros each customer's accounts
+  - Strategy:
+    1. Find the total balance across each customer's accounts
+    2. Take the average of the totals
+  ```sql
+  SELECT  AVG(subquery.tot)
+  FROM    ( SELECT   A.custid, SUM(A.balance) AS tot
+            FROM     Account A
+            GROUP BY A.custid ) AS subquery ;
+  ```
+## Week 6: Other Bits of SQL
+- Ordering
+  ```sql
+  -- Syntax
+  ORDER BY <column1> [DESC], ..., <columnN> [DESC]
+  ```
+  - Sorts the output rows according to the values of `column1`
+  - If two rows have the same value for `column1`, they are sorted by the values of `column2` and so on
+  - Default ordering is **ascending** (can be specified with `ASC`)
+  - **Descending** ordering is specified by `DESC`
+- Ordering example
+  ![Ordering based on custid first, then on balance](../images/dbs-ordering.png)
+- Casting
+```sql
+CAST( term AS <type> )
+```
+- Cast a term to a certain type
+- **Rounding**
+  ```sql
+  CAST( 102, 4675 AS NUMERIC(5,2) )
+  -- Gives 102.47
+  ```
+  - Useful also to produce values in a specific format
+- **Aggregation**
+  ```sql
+  AVG( CAST( term AS NUMERIC(P,S) ) )
+  ```
+  - Avoids rounding errors in some systems
+- Conditional expressions
+  - Syntax
+    ```sql
+    CASE WHEN <bool-expr>
+        THEN <value-expre>
+        ...
+        WHEN <bool-expr>
+        THEN <value-expr>
+        ELSE <value-expr>
+    END
+    ```
+    - Each `bool-expr` is evaluated in order (from top to bottom)
+    - When `bool-expr` is true, then the value produced by the corresponding `value-expr` is returned and the `CASE` ends
+      - I.e (subsequent `WHEN` are not evaluated)
+    - If no `WHEN` evaluates to true, the value produced by `value-expr` in `ELSE` is returned
+    - `ELSE` is optional (if missing, the default value is `NULL`)
+  - Conditional expressions can be used in `SELECT`, `WHERE`, and `HAVING`
+  - Example
+    - Return the values of column $A$ replacing `NULL` values with $0$
+    ```sql
+    SELECT CASE WHEN R.A IS NULL THEN 0
+           ELSE      R.A END
+    FROM R ;
+    ```
+- Pattern matching
+  ```sql
+  term LIKE pattern
+  ```
+  - It's a comparison
+  - `pattern` is a string consisting of
+    - characters (case-sensitive)
+    - `_` wildcard matching any one character
+    - `%` wildcard matching any substring (including empty), of any length
+  - Example
+    - Customers with a name that begins with 'K' and has at least 5 characters
+  ```sql
+  SELECT *
+  FROM  Customer
+  WHERE name LIKE 'K____%';
+  ```
+## Week 6: Database Constraints
+- Integrity constraints
+  - Databases are often required to satisfy some integrity constraints
+  - Such constraints determin what tuples can be stored in the database
+  - Instances that satisfy the constraints are called *legal*
+  - Common constraints: *keys* and *foreign keys*
+    - These are special cases of more general constraints
+      - **Functional dependencies**
+      - **Inclusion dependencies**
+- Functional dependencies (FDs)
+  - Constraints of the form $X\rarr Y$, where $X,Y$ are sets of attributes
+  - Semantics (on sets)
+    - A relation $R$ satisfies $X\rarr Y$ if for every two tuples $t_1,t_2\in R$
+      ![TODO](../images/dbs-fds.png)
+    - Intuition: The values for the $X$ attributes determine the values for the $Y$ attributes
+    - Intuition 2: If we take any combination of two tuples for which the attribute values from $X$ are the same,
+    then if we take their $Y$ values, they must also be the same. Must be true for all combinations of tuples.
+      - Think of it as "The combination of attributes from $X$ is a deterministic injective map to a value for the attributes from $Y$, values are always paired up the same way depending on the value of an attribute from $X$."
+    - Not true if we can find a tuple for which their $X$ attribute values are the same but for $Y$ attributes they differ from each other
+    - Trivial FDs: $X\rarr Y$ where $Y\subseteq X$
+  - Examples of FDs
+    ![TODO](../images/dbs-fds-examples.png)
+    - Which of the following FDs would the above relation satisfy?
+      1. Department $\rarr$ Manager `True`
+      2. Employee $\rarr$ Department `False`
+         - See: John + Finance vs John + Sales
+      3. {Employee, Manager} $\rarr$ Department `False`
+         - See: John, Smith + Finance vs John, Smith + Sales
+      4. Manager $\rarr$ Departement `False`
+         - See: Smith + Finance vs Smith + Sales
+- Keys
+  - A set of attributes $X$ is a **key** ofr relation $R$ if for every $t_1,t_2\in R$
+    $$\pi_X(t_1)=\pi_X(t_2)\implies t_1=t_2$$
+  - A key for a table is a set of attributes that *uniquely identify a row*
+    - $\implies$ no two rows caan have the same values for key attributes
+  - Key constraints: special case of FDs $X\rarr Y$
+    - Where $Y$ is the *whole set of attributes* of a relation
+    - So the constraint for a key to be a key is just a special case of an FDs
+- Inclusion dependencies (INDs)
+  - Constraints of the form $R[X]\subseteq S[Y]$
+    - Where $R,S$ are relations and $X,Y$ are **sequences** of attributes
+      - Q: What are sequences of attributes?
+      - A: TODO
+  - Semantics
+    - $R$ and $S$ satisfy $R[X]\subseteq S[Y]$ if
+      - for every $t_1\in R$ there exists $t_2\in S$ such that $\pi_X(t_1)=\pi_Y(t_2)$
+    - **Important**: the projection must respect the attributes order
+  - INDs are *referential constraints*: **link** the contents of one table with the contents of another table
+  - A *foreign key* constraint is the conjunction of two constraints:
+    1. $R[X]\subseteq S[Y]$   (an IND)
+    2. $Y$ is a key for $S$   (a key constraint)
+  - Examples of INDs
+    ![TODO](../images/dbs-inds.png)
+    - Which of the following INNDs would the above relation satisfy?
+      - Exmployees[Dep] $\subseteq$ Departments[Name] `True`
+      - Exmployees[Name] $\subseteq$ Departments[Mgr] `No`
+        - See: Linda or Susan
+      - Departments[Mgr] $\subseteq$ Employees[Name] `True`
+      - Departments[Mgr,Name] $\subseteq$ Employees[Name,Dep] `No`
+        - See: Linda + Sales
+- Basic SQL constraints
+  | Constraint Keyword(s) | Purpose                              |
+  | --------------------- | ------------------------------------ |
+  | `NOT NULL`            | Disallow null values                 |
+  | `UNIQUE`              | Declare keys                         |
+  | `PRIMARY KEY`         | Key + not null                       |
+  | `FOREIGN KEY`         | Reference attributes in other tables |
+  - `NULL` values are ignored when checking constraints
+    - Except for `NOT NULL` and `PRIMARY KEY`
+- `NOT NULL`
+  - Declaring an attribute as `NOT NULL` disallows null values for that attribute
+    ```sql
+    CREATE TABLE Account (
+      accnum  VARCHAR(12) NOT NULL,
+      branch  VARCHAR(30),
+      custid  VARCHAR(10),
+      balance NUMERIC(14,2) DEFAULT 0
+    );
+  ```
+  - The following instertion would fail:
+    ```sql
+    INSERT INTO Account(branch,custid)
+      VALUES ('London','cust1');
+    ```
+- Keys
+  ```sql
+  CREATE TABLE Account (
+    accnum  VARCHAR(12) UNIQUE,
+    branch  VARCHAR(30),
+    custid  VARCHAR(10),
+    balance NUMERIC(14,2)
+  );
+  ```
+  - The following insertion would fail:
+  ```sql
+  INSERT INTO Account VALUES
+    (1, 'London', 'cust1', 100),
+    (1, 'Edinburgh', 'cust3', 200);
+  ```
+  - Fails because duplicated `accnum`
+  - The following insertionn succeeds:
+  ```sql
+  INSERT INTO Account VALUES
+    (NULL, 'London', 'cust1', 100),
+    (NULL, 'Edinburgh', 'cust3', 200);
+  ```
+    - Succeeds because `NULL` values are ignored for `UNIQUE`
+- Compounnd keys
+  - Compound keys are keys consisting of more than one attribute
+  - Compound keys must be declared using a different syntax
+  ```sql
+  CREATE TABLE Movies (
+    m_title     VARCHAR(30),
+    m_director  VARCHAR(30),
+    m_year      SMALLINT,
+    m_genre     VARCHAR(30),
+    UNIQUE (m_title,m_year)
+  );
+  ```
+  - Declares the set `{m_title,m_year}` as a key for $Movies$
+- Primary keys
+  - Essentially `UNIQUE` + `NOT NULL`
+  - So attributes that don't have any duplicates and no `NULL` values
+  ```sql
+  CREATE TABLE Account (
+    accnum  VARCHAR(12) PRIMARY KEY,
+    branch  VARCHAR(30),
+    custid  VARCHAR(10),
+    balance NUMERIC(14,2)
+  );
+  -- Same as:
+  CREATE TABLE Account (
+    accnum  VARCHAR(12) NOT NULL UNIQUE,
+    branch  VARCHAR(30),
+    custid  VARCHAR(10),
+    balance NUMERIC(14,2)
+  );
+  ```
+- Foreign keys in SQL (1)
+  ```sql
+  CREATE TABLE Customer (
+    id      VARCHAR(10) PRIMARY KEY,
+    name    VARCHAR(20),
+    city    VARCHAR(30),
+    address NUMERIC(30)
+  );
+
+  CREATE TABLE Account (
+    accnum  VARCHAR(12) PRIMARY KEY,
+    branch  VARCHAR(30),
+    custid  VARCHAR(10) REFERENCES Customer(id),
+    balance NUMERIC(14,2)
+  );
+  ```
+  - Every value for attribute `custid` in $Account$ must appear among the values of the **key** `id` in $Customer$
+- Foreign keys in SQL (2)
+  - General syntex for declaring foreign keys
+    - Useful for declaring compound foreign keys
+  ```sql
+  CREATE TABLE <table1> (
+    <attr> <type>,
+    ...
+    <attr> <type>,
+    FOREIGN KEY (<list1>)
+    REFERENCES <table2>(<list2>)
+  );
+  ```
+  - Where:
+    - `<list1>` and `<list2>` are lists with the **same number of attributes**
+    - Attributes in `<list1>` are from table `<table1>`
+    - Attributes in `<list2>` are **unique** `<table2>`
+- Referential integrity and database modifications (1)
+  - Deletion can cause problems with foreign keys
+    ![where Account.CustID is a foreign key for Customer.ID](../images/dbs-foreign-key-del.png)
+  - What happens if one deletes `(cust1,John)` from $Customer$?
+  - Three approaches are supported in SQL:
+    1. Reject the deletion operation
+    2. Propogate it to $Account$ by deleting also `(123456,cust1)`
+    3. "Don't know" approach: keep the tuple in $Account$, but set `CustID` value to `NULL`
+- Referential integrity and database modifications (2)
+  - All of the three approaches are supported in the SQL
+    ```sql
+    CREATE TABLE <table1> (
+      <attr> <type>,
+      ...
+      FOREIGN KEYY <list1> REFERENCES <table2>(<list2>)
+        <approach>
+    )
+    ```
+    - Where `<approach>` can be:
+      1. Empty: Reject deletions from `<table2>` causing the FK to be violated
+         - This is default when `<approach>` is not specified
+         - Q: What's FK?
+         - A: Foreign key, duh
+      2. `ON DELETE CASCASE`: Propogate the deletion to `<name>` (tuples in `<table1>` that violate the FK will be deleted)
+      3. `ON DELETE SET NULL`: "Don't know" approach
+         - (The values of the attributes in `<list1>`, for tuples in `<name>` that violate the FK, are set to `NULL`)
+## Week 7: Entailment of Constraints
+- Implication of constraints
+  - A set $\Sigma$ of constraints **implies / entails** a constraint $\phi$ if
+    - **every** instance that satisfies $\Sigma$ also satisfies $\phi$
+  - Notation: $\Sigma\models\phi$
+- Implication problem
+  - Problem formulation:
+  > Given $\Sigma$ and $\phi$, does $\Sigma$ imply $\phi$?
+  - Relevant because:
+    - We never get the list of all constraints tha hold on a database
+    - The given constraints may look fine, but imply some bad ones
+    - The given constraints may look bad, but imply only good ones
+- Axiomatisation of constraints
+  - Set of rules (**axioms**) to derive constraints
+    - **Sound**: every derived constraint is implied
+    - **Complete**: every implied constraint can be derived
+  - A sound and complete axiomatisation gives a procedure $\vdash$ such that
+    - $\Sigma\models\phi\iff\Sigma\vdash\phi$
+- Notation
+  - Attributes are denoted by $A,B,C,...$
+  - If $A$ and $B$ are attributes, $AB$ denotes the set $\{A,B\}$
+  - Sets of attributes are denoted by $X,Y,Z,...$
+  - If $X$ and $Y$ are sets of attributes, $XY$ denotes their union $X\cup Y$
+  - If $X$ is a set of attributes and $A$ is an attribute, $XA$ denotes $X\cup\{A\}$
+- Armstrong's axioms
+  - Sound and complete axiomatisations for FDs
+    - Recall FDs: Functional dependencies are constraints of the form $X\rarr Y$, where $X,Y$ are sets of attributes
+  ![Armstrong's Axioms](../images/dbs-armstrong.png)
+- Closure of a set of FDs
+  - Let $F$ be a set of FDs
+  - The closure $F^+$ of $F$ is the set of all FDs implied by the FDs in $F$
+  - Can be computed using Armstrong's axioms
+  - Example:
+    - Closure of $\{A\implies B,B\implies C\}$
+    - $F^+=\{A\implies C\}$
+      - TODO: verify this
+- Closure of attributes / attribute closure
+  - The closure $C_F(X)$ of a set $X$ of attributes w.r.t. a set $F$ of FDs
+    - Is the set of attributes we can derive from $X$ using the FDs in $F$
+      - i.e., all the attributes $A$ such that $F\vdash X\implies A$
+  - Properties
+    ![Attribute closure properties](../images/dbs-attribute-closure.png)
+    - First: the set of attributes we can derive from $X$ using the FDs in in $F$ is a superset of $X$, so it includes all attributes of $X$
+    - Second: self-explanatory
+    - Third: We can't derive any further attributes from a attribute closure set using the same FDs, we'll get the same set.
+  - Solution to the implication problem
+    - $F\models Y\implies Z$ if and only if $Z\subseteqC_F(Y)$
+- Closure algorithm
+  - How to get the attribute closure:
+  ![Closure algorithm](../images/dbs-closure-algorithm.png)
+  - Example
+    - Closure of $A$ w.r.t. $\{AB\implies C, A\implies B, CD\implies A\}$
+    - TODO: I don't understand this algorithm because of two reasons:
+      1. What are Y and Z?
+      2. Doesn't the while loop terminate after one iteration since we definitely remove Y -> Z?
+      - Ok, I think this is just a bad notation. I think Paolo uses $Y\implies X$ to refer to a specific FD in F?
+- Keys, candidate keys, and prime attributes
+  - Let $R$ be a relation with a set of attributes $U$ and FDs $F$
+  - $X\subseteq U$ is a key for $R$ if $F\models X\implies U$
+    - TODO: I don't get this
+  - Equivalently, $X$ is a key if $C_F(X)=U$
+    - TODO: Why?
+  - Candidate keys
+    - Keys $X$ such that, for each $Y\subset X$, $Y$ is not a key
+    - Intuitively, keys with a *minimal* set of attributes
+  - Prime attribute: an attribute of a candidate key
+- Attribute closure and candidate keys
+  - Given a set $F$ of FDs on attributes $U$, how do we compute all candidate keys?
+  - Candidate key algorithm
+    ![Candidate key algorithm](../images/dbs-candidate-key.png)
+    - TODO: explain this after having watched the lecture
+- Implication of INDs
+  - Recall inclusion dependencies (INDs)
+    - Constraints of the form $R[X]\subseteq S[Y]$
+      - Where $R,S$ are relations and $X,Y$ are **sequences** of attributes
+  - Given a set of INDs, what other INDs can we infer from it?
+    ![Sound and complete derivation procedures for INDs](../images/dbs-inds-implication.png)
+- FDs and INDs together
+  - We have established:
+    - Given a set $F$ of FDs and a FD $F$, we can decide whether $F\models f$
+    - Given a set $G$ of INDs and an IND $g$, we can decide whether $G\models g$
+  - What about $F\cup G\models f$ or $F\cup G\models g$?
+    - This problem is **undecidable**: no algorithm can solve it
+  - What if we consider only *keys* and *foreign keys*?
+    - The implication problem is still undecidable
+  - Unary inclusion dependencies (UINDs)
+    - They are INDs of the form $R[A]\subseteq S[B]$ where $A,B$ are attributes
+    - The implication problem for FDs and UINDs is decidaable in PTIME
+- Further reading
+  - Abiteeboul, Vianu, Hill: Foundations of Databases. Addison-Wesley, 1995
+    - Algorithm for checking implication of INDs
+    - Proof that implication of INDs is PSPACE-complete
+    - Undecidability proof for implication of FDs and INDs
+    - Axiomatisation for FDs and UINDs
+## Week 7: Normal Forms
+- Bad design
+![Example of a badly designed database](../images/dbs-bad.png)
+  - Redundancy
+    - Many facts are repeated
+      - For every showing we list both director and title
+      - for every movie playing we repeat the address
+  - Update anomalies
+    - Address must be changed for all movies and showtimes
+    - If a movie stops playing, association title $rarr$ director is lost
+    - Cannot add a movie before it starts playing
+- Good design
+![Example of a well designed database](../images/dbs-good-design.png)
+  - No redundancy
+    - Every FD defines a key
+      - TODO: what does this mean?
+  - No information loss
+    - All the information from the bad database is still there, in fact, we can construct exactly $BAD$ from the well designed database:
+      ![BAD can be constructed, there is no information loss](../images/dbs-no-information-loss.png)
+  - No constraints are loss
+    - All of the original FDs appear as constraints in the new tables
+- Boyce-Cood Normal Form (BCNF)
+  - Problems with bad designs are caused by non-trivial FDs $X\rarr Y$ where **$X$ is not a key**
+  > A relation with FDs $F$ is in BCNF if for every $X\rarr Y$ in $F$
+  > 1. $Y\subseteq X$ (the FD is trivial), or
+  > 2. $X$ is a key.
+  - A database is in BCND if all relations are in BCNF
+- Decompositions
+  - Given a set of attributes $U$ and a set of FDs $F$, a *decomposition* of $(U,F)$ is a set
+    $$(U_1,F_1),...,(U_n,F_n)$$
+  - Such that $U=\bigcup_{i=1}^n U_i$ and $F_i$ is a set of FDs over $U_i$
+  - A decomposition is a BCNF decomposition if each $(U_i, F_i)$ is in BCNF
+  - Criteria for good decompositions
+    - Losslessness: no information is lost
+    - Dependency preservationn: no constraints are lost
+- Good decompositions
