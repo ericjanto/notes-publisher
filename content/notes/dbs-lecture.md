@@ -2158,3 +2158,114 @@ CAST( term AS <type> )
     - Losslessness: no information is lost
     - Dependency preservationn: no constraints are lost
 - Good decompositions
+  - A decomposition of $(U,F)$ into $(U_1,F_1),...,(U_n,F_n)$ is
+    - **Lossless** if for every relation $R$ over $U$ that satisfies $F$
+      - Each $\pi_{U_i}(R)$ satisfies $F_i$
+        - I.e., if you project that attribute from any relation, it still satisfies the corresponding functional constraint $F_i$
+      - $R=\pi_{U_1}(R)\bowtie...\bowtie\pi_{U_n}(R)$
+        - You can construct any relation $R$ from the natural joins of the projections of $U$ from $R$
+          - Intuitively: you deconstruct, *decompose*, a Lego house into its basic building blocks and check that when you're putting it back together, it still creates the entire house
+    - **Dependency preserving** if $F$ and $\bigcup_{i=1}^n F_i$ are equivalent
+      - That is, they have the same closure
+- Projection of FDs
+  - Let $F$ be a set of FDs over attributes $U$
+  - The **projection** of $F$ on $V\subseteq U$ is the set of all FDs over $V$ that are implied by $F$
+    ![Projection of FDs](../images/dbs-projection-of-fds.png)
+  - Can be often represented compactly as a set of FDs $F'$ over $V$ s.t.
+    ![Projection of FDs in compact representation](../images/dbs-projection-of-fds-compact.png)
+- BCNF decomposition algorithm
+  - *Input*: A set of attributes $U$ and a set of FDs $F$
+  - *Output*: A database schema $S$
+  ```python
+  # S is a set of attributes, each associated with a functional dependency
+  S = {(U,F)}
+  # Check whether every (U_i,F_i) pair is in BCNF:
+  while not all_in_BCNF(S):
+    # Let's call the pair that is not in BCNF (U_i,F_i)
+    Replace (U_i,F_i) by decompose(U_i,F_i)
+  Remove any (U_i,F_i) from S for which there is (U_j,F_j) with U_i in U_j
+  Return S
+
+  # Subprocedure decompose:
+  def decompose(U,F):
+    Choose (X -> Y) in F that violates BCNF
+    # TODO: what does line below do?
+    V = C_F(X)
+    Z = U - V
+    Return (V, projection_V(F)) and (XZ, projection_XZ(F))
+  ```
+- Properties of the BCNF algorithm
+  - The decomposed schema is in BCNF and lossless-join
+  - The output depends on the FDs chosen to decompose
+  - *Dependency preservation* is **not guaranteed**
+- Example: apply the BCNF to the bad schema example we showed earlier
+  - TODO
+- BCNF and dependency preservation
+  - Take the relation $Lectures$
+    - Attributes $U$: **C**lass, **P**rofessor, **T**ime
+    - FDs $F=\{C\rarrP,PT\rarr C\}$
+  - $(CPT, F)$ is not in BCNF:
+    - $(C\rarr P)\in F$ is non-trivial and $C$ is not a key
+  - If we decompose using the BCNF algorithm we get
+    $$(CP, C\rarr P)\ and\ (CT,\varnothing)$$
+  - We lose the constraint $PT\rarr C$
+- Third Normal Form (3NF)
+  - A looser form of BCNF
+  - $(U,F)$ is in 3NF if for every FD $X\rarr Y$ in $F$ one of the following holds:
+    1. $Y\subseteq X$ (the FD is trivial), or
+    2. $X$ is a key, or
+    3. All of the attributes in $Y$ are prime
+       - TODO: what does it mean to be prime?
+  - Intuition: in 3NF FDs where the left hand-side is not a key are allowed as long as the right hand-side consists only of prime attributes
+  - Every schema in BCNF is also in 3NF
+- 3NF and redundancy
+  - Consider again the relation $Lectures$
+    - Attributes $U$: **C**lass, **P**rofessor, **T**ime
+    - FDs $F=\{C\rarrP,PT\rarr C\}$
+  - $(CPT,F)$ is in 3NF: $PT$ is a *candidate key*, so $P$ is prime
+  - More redundancy than in BCNF
+    - Each time a class appears in a tuple, the professor's name is repeated
+    - We tolerate this because there is no BCNF deomposition that preserves dependencies
+- Minimal covers
+  - Let $F$ and $G$ be sets of FDs
+  - $G$ is a *cover* of $F$ if $G^+=F^+$
+    - TODO: what does the `+` denote?
+  - A cover is *minimal* if:
+    - Each FD in $G$ has the form $X\rarr A$
+    - No proper subset of $G$ is a cover
+      - We cannot remove FDs without losing equivalence to $F$
+      - TODO: what's a proper subset?
+    - For $(X\rarr A\in G$ and $X'\subset X$, $A\notin C_F(X')$
+      - We cannot remove attributes from the left hand-side of FDs in $G$
+  - UNtuition: $G$ is small representation of all FDs in $F$
+- Finding minimal covers
+  1. Convert the FDs in standard form: so there's only one attribute on RHS of each FD
+    - Use Armstrong's decomposition axium
+    - Split $X\rarr A_1...A_n$ into $n$ FDs: $X\rarr A_1,...,X\rarr A_n$
+  2. Minimise the LHS of each FD
+    - Check whether attributes in the LHS can be removed
+    - For $(X\rarr A)\in F$ and $X'\subset X$ check whether $A\in C_F(X')$
+      - TODO: what's $C_F(X')$?
+       - If yes, replace $X\rarr A$ by $X'\rarr A$ and repeat
+  3. Delete redundant FDs
+    - For each $(X\rarr A)\in F$, check whether $F-\{X\rarr A\}\models X\rarr A$
+- Finding minimal covers: example
+  ![Minimal cover algorithm](../images/dbs-minimal-cover-algorithm.png)
+- 3NF synthesis algorithm
+  - Input: A set of attributes $U$ and a set of FDs $F$
+  - Output: A database schema $S$
+    ![3NF synthesis algorithm](../images/dbs-3nf-synthesis-algorithm.png)
+- Properties of the 3NF algorithm
+  - The synthetised schema is
+    - In 3NF
+    - Lossless-join
+    - Dependency-preserving
+- Example: apply the 3NF algorithm to the $Lectures$ schema (it's already in 3NF, but let's do it anyway)
+  - TODO
+- Schema design: summary
+  - Given the set of attributes $U$ and the set of FDs $F$
+  - Find a **lossless**, **dependency-preserving** decomposition into:
+    - BCNF if it exists
+    - 3NF is BCND decomposition cannot be founds
+- Data administrators may decide to de-normalise tables to reduce the number of joins
+  - TODO: what does this mean?
