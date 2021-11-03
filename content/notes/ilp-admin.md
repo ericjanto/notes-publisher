@@ -19,3 +19,4 @@ All values below are in minutes.
 | Week 4 | 60                 | 30  | 115 | 75       |        | 40    |
 | Week 5 |                    |     | 325 | 35       |        |       |
 | Week 6 |                    |     | 300 |          | 5      |       |
+| Week 7 |                    |     | 120 |          |        |       |

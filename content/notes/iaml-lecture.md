@@ -2372,3 +2372,126 @@ the values which guide our use of them
     - Cluster numbers (vis-terms) becomes attributes
       - TODO: what?
   - Evaluation: intrinsic vs. extrinsic
+## Week 7: Gaussian Mixture Models
+- Mixture models
+  - Recall the different types of clustering methods
+    - Hard clustering: clusters do not overlap
+      - Element either belongs to cluster or it does not
+      - K-means
+    - Soft clustering: clusters may overlap
+      - Strength of association between clusters and instances
+- Probabilisically-grounded way of doing soft clustering
+  - Means we're using probabilistic models
+  - Each cluster corresponds to a probability distribution in our d-dimensional space
+  - And the points are viewed as samples from that probabilitiy distribution
+  - What kind of probability distribution it is depends on the data
+    - If it's real-valued observations then typically use Gaussian
+    - If discrete, use something multinomial
+  - Let's assume data is real-valued and use Gaussian
+- Each cluster: a generative model (Gaussian or multinomial)
+- Parameters (e.g. mean/covariance are unknown)
+- Expectation Maximisation (EM) algorithm
+  - Automatically discover all parameters for the K "sources"
+    - Source = individual Gaussian in mixture
+      - Or other probabilistic model if Gaussian not used
+- Mixsture models in 1-d
+  - We have observations $x_1...x_n$
+    - Let's way we want to fit a two Gaussian mixture to this input data set:
+      - This means we are assuming this data came from this mixture of Gaussians, every point came from one of the two Gaussians, randomly samples from them
+      - K=2 Gaussians with unknown $\mu, \sigma^2$
+    - Estimation trivial if we know the source of each observation, if we knew which point came from which Gaussian
+      ![TODO](../images/iaml-mixture-gaussian-estimation.png)
+      - If we know that the yellow points come from the "yellow" Gaussian, and the blue from the blue one, then we can simply compute mean and variance:
+        ![TODO](../images/iaml-mixture-gaussian-estimation-calc.png)
+        - Above how to compute mean and variance for the blue (b) Gaussian source, that's our best estimate for it
+        - If we do that for each class, we get a pretty good image of what the mixture looks like:
+          ![TODO](../images/iaml-mixture-image.png)
+  - What if we don't know the source?
+    - Problem: nobody tells us which points are blue and which ones are yellow:
+      ![TODO](../images/iaml-mixture-realistic-dataset.png)
+    - If we want to estimate means, not really possible
+    - If we knew parameters of the Gaussians ($\mu,\sigma^2$)
+      - Can guess whether point is more likely to be blue or yellow
+      - For each point we would compute the posterior probability that it is blue
+      ![TODO](../images/iaml-mixture-models.png)
+- Expectation Maximisation (EM)
+  - Chicken and egg problem
+    - We have neither colours nor means / variances
+    - Need $(\mu_a,\sigma_a^2)$ and $(\mu_b,\sigma_b^2)$ to guess source of points
+    - Need to know source to estimate $(\mu_a,\sigma_a^2)$ and $(\mu_b,\sigma_b^2)$
+  - EM algorithm
+    - Guesses both classes and model parameters iteratively
+    - Start with two randomly places Gaussians $(\mu_a,\sigma_a^2)$, $(\mu_b,\sigma_b^2)$
+      - Random points in space
+      - A and b are just the two classes, yellow and blue
+    - **E-step**: for each point: $P(b|x_i)=$ does it look like it came from $b$?
+      - Use the models to colour the points, predict the most probable cluster
+    - **M-step**: adjust $(\mu_a,\sigma_a^2)$ and $(\mu_b,\sigma_b^2)$ to fit points assigned to them
+    - Iterate until convergence
+- EM: 1-d example
+  ![TODO](../images/iaml-em-example.png)
+  - Dotted line: posterior probability $P(b|x_i)$
+- Gaussian Mixture Model
+  - Can do it in high-dimensional data as well
+  - Formulas
+  ![TODO](../images/iaml-gaussian-mixture-model.png)
+  - Data with $D$ attributes, from Gaussian sources $c_1...c_k$
+    - EM for high-dimensional data:
+    1. How typical is $\bf{x}_i$ under source $\bf{c}$?
+      - Is this an input point?
+      ![TODO](../images/iaml-mixture-x-under-c.png)
+      - $\Sigma_c^{-1}$ is the inverse of the covariance matrix for Gaussian source $c$
+    2. How likely that $\bf{x}_i$ came from $\bf{c}$ (Bayes' rule)
+      ![TODO](../images/iaml-mixture-c-from-x.png)
+      - Like colouring data points with the more probable colour, can be mixture of colours
+    3. How important is $\bf{x}_i$ for source $\bf{c}$:
+      ![TODO](../images/iaml-mixture-important-x-c.png)
+      - Convert posteriors to weights
+      - They reflect how important particular instances are to particular Gaussians
+    4. Compute the mean of attribute $\bf{a}$ in items assigned to $\bf{c}$:
+      ![TODO](../images/iaml-mixture-mean.png)
+    5. Covariance of $\bf{a}$ and $\bf{b}$ in items from $\bf{c}$:
+      ![TODO](../images/iaml-mixture-covariance.png)
+    6. Prior: how many items assigned to $\bf{c}$:
+      ![TODO](../images/iaml-mixture-assigned-to-c.png)
+      - $\Sigma_{cab}$ is the covariance for attribute a and attribute b for Gaussian number c
+- How to pick $K$, number of Gaussians
+  - Probabilistic model
+    ![TODO](../images/iaml-mixture-maximum-likelihood.png)
+    - Tries to "fit" the data (maximise likelihood)
+  - Pick $K$  that makes $L$ as large as possible?
+    - Ill-posed approach
+    - $K=n$ where each data point has its own "source"
+    - Like K-means where we place a centroid on each individual datapoint
+    - May not work well for new data poitns
+  - Split points into training set $T$ and validation set $V$
+    - For each $K$: fit parameters of $T$, measure likelihood of $V$
+    - See which number of components (K) works the best on validation set
+    - Sometimes still best when $K=n$
+      - The more Gaussians you throw, the more densely you're going to cover the space
+  - Occam's razor: pick "simplest" of all models that fit
+    ![TODO](../images/iaml-occams-razor.png)
+    - Two possible instantiations of Occam's razor
+    - In both cases, we're trying to balance the likelihood against the complexity of the model
+- Summary
+  - Walked through 1-d version
+    - Works for higher dimensions as well
+      - d-dimensional Gaussians, can be non-spherical
+        - Q: what does spherical mean?
+        - A: They have a circular form because the covariance matrix is a multiple of the identity matrix
+    - Works for discrete data (test)
+      - d-dimensional multinomial distributions (e.g. pLSI is a popular choice for text data)
+  - Maximises likelihood of the data:
+    ![TODO](../images/iaml-mixture-maximise-likelihood.png)
+  - Similar to K-means
+    - Sensitive to starting point, converges to a local maximum
+    - Convergence: Gaussians will always shift around a little bit so stop when change in $P(x_1,...,x_n)$ is sufficiently small
+    - Cannot discover $K$ (likelihood keeps growing with $K$)
+  - Different from K-means
+    - Soft clustering: instance can com from multiple "clusters" (sources)
+    - Co-variance: notion of "distance" changes over time
+      - K-means sticks to same specified distance definition
+  - How can you make GMM = K-means?
+    - GMM basically like K-means if only considering means
+  ![TODO](../images/iaml-mixture-formulas.png)
+    - TODO: what do these mean?
