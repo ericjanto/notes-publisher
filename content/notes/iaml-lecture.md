@@ -589,7 +589,7 @@ to-heading: 6
   - We look at which rows are positive or negative, e.g. like this:
     - Trying to decide whether will play tennis or not in future, given some data. Training data:
     ![Green: days on which we play tennis, red for negative days](../images/iaml-decision-tree-prep.png)
-    - A pure subset would be a subset containing only green rows
+    - A pure subset is a subset containing only green rows
   - Works in a **divide and conquer** fashion:
     - This is a concept, please look at the ID3 Algorithm in the next section and follow that one
     ```md
@@ -601,10 +601,10 @@ to-heading: 6
     ```
     - Will talk about step 2 in detail later
     - Step 3: Splits into all possible values for this attribute, and each set contains only data instances which have that particular attribute value
-      ![Example of a decision tree without keeping track of +/- labels](../images/iaml-decision-tree.png)
+      ![Example of a decision tree](../images/iaml-decision-tree.png)
 - After creating the branches
   - Replace the leaves (pure subsets of the data set) with decision labels (yes/no)
-    ![Same decision tree as before with labels](../images/iaml-decision-tree-labels.png)
+    ![Same decision tree as before, but added one more split](../images/iaml-decision-tree-labels.png)
   - Given new data, we can just follow the tree and choose the label at the leaf we end up at
 - Counts and pruning
   - We keep track of the counts (how pure/unpure the subset is, like `3 yes / 1 no`)
