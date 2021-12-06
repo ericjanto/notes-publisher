@@ -300,10 +300,10 @@ to-heading: 6
   - Supervised tasks
     - Classification and regression are both *supervised prediction tasks* because in both cases our input is something specific to learn from
       - Like labels
-    - The learing algorithm is given *examples* of what we want to see come out of it
+    - The learning algorithm is given *examples* of what we want to see come out of it
       - It's given *supervision*
-    - We're trying to predict a specifiy quantity
-    - We can mmeasure the accuracy of the predictor directly
+    - We're trying to predict a specific quantity
+    - We can measure the accuracy of the predictor directly
   - Unsupervised tasks  
     - Trying to *understand* the data
     - Looking for structure/unusual patterns
@@ -373,13 +373,13 @@ to-heading: 6
        -  Skewed distributions
           - That's when we have systematic extreme values
             - e.g. personal wealth, there is a significant amount of people that have an extreme amount of money
-              - They skew the distribution, they're not representative for the total population
+              - They skew the distribution but they're not representative for the total population
            - Since these values are systematic, we can't just remove them like outliers (one by one)
            - However, we can deskew the distribution:
 
             1. $log(x)$ or $atan(x)$ the distribution
                - $log$ if the distribution is positive only, if there are negative values use $atan$
-            2. Normalise 
+            2. Then normalise 
        -  Non-monotonic attributes or prediction relationships
        -  Recall what it means for a function to be *monotonic*
           - A function that preserves an order
@@ -411,7 +411,7 @@ to-heading: 6
         - The classes are always mutually exclusive
           - Means that an instance is of exactly one class
       - Some algorithms can't deal with multi-class classifiers
-        - We can take multi-class classifier and turin it into *one-vs-rest* classifier:
+        - We can take multi-class classifier and turn it into *one-vs-rest* classifier:
           - For instance, `{category a}` vs `{not a}` where `not a` are all the other classes
           - Do that for each class, individually
             - You'll get for each one a decision boundary
@@ -471,8 +471,8 @@ to-heading: 6
       - $y=y_i\in\{spam, ham\}$
         - (One of the set members)
       - Our classifier is going to compute two probabilities:
-        - Probabilitiy of spam given an email x
-        - Probabilitiy of haml given an email x
+        - Probabilitiy of spam given an email $x$
+        - Probabilitiy of ham given an email $x$
       - And will then look whichever of those two probabilities has the higher probabilitiy
         - That's the class that's more likely then
 - Bayesian probailitiy of a class
@@ -484,7 +484,7 @@ to-heading: 6
     - Any Bayesian classifier is going to compute the probabilitiy the this way
     - Prior: $P(y)$ says "what's the probability of a class independently of $x$"
     - Class model: "Assuming that a class $y$ is the case, how likely am I going to see a particular observation"
-    - Normaliser: normalises probabilitiy across observations
+    - Normaliser: normalises probability across observations
       - Just another way of writing $P(x)$
       - Sometimes left out since it does not affect which class is most likely as we take $argmax$
       - However, allows us to compare $P_1(x|y)$ to $P_2(x|y)$ etc.
@@ -511,9 +511,9 @@ to-heading: 6
   - At the core of the Naïve Bayes classification is the independence assumption
     - That's what makes this classifier "naïve"!
   - When dealing with class probabilities, we run into a problem:
-    - We must compute all these model-based probabilities ($P(x|y)$)
+    - We must compute all these model-based probabilities $P(x|y)$
     - It gets difficult because our $x$ is not just a single variable
-    - It's a bunch of variables, on for every attribute
+    - It's a bunch of variables, one for every attribute
     - $x=x_1,...,x_d$ where $d=$ number of attributes
     - So there are usually lots of possible combinations for $x$ which is not computable
   - Solution to this problem: make independence assumption
@@ -544,13 +544,13 @@ to-heading: 6
     - Where $n=$ total number of all individuals, and $n_a$ the number of class $a$ individuals
   - Example
     - Assume a data set containing information about $4$ adults ($a$) and $12$ children $(c)$
-    - $P(a)=\frac{4}{4+12}$ = 0.25$
+    - $P(a)=\frac{4}{4+12} = 0.25$
     - $P(c)= 1-0.25=0.75$
       - Since we only have two classes
 - Modelling a class
   - Mean: $\mu_{attribute,\ class}=\frac{1}{n_{class}}\Sigma_{i:y_i=class}attribute$
     - Take all given attributes for that class and divide by the number of class individuals
-  - Variance: $\sigma^2_{attribute,\ class}=\frac{1}{n_{class}}\Sigma_{i:y_{i=a}}(attribute_i-\mu_{attribute,\ class})$
+  - Variance: $\sigma^2_{attribute,\ class}=\frac{1}{n_{class}}\Sigma_{i:y_{i=a}}(attribute_i-\mu_{attribute,\ class})^2$
 - Problems with Naïve Bayes
   - Covariance problem
     - Estimated distributions for different classes can be on top of each other
@@ -1985,7 +1985,7 @@ the values which guide our use of them
     - Set aside a portion of the training data (validation set)
       - It's critical to use a separate set of validation set (and not use training data as validation data) because otherwise we'll just get $k=1$ because for the training data set there is always going to be one example that is going to be near the input which has exactly the correct class label, that is the example itself
         - Higher k will never give better prediction because neighbours could be another class 
-    - Vary $k$, observe training $\rar$ validation error
+    - Vary $k$, observe training $\rarr$ validation error
     - Pick $k$ that gives best generalisation performance
 - Distance measures
   | Measure   | Data               |
@@ -2245,7 +2245,7 @@ the values which guide our use of them
       - Centre of mass
     - Once new assignment of centroids doesn't change the cluster of a single datapoint $\rarr$ we know we can stop the algorithm
 - K-means properties
-  - Minimises aggregate intra-cluster distance $\underset{j}{\Sigma}\underset{x_i\rarr c_i}{\Sigma}D(c_j x_i)^2\$
+  - Minimises aggregate intra-cluster distance $\underset{j}{\Sigma}\underset{x_i\rarr c_i}{\Sigma}D(c_j x_i)^2$
     - Total squared distance from a point to the centre of its cluster
       - Summed up over all the data points assigned to cluster j and then summed up over all the centroids j
       - Only care about distance within cluster, not to other clusters in this method
@@ -2495,3 +2495,623 @@ the values which guide our use of them
     - GMM basically like K-means if only considering means
   ![TODO](../images/iaml-mixture-formulas.png)
     - TODO: what do these mean?
+## Week 8: Dimensionality Reduction
+- Overview
+  - Curse of dimensionality
+  - Different ways to reduce dimensionality
+  - Principal Components Analysis (PCA)
+  - Example: Eigen Faces
+  - PCA for classification
+  - Witten & Frank section 7.3
+    - Only the PCA section required
+    - TODO: add to revision plan + all the other readings
+- True vs observed dimensionality
+  - Suppose we have some data set
+  - Want to predict some thing based on that data set
+  - The instances from that data set are represented as real-valued `{urefu, height}` pairs
+  - Trying to figure out: what is the dimensionality of this data?
+  - On the surface, it looks like two-dimensional data (because of two attributes)
+    - (Left image only, points on the right are different example)
+    ![TODO](../images/iaml-dimensions.png)
+    - But then someone tells us that *urefu* means *height* in Swahili
+    - So shouldn't the data points form a completly straight line if the axes are the same attribute?
+      - Not necessarily, if they describe different heights
+  - TODO: Data points over time
+- Curse of dimensionality
+  - Datasets typically are high dimensional
+    - E.g. vision: $10^4$ pixels, text: $10^6$ words
+      - That's the way we observe / record them, the high dimensionality is not actual
+      - We only get a million dimensions because we choose to represent a word each attribute
+    - True dimensionality is often much lower
+      - The data underneath doesn't uniformly fill that high dimensional space
+      - It lies on a low-dimensional subsurface in that space
+      - A manifold (sheet) in a high-d space
+  - Example: handwritten digits
+    - $20\times 20$ bitmap: $\{0,1\}^400$ possible events
+      - Apparent lots of dimensions
+      - Will never see most of these events, the bitmaps we're going to see for digits only fill up tiny fraction of that space
+      - Actual digits: tiny fraction of events
+    - True dimentionality:
+      - Possible variations of the pen-stroke
+    ![TODO](../images/iaml-pen-stroke.png)
+      - See random bitmap, has nothing to do with digit bitmaps!
+      - Number of dimensions should be how many variations of pen-strokes we can have, not number of bits in bitmap
+  - Machine learning methods are statistical by nature
+    - We take our space and cut it up in some way
+    - We count how many positive and negative examples we have in different parts of the space
+    - Use counts to construct the predictor $f(x)$
+    - E.g. decision trees numbers of $p_+/p_-$ in $\{o=rain,w=strong,T>28°\}$
+    - Text: number of documents in {"hp" and "3d" and not "$" and ...}
+  - As dimensionality grows: fewer observations per region because number of observations don't grow
+  - Example data set:
+    ![TODO](../images/iaml-dimension-1d.png)
+    - 1d: $3$ regions, 2d: $3^2$, 1000d - hopeless
+    - ![Same 10 points coverin 27 regions so most regions are going to have 0 counts](../images/iaml-dimension-3d.png)
+- Dealing with high dimensionality
+  - Use domain knowledge
+    - Start with high-dimensional observations
+    - Apply some knowledge about the domain to create features about that data
+    - Feature engineering: SIFT, MFCC
+  - Make assumptions about dimensions and increase observations in space
+    - *Independence*: count along each dimension separately
+      ![TODO](../images/iaml-ind-dimension.png)
+      - Let's count the observations separately separately along each dimension, ignoring other dimensions
+      - Propogates lots of observations to other dimensions
+    - *Smoothness*: propogate class counts to neighbouring regions
+      - Nearby regions in space should have similar distributions of classes
+      - If you get blue individual, likeliness of blue in nearby regions should increase
+      ![TODO](../images/iaml-dimension-smoothness.png)
+    - *Symmetry*: e.g. invariance to order of dimensions: $x_1 \iff x_2$
+      ![TODO: arrow down only](../images/iaml-dimensions-symmetry.png)
+      - You flip the attributes without flipping their values
+      - You swap the dimensions and get data that is symmetric around the diagonal
+      - Increases count you get in various regions in space
+  - Reduce the dimensionality of the data
+    - Create a new set of dimensions (variables)
+  - TODO: add photos from lecture
+- Dimensionality reduction
+  - Goal: represent instances with fewer variables
+    - Try to preserve as much structure in the data as possible
+      - *Structure* is a loose term, can refer to various things
+      - For now, when we use the word structure, we refer to preserving the *variance* of the data
+    - Discriminative: only structure that affects class separability
+  - There are two families of reducing dimensionality: feature selection and feature extraction
+  - Feature selection
+    - Pick a subset of the original dimensions:
+      ![The red attributes are picked](../images/iaml-dimension-pick.png)
+    - Throwing away attributes we don't need
+    - Discriminative: pick good classse "predictors" (e.g. information gain could be indicator to pick such classses)
+  - Feature extraction
+    - Construct a new set of variables / dimensions $E_i=f(X_1...X_d)$ to represent data
+    - Creating $m$ new variables where `m<<d`
+      - m is a lot smaller than d
+    - Each one of the new attributes E is going to be some combination of the original attributes
+    - (Linear) combinations of the original dimensions are mapped to new set of dimensions
+    ![TODO](../images/iaml-dimension-map.png)
+- Principal Components Analysis (PCA)
+  - Assumption: we have low dimensional data embedded in high-dimensional space
+  - PCA looks for dimensions of greatest variance
+    - I.e. dimensions for which data is spread-out as much as possible
+  - Defines a set of principal components
+    - 1st: vector in direction of the greatest variability in the data
+    - 2nd: perpendicular to 1st, greatest variability of what's left
+    - ... and so on until $d$ (original dimensionality)
+  - First `m<<d` components become m new dimensions
+    - Change coordinates of every data point to these dimensions
+    ![2-dimensional data is embedded in 3-dimensional space as a hyperplane within that space](../images/iaml-pca.png)
+    - Pick PC1 and PC2 as new coordinate vectors to represent all of the points in terms of them
+- Why greatest variability ( variance?
+  - Example: reduce 2-dimensional data to 1-d
+  ![TODO](../images/iaml-pca-variance.png)
+  - Trying to embedd these 2-dimensional observations in 1-dimensional space
+  - Going to create a line $e$
+  - Might have blue dimension $e$
+    - That's where the data is spread-out the most if you look at projections (lines from data points to line, perpendicular)
+  - Or green $e$
+    - Less variance
+  - Look at red points
+    - Pretty far apart from each other in blue dimensions
+    - In green dimension: on top of each other, the dimension does not preserve distances in the original space $\rarr$ not good, distances are important, they are the basis for most of our learning algorithms
+    - This is going to happen for some points but if we pick dimension with highest variance, we minimise that distance loss
+  - $\{x_1,x_2\}\rarr e'$ (along new axis $\bf{e}$)
+  - Pick $e$ to maximise variability
+  - Reduces cases when two points are close in $\bf{e}$-space but very far in (x,y)-space
+  - Minimises distances between original points and their projections
+- Principal components and covariance eigenvectors
+  - There is an interesting relation between the dimension of the highest variance and the variance of our data
+  - Let's refresh what the covariance is
+  - Let's say we have a data set with two dimensions, $x_1, x_2$ (ignore the colours of the vectors for now)
+  ![TODO](../images/iaml-covariance-eigenvectors.png)
+  - First thing we're going to do is that we're going to move the data set that the centre is at zero
+  - How to "center" the data at zero: $x_{i,a}=x_{i,a}-\mu_a$
+    - That is, for every attribute $a$ subtract the mean of that attribute from every instance of that attribute
+    - We're doing this to make the maths a lot easier later on
+    - Makes it easy to express the covariance matrix of our data
+  - Compute covariance matrix $\Sigma$
+    - Covariance of dimensions $x_1$ and $x_2$: 
+    ![TODO](../images/iaml-covariance-matrix-pca.png)
+    - First number in upper left ($2.0$) is spread of data along the first attribute $x_1$ (variance)
+      - That's how much the data varies if you only look at the $x_1$ dimension
+    - $0.6$ is the spread along the $x_2$ attribute
+    - Two numbers off-dimensional happen to be identical, it's the *covariance* of the first and second attribute
+      - Compute this by using the $cov(x_1,x_2)$ formula
+        - Look at value of attribute $x_1$ and value of attribute $x_2$ in some instance $i$, multiply them together, add them up over all instances, and divide by number of instances $n$
+          - Usually we subtract the means but we already centred the data so the means are zero so we can just write it out as the products
+      - Interpret this covariance as how one attribute changes as the other one changes
+        - As I incrase / decrease $x_1$ by a certain amount, how is $x_2$ going to increase / decrease
+    - Green points: difference in first attribute and difference in second attribute go in same direction, positive covariance
+      - Mean is axes so if points are in negative or positive space (diagonal, bottom left and top right), product of instance values is going to be positive so positive covariance
+    - Do $x_1$ and $x_2$ tend to increase together?
+    - Or does $x_2$ decrease as $x_1$ increases?
+  - Covariance matrix $\Sigma$ does interesting things if you start multiplying random vectors with that matrix
+  - Multiply a vectors by $\Sigma$:
+    ![TODO](../images/iaml-pca-vector.png)
+    - We pick random vector $(-1,+1)$ first (it's red, pointing to top left in original image of data set)
+    - Get new vector after multiplying with $\Sigma$
+      - In original image: kind of pointing to left side
+    - Keep doing it
+    - Turns towards direction of variance
+    - Vectors keep getting longer and turning by smaller and smaller angle
+    ![TODO](../images/iaml-turning.png)
+    - Not insterested in length because it keeps increasing but in slope only
+      - Get slope by taking second component of vector and dividing it by first component
+    - Slope is converging to some value
+    - Happens to be the slope of vector $\bf{e_2}$
+    - That vector is the direction along which the data has the greatest variance
+  - Want vectors $\bf{e}$ which aren't turning when multiplying with covariance matrix: $\Sigma\bf{e}=\lambda\bf{e}$
+    - These vectors are called *eigenvectors*
+    - They become shorter or longer ($lambda$) but don't turn in angle
+    - $\lambda$ (scaling factor) is known as eigenvalue, how much vector is growing or shrinking
+    - e ... eigenvectors of $\Sigma$,$\lambda$... corresponding eigenvalues
+    - Principal components = eigenvectors with largest eigenvalues
+- Finding principal components
+  - Finding eigenvectors
+  - [TODO](../images/iaml-finding-pc.png)
+- Projecting to new dimensions
+  - $\bf{e_1}...\bf{e_m}$ are new dimension vectors
+  - Have instance $\bf{x}=\{x_1...x_d\}$ (original coordinates)
+  - Want new coordinates $\bf{x'}=\{x'_1...x'_m\}$:
+    1. "Center" the instance (subtract the mean): $\bf{x'}-\bf{\mu}$
+    2. "Project" to each dimension: $(\bf{x'}-\bf{\mu}^T\bf{e_j})$ for $j=1...m$
+    ![TODO](../images/iaml-pc-projection.png)
+    ![TODO](../images/iaml-pc-projection-calc.png)
+- Direction of greatest variability
+  - TODO: add photos from lecture
+  - Select dimension $\bf{e}$ which maximises the variance
+  - Points $\bf{x}_i$ "projected onto vector $\bf{e}$: ![TODO](../images/iaml-dir-var.png)
+  - Variance of projections: ![TODO](../images/iaml-proj-var.png)
+    - Assume that mean is 0:
+      ![TODO](../images/iaml-proj-var-mean.png)
+  - Maximise variance
+    - Find the dimension vector $\bf{e}$ that maximises the variance formula above
+        ![TODO](../images/iaml-proj-variance.png)
+      - But could use really really large values for $\bf{e}$'s components so need to put a cap on how large the values are allowed to be 
+    - Want unit length: $||\bf{e}||=1$
+      - This way, we maximise the variance by *turning* the vector, not by having large vector component values (constrained optimisation)
+    - Add Lagrange multiplier to achieve the above
+      ![TODO](../images/iaml-var-constrained.png)
+    - Maximise:
+      - $e_a$: a is just one of the attributes, it's an element of the vector
+      ![TODO](../images/iaml-var-derivative.png)
+      - Must be 0 for every single attribute component $a$ in $\bf{e}$
+    - After rearranging the above formula:
+      ![TODO](../images/iaml-var-rearrange.png)
+      - Must hold for all attributes components in e
+      - So have d of these equations:
+      ![TODO](../images/iaml-var-cov-eqs.png)
+      - That's the proof that e must be an eigenvector b ecause we multiply the vector by the covariance matrix and it does not change direction, only scale
+      - If we look for the direction of the greatest variability of the data, we are going to find an eigenvector and nothing else
+- Variance along eigenvector
+  - Variance of projected points ($\bf{x}^T\bf{e}$)
+  ![TODO](../images/iaml-variance-proj.png)
+  - Remember, we are trying to determine the variance along a dimension
+  - Since we have determined that the dimension vector is always going to be an eigenvector, we want the variance along an eigenvector
+  - We deduce:
+    1. The eigenvector is where the data is spread-out the most.
+    2. The amount of spreading is just the eigenvalue.
+- How many dimensions?
+  - Trying to reduce the dimensionality of the data
+  - Want to pick a smaller number of dimentions
+  - Have: eigenvectors $\bf{e}_1...\bf{e}_d$
+  - Want: m<<d
+    - Q: What's m again?
+    - A: A smaller number of dimensions, number of dimensions we want to reduce to
+  - Proved: eigenvalue $\lambda_i=$ variance along $\bf{e}_i$
+    - Can get $m$ by looking at these
+  - Pick $\bf{e}_i$ that "explain" the most variance
+    - Do so by:
+      - Sort eigenvectors s.t. $\lambda_1\geq\lambda_2\geq ... \geq\lambda_d$
+      - Pick first $m$ eigenvectors which explain $90\%$ of the total variance
+        - Typical threshold values: $0.9$ or $0.95$
+        - "Want number of dimensions that give you 90% of variance of data"
+          - If we wanted 100% of the data it'd be very unlikely that we'd actually reduced the dimensionality unless the data is actually on a linear plane (which almost never happens in real life)
+      ![TODO](../images/iaml-var-threshold.png)
+  - Or use a scree plot:
+    - Like K-means
+    - Look for ellbow point (inflection point)
+    - (Also sensible to do)
+      ![TODO](../images/iaml-pca-scree.png)
+- PCA overview, in a nutshell (important)
+  ![TODO](../images/iaml-pca-nutshell.png)
+- Eigen faces
+  - Example in lecture
+- PCA: practical issues
+  - Covariance is extremely sensitive to large values
+    - E.g. multiply some dimension by 1000
+      - Will then dominate covariance
+      - Becomes a principal component
+    - Normalise each dimension to zero mean and unit variance:
+      $$x'=(x-\mu)/st.dev$$
+  - PCA assumes underlying subspace is linear
+    ![TODO](../images/iaml-linear-pca.png)
+- PCA and classification
+  - PCA is unsupervised
+    - Maximises overall variance of the data along a small set of directions
+    - Does not know anything about class labels
+    - Can pick direction that makes it hard to separate classes
+  - Discriminative approach
+    - Look for a dimension that makes it easy to separate classes
+  ![TODO](../images/iaml-pca-classification.png)
+- Linear Discriminant Analysis
+  - PCA looks for a dimension with greatest variance
+  - LDS: pick a new dimension that gives:
+    - Maximum separation between means of projected classes
+    - Minimum variance within each projected class
+  - Assumes data is Gaussian distributed and easily separable
+  - Solution: eigenvectors based on between-class and within-class covariance matrices
+    ![TODO](../images/iaml-lda.png)
+- PCA vs LDA
+  - LDA is not guaranteed to be better for classification
+    - Assumes classes are unimodal Gaussians
+    - Fails when discriminatory information is not in the mean, but in the variance of the data
+  - Example where PCA gives a better projection:
+    ![TODO](../images/iaml-pca-lda.png)
+- Dimensionality reduction: pros and cons
+  - Pro
+    - Reflects our intuitions about the data
+    - Allows estimating probabilities in high-dimensional data
+      - No need to assume independence etc
+    - Dramatic reduction size of data
+      - Faster processing (as long as reduction is fast), smaller storage
+  - Cons
+    - Too expensive for many applications (Twitter, web)
+    - Disastrous for tasks with fine-grained classes
+    - Understand assumptions behind the methods (linearity etc)
+      - There may be better ways to deal with sparseness
+- Summary
+  - True dimensionality << observed dimensionality
+  - High dimensionality $\rarr$ sparse, unstable estimates
+  - Different ways of dealing with high dimensionality:
+    - Use domain knowledge
+    - Make an assumption: independence / smoothness / symmetry
+    - Dimensionality reduction: feature selection / feature extraction
+  - Principal Components Analysis (PCA)
+    - Picks dimensions that maximise data vraiability
+      - I.e. where the data is the most "stretched out"
+    - Examples: Eigen faces (in lecture slides, not here)
+    - Variant for classification: LInear Discriminant Analysis
+## Week 8: Hierarchical Clustering
+- Hierarchical clustering
+  - For clustering, selecting K can be difficult, it's a question of granularity
+  - Number of clusters is really dependent on what you're looking for
+  - Asking how many clusters you have in the data is asking at what granularity do you want to look at your data
+    - Do you want to look at high-level effects or are you looking for fine-grained subgroupings of your data
+  - "How many" is a bad questions
+    - How coarse or fine-grained is the structure in  your data?
+      - Analogy: tidal waves or ripples on the surface?
+      - Real data: both, and probably everything in-between
+    - No clustering algorithm is able to pick $K$ 
+      - (even though some claim to)
+  - Instead of picking $K$: find a hierarchy of structure
+    - Top levels: coarse effects
+    - Low levels: fine-grained
+      - Topmost cluster: contains every point in the dataset
+      - Next level in hierarchy: largest clusters we can find
+      - Bottom level: set of $n$ singleton clusters, on per data point
+    - Strategies:
+      - Top-down: start with all items in one cluster, split recursively
+      - Bottom-up: start with singletons, merge, agglomerate by some criterion
+      - In both cases, you end up with a tree where at the top you have all the data in one cluster and in the leaves you have singletons of data points
+- Hierarchical K-means
+  - Top-down approach:
+    - Run K-means algorithm on the original data $x_1...x_n$
+    - For each of the resulting clusters $c_i:i=1...K$
+      - Recursively run K-means on point in $c_i$
+  - Fast: recursive calls operate on a slice: $O(K*n*d*log_K(n))$
+  - Greedy: can't cross boundaries imposed by top levels
+    - Nearby points may end up in different clusters
+    ![TODO](../images/iaml-hierarchical-clustering.png)
+- Agglomerative clustering
+  - Idea: ensure nearby points end up in the same cluster
+    - As opposed to recursive hierarchical K-means
+  - Start with a collection $C$ of $n$ singleton clusters
+    - Each cluster contains one data point: $c_i=\{x_i\}$
+  - Repeat until only one cluster is left:
+    - Find a pair of clusters that is closest: $\underset{min}{i,j}D(c_i,c_j)$
+    - Merge the clusters $c_i,c_j$ into a new cluster $c_{i+j}$
+    - remove $c_i,c_j$ from the collection $C$ and add $c_{i+j}$
+  - Produces a dendrogram: hierarchical tree of clusters
+  - Need to define a distance metric over clusters
+  - Slow: $O(n^2d+n^3)$
+    - Slow bc creates and traverses distance matrix
+      - TODO: or was this meant as a solution and makes it faster?
+- Agglomerative clustering: example
+  ![TODO](../images/iaml-agglomerative-clustering.png)
+  - Scattered blue points are data set
+  - We use Euclidean distance to measure the distance between data points
+  - Doing single link clustering, so will look for two nearest points in clusters (will talk about this later)
+  - Find two points that are closest to each other
+    - That's a and b
+  - Left of Dendrogram, height of arch between a and b corresponds to distance between them
+  - Repeat the above steps
+  - At some point, merge b and d but b and d are already in cluster so merge cluster a-b with c-d
+  - Can use dendrogram to cut off tree at some horizontal point and number of top-level branches crossing that line is number of clusters
+- Cluster distance measures
+  ![TODO](../images/iaml-cluster-distance-measures.png)
+  - Need to define a distance metric for hierarchical clustering
+  - A bit tricky because we define distances between clusters, not single points
+  - Single link
+    - Simplest distance strategy, called nearest-neighbour
+    - Look for points which are the closest to each other, using Euclidean distance
+    - Bad flaw: leads to chains formed in data, sometimes you want spherical clusters which you can't get with single linking
+  - Complete link
+    - Opposite of single link
+    - Distance is the maximum of the Eucledian distance over all possible points in clusters
+      - That's going to be the diameter of the cluster
+    - Take the smallest max distance $\rarr$ that's the new linkage
+  - Average link
+    - Distance is just the average of all distances between all possible combinations of points
+    - Less affected by outliers
+  - Centroids
+    - Similar to average linking
+    - Form a centroid of each cluster
+    - Look at the difference between centroids
+  - Ward's method
+    - One of the better methods out there
+    - Pretends to merge the two clusters
+    - Similar to complete link (merging), but instead of looking for the diameters it looks for the deviations from formed centroid
+    - Look for merge which results in smallest deviation from centroid
+- Lance-Williams Algorithm
+  - Can use any cluster distance
+  - Efficient algorithm to agglomeratively construct hierarchical clustering between data points
+  - $D=\{D_{i,j}:$distance between $\bf{x}_i$ and $\bf{x_j}$ for $i,j=1..N\}$
+    - Maybe Euclidean distance, or any other that may be better
+  - For $N$ iterations:
+    - $i,j=\bf{arg}\bf{min}D_{i,j}$ is the pair of closest clusters
+    - Add cluster: $i+j$, delete clusters $i,j$
+      ![TODO](../images/iaml-hier-ij.png)
+    - For each remaining cluster k:
+      $$D_{k,i+j}=\alpha_i D_{k,i}+\alpha_j D_{k,j}+\beta D_{i,j}+\gamma|D_{k,i}-D_{k,j}|$$
+      - If you set constants in different ways, you get different cluster distance methods
+      - On the right to the table below is shown why you end up with single link if you plug in the constants
+      ![TODO](../images/iaml-hier-params.png)
+- Summary
+  - Clustering is about discovering underlying sub-populations
+  - K-means
+    - fast, iterative, leads to a local minimum
+    - Need to pick k: look for unusual reduction in variance
+  - Misture models
+    - Probabilistic version of K-means
+    - Expectation Maximisation (EM) algorithm
+  - Hierarchical clustering
+    - Top-down (K-means) and bottom-up (agglomerative)
+    - Single / complete / average link variations
+## Week 9: Neural Networks
+- The perceptron
+  - A simple linear algorithm
+    - Can we do something simpler than logistic regression? And still be linear?
+    - For logistic regression, we had this squashing function
+    
+    $$f(z)=\sigma(z)\equiv 1/(1+exp(-z))$$
+    - What if we just have a step function?
+    ![TODO](../images/iaml-nn-step-function.png)
+    - Notice that we call the classes $y\in\{-1,1\}$
+      - This is just for mathematical convenience later on
+    - This architecture is called a *perceptron*, and has a very long history
+- Classifying using a perceptron
+  - A perceptron is like any other linear classifier
+  - Given $\tilde{\bf{w}}, w_0$ and a $\bf{x}$ to classify, do
+    - TODO: what do these stand for again?
+  ![TODO](../images/iaml-nn-perceptron-classification.png)
+  - This is ok, but how are you going to train it?
+  - The problem is that you can't use gradient descent anymore
+    - Q: Why not?
+    - A: Because we have this step function and we can't differentiate it (which we'd need to do to get the gradient)
+- The perceptron learning rule
+  - The following perceptron learning rule was studied by Rosenblatt (1956)
+  ![TODO](../images/iaml-nn-perceptron-learning-rule.png)
+  - This is like an approximation to the gradient descent
+  - It says
+    - Keep repeating until all training examples has been classified
+    - What we do: move the weights in the direction according to the sign of $\bf{w}^T\bf{x}_i$
+  - Why does this make sense? Use same reasoning as logistic regression gradient
+    - TODO: Explain this
+  - Say $y_1=1$ and $\hat{y}=0$. Then, after the update $\bf{w}^T\bf{x}_i$ get bigger
+- The perceptron learning rule
+  - Amazing fact: if the data is linearly separable, the above algorithm always converges to a weight vector that separates the data
+  - If the data is not separable, algorithm does not converge
+    - Need to somehow pick which weight vector to go with
+  - There are ways to do this (not examinable), such as the *averaged perceptron* and the *voted perceptron*
+  - This algorithm is a bit old and frumpy, but can still be very useful
+    - Especially when you add kernels, to get the *kernel perceptron* algorithm
+  - Also can be seen as a very simple neural network (see later)
+- Artificial neural networks
+  - Going to talk about:
+    - Why multilayer artificial neural networks (ANNs)?
+    - Representation power of ANNs
+    - Training ANNs: backpropagation
+    - Learning hidden layer representations
+    - Examples
+- What's wrong with the IAML course
+  > When we write programs that "learn", it turns out that we do and they don't. –Alan Perlis
+  - Many of the methods in this course are linear. All of them depend on *representation*, i.e. having good features
+  - What if we want to learn the features?
+  - This lecture: nonlinear regression and nonlinear classification
+  - Can think of this as: a linear method where we learn the features
+  - These are motivated by a (weak) analogy to the human brain, hence the name *artificial neural networks*
+- How artificial neural networks fit into the course
+  ![TODO](../images/iaml-ann-overview.png)
+- Artificial neural networks (ANNs)
+  - The field of neural networks grew up out of simple models of neurons
+  - Each single neuron looks like a linear unit
+  - (In fact, *unit* is the name for a "simulated neuron")
+  - A network of them is nonlinear
+- Classification using a single neuron
+  ![TODO](../images/iaml-nn-single-neuron.png)
+  - Take a single innput $\bf{x}=(x_1,x_2,...,x_d)$
+  - To compute a class label:
+    1. Compute the neuron's activation
+    ![TODO](../images/iaml-nn-neuron-activation.png)
+    1. Set the neuron output $y$ as a function of its actiaation $y=g(a)$ For now, let's say
+    ![TODO](../images/iaml-nn-neuron-output.png)
+    1. If $y>0.5$, assign $\bf{x}$ to class $1$. Otherwise, class $0$
+- Why we need multilayer networks
+  - We haven't done anything new yet
+  - This is just a very strange way of presenting logistic regression
+  - Idea: use recursion
+    - Use the output of some neurons as input to another neuron that actually predicts the label
+- A slightly more complex ANN:
+  ![TODO](../images/iaml-nn-more-complex.png)
+  - **The units**
+    - $x_1,x_2$ and $x_3$ are the input features, just like always
+    - $y$ is the output of the classifier
+      - In an ANN this is sometimes called an *output unit*
+    - The units $h_1$ and $h_2$ don't directly correspond to anything in the data
+      - They are called hidden units
+  - **The weights**
+    - Each unit gets its own weight vector
+    - $\bf{w}_1=(w_{11},w_{12,w_{13}})$ are the weights for $h_1$
+    - $\bf{w}_2=(w_{21},w_{22,w_{23}})$ are the weights for $h_2$
+    - $\bf{v}=(v_1,v_2)$ are the weights for $y$
+    - Also each unit gets a "bias weight"
+      - $w_{10}$ for unit $h_1$, $w_{20}$ for unit $h_2$ and $v_0$ for unit $y$
+    - Use $\bf{w}=(\bf{w}_1,\bf{w}_2,\bf{v},w_{10},w_{20},v_0)$ to refer to all of the weights stacked into one vector
+  - **Predicting**
+    - Here is how to compute a class label in this network:
+    ![TODO](../images/iaml-nn-complext-predicting.png)
+- ANN for regression
+  - If you want to do regression instead of classification, it's simple
+  - Just don't squash the output
+  - Here is how to make a real-valued prediction:
+  ![TODO](../images/iaml-nn-regression.png)
+- ANN for multiclass classification
+  ![TODO](../images/iaml-nn-multiclass.png)
+  - Is it possible to predict more than two classes? $\rarr$ no problem
+  - The only change is to output a layer
+  - Define one output unit for each class
+  - $y_i\larr$ how likely it is that $\bf{x}$ is in class $i,(i=1...M$
+    - TODO: what it $M$?
+  - Then convert to proabbilities using a softmax function
+    - TODO: what's a softmax function again argargarhgaerhgwe
+    ![TODO](../images/iaml-nn-softmax.png)
+  - Making the prediction:
+  ![TODO](../images/iaml-nn-multiclass-prediction.png)
+- Increasing an ANN's complexity
+  - You can have more hidden layers and more units
+  - An example network with 2 hidden layers
+  ![TODO](../images/iaml-nn-hidden-layers.png)
+  - There can be an arbitrary number of hidden layers
+  - The networks that we have seen are called *feedforward* because the structure is a directed acyclic graph (DAG)
+  - Each unit in the first hidden layer computes a non-linear function of the input $\bf{x}$
+  - Each unit in a higher hidden layer computes a non-linear function of the output of the layer below
+- Things that you get to tweak
+  - The structure of the network:
+    - How many layers?
+    - How many hidden units?
+  - What activation function $g$ to use for all the units
+  - For the output layer this is easy:
+    - $g$ is the identity function for a regression task
+    - $g$ is the logistic function fo a two-class classification task
+  - For the hidden layers you have more choice:
+    ![TODO](../images/iaml-nn-output-functions.png)
+  - Tweaking all of these can be a black art
+- Representation power of ANNs
+  - Boolean functions:
+    - Every boolean function can be represented by a network with a single hidden layer
+    - But might requier exponentially many (in number of inputs) hidden units
+      - TODO: why?
+  - Continuous functions:
+    - Every bounded continnuous function can be approximated, with arbitrarily small error, by a network with one hidden layer [Cybenko 1989; Hornik et al. 1989]
+      - TODO: read reference
+    - Any function can be approximated to arbitrary accuracy by a network with two hidden layers
+      - TODO: what's the difference to the prior point?
+    - Neural networks are *universal approximators*
+    - But again, if the function is complex, two hidden layers may require an extremely large number of units
+  - Advanced (non-exampinable): for more on this see (TODO)
+    - F. Girosi and T. Poggio. “Kolmogorov’s theorem is irrelevant.” Neural Computation, 1(4):465469, 1989.
+    - I V. Kurkova, “Kolmogorov’s Theorem Is Relevant”, Neural Computation, 1991, Vol. 3, pp. 617-622.
+![TODO](../images/iaml-nn-vowel-prediction.png)
+- Training ANNs
+  - Training: finding the best weights for each unit
+  - We create an error function that measures the agreement of the target $y_i$ and the prediction $f(\bf{x})$
+  - Linear regression, squared error: $E=\Sigma^n_{i=1}(y_i-f(\bf{x}_i))^2$
+  - Logistic regression (0/1 labels):
+    $$E=\Sigma^n_{i=1}y_i log f(\bf{x}_i)+(1-y_i)log(1-f(\bf{x_i}))$$
+  - It can make sense to use a regularisation penalty (e.g. $\lambda|\bf{w}|^2$) to help control overfitting; in the ANN literature this is called *weight decay*
+  - The name of the game will be to find $\bf{w}$ so that $E$ is minimised
+  - For linear and logistict regression the optimisation problem for $\bf{w}$ had a unique optimum
+    - This is no longer the case for ANNs (e.g. hidden layer neurons can be permuted)
+- Backpropagation
+  - As discussed for logistic regression, we need the gradient of $E$ w.r.t all the parameters $\bf{w}$, i.e. $\bf{g}(\bf{w})=\frac{\partial E}{\partial\bf{w}}$
+  - There is a clever recursive algorithm for computing the derivatices
+    - It uses the chain rule, but stores some intermediate terms
+    - This is called *backpropagation*
+  - We make use of the layered structure of the net fo compute the derivatives, heading backwards from the output layer to the inputs
+  - Once you have $\bf{g}(\bf{w})$, you can use your favourite optimisation routines to minimise $E$
+    - See discussion of gradient descent and other mmethods in Logistic Regression section
+- Convergence of backpropagation
+  - When dealing with local minima
+    - Train multiple nets from different starting places, and then choose best (or combine in some way)
+  - Initialise weights near zero; therefor, initial networks are near-linear
+  - Increasingly non-linear functions are possible as training progresses
+- Training ANNs: summary
+  - Optimise over vector of all weights / biases in a network
+  - All methods considered find *local* optima
+  - Gradient descent is simple but slow
+  - In practice, second-order methods (*conjugate gradients*) are used for batch learning
+  - Overfitting can be a problem
+- Applications of neural networks
+  - Recognising handwritten digits on cheques and post codes
+  - Language modelling: given a partial sentence, precit the next word
+  - Financial forecasting
+  - Speech recognition
+- ANNs: summary
+  - Artificial neural networks are a powerful nonlinear modelling tool for classification and regression
+  - These were never very good models of the brain
+    - But as classifiers, they work
+  - The hidden units are a new representation of the original input
+    - Think of this as learning the features
+  - Trained by optimisation methods making use of the backpropagation algorithm to compute derivatives
+  - Local optima in optimisation are present, cf linear and logistic regression (and krenelised versions thereof, e.g. SVM)
+  - Ability to automatically discover useful hidden-layer representations
+- Neural networks: recent developments
+  - There was a wave of neural networks research from around 1985 to the early 1990s
+  - There is a lot of recent interest around "deep learning", starting from around 2010
+  - For images: convolutional neural networks (CNNs)
+  - For sequences: recurrent neural networks
+- COnvolutional neural networks – why?
+  - Fully connected networks with high-dimensional input have a *lot* of parameters
+  - E.g. one hidden unit that gets input from a $200$ x $200$ image requires $40000$ weights
+  - This gives too many parameters to learn
+  - The spatial structure of the input image is ignored
+  - TODO: add images from lecture in some way (slides 33 pp)
+- Concolutional feature detection
+  - Constrain each hidden unit $h_{i,j}$ to extract the feature by sharing weights across the receptive fields
+  - For hidden unit $h_{i,j}$ and $m\times m$ weight matrix $W$
+  ![TODO](../images/iaml-nn-conv-feature.png)
+  - The output is a *feature map*
+  - Many different weight matrices can be used, to produce multiple feature maps
+- Convolutional neural networks (CNNs)
+  ![TODO](../images/iaml-conv-nn.png)
+  - Recent wave started with "AlexNet" by Krizhevsky, Sutskever, Hinton (2012), although similar architectures can be traced back decades earlier
+  - Tasks
+    - Object classification: is there an X in this image?
+    - Object localisation: put a bounding box around each X in the image
+    - INstance segmentation: identify the pixels belonging to each X in the image
+- Recurrent neural networks (RNNs)
+  ![TODO](../images/iaml-rec-nn.png)
+  - A model for sequence data (e.g. time series)
+  - Example use: annotation of motion-capture data to label action type
+  - Example use: part-of-speech tagging for natural language
+    - TODO: use this for your part-of-speech syntax highlighter?
+  - Many complex network architectures, e.g. long short-term-memories (OSTMs, Hochreiter and Schmidhuber, 1997)

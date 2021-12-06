@@ -17,6 +17,7 @@ to-heading: 6
 
 - Introduction
   - Data is the most important asset of any enterprise
+    - Ahem...
   - To be turned into meaningful information, must find way to effectively, efficiently, and reliably:
     - collect and store
     - maintain and update
@@ -1842,6 +1843,8 @@ CAST( term AS <type> )
       - **Inclusion dependencies**
 - Functional dependencies (FDs)
   - Constraints of the form $X\rarr Y$, where $X,Y$ are sets of attributes
+    - This is just syntax, not equivalent to a logical implication!
+    - "the valuse of the attributes in $X$ determine the values of the attributes in $Y$
   - Semantics (on sets)
     - A relation $R$ satisfies $X\rarr Y$ if for every two tuples $t_1,t_2\in R$
       ![TODO](../images/dbs-fds.png)
@@ -1851,6 +1854,7 @@ CAST( term AS <type> )
       - Think of it as "The combination of attributes from $X$ is a deterministic injective map to a value for the attributes from $Y$, values are always paired up the same way depending on the value of an attribute from $X$."
     - Not true if we can find a tuple for which their $X$ attribute values are the same but for $Y$ attributes they differ from each other
     - Trivial FDs: $X\rarr Y$ where $Y\subseteq X$
+      - Trivial since the values of any set always determine the values of any subsets
   - Examples of FDs
     ![TODO](../images/dbs-fds-examples.png)
     - Which of the following FDs would the above relation satisfy?
@@ -1862,8 +1866,11 @@ CAST( term AS <type> )
       4. Manager $\rarr$ Departement `False`
          - See: Smith + Finance vs Smith + Sales
 - Keys
-  - A set of attributes $X$ is a **key** ofr relation $R$ if for every $t_1,t_2\in R$
+  - A set of attributes $X$ is a **key** of relation $R$ if for every $t_1,t_2\in R$
+
     $$\pi_X(t_1)=\pi_X(t_2)\implies t_1=t_2$$
+
+  - In the case that the attributes from $X$ are a key, if we project over $X$ and the tuples $t_1$ and $t_2$ agree, then the tuples must be the same row
   - A key for a table is a set of attributes that *uniquely identify a row*
     - $\implies$ no two rows caan have the same values for key attributes
   - Key constraints: special case of FDs $X\rarr Y$
@@ -1872,13 +1879,17 @@ CAST( term AS <type> )
 - Inclusion dependencies (INDs)
   - Constraints of the form $R[X]\subseteq S[Y]$
     - Where $R,S$ are relations and $X,Y$ are **sequences** of attributes
+      - These sequences are of the same length
       - Q: What are sequences of attributes?
       - A: TODO
   - Semantics
     - $R$ and $S$ satisfy $R[X]\subseteq S[Y]$ if
       - for every $t_1\in R$ there exists $t_2\in S$ such that $\pi_X(t_1)=\pi_Y(t_2)$
     - **Important**: the projection must respect the attributes order
+    - Basically, want the attributes in $X$ of any sub-tuples of $R$ to be among the sub-tuples of $S$ among the attributes of $Y$
+      - Like set containment, hence the inclusion symbol $\subseteq$
   - INDs are *referential constraints*: **link** the contents of one table with the contents of another table
+    - We want some parts of $R$ to be contained in some parts of $S$, where these parts are defined in $X$ and $Y$
   - A *foreign key* constraint is the conjunction of two constraints:
     1. $R[X]\subseteq S[Y]$   (an IND)
     2. $Y$ is a key for $S$   (a key constraint)
@@ -1886,10 +1897,10 @@ CAST( term AS <type> )
     ![TODO](../images/dbs-inds.png)
     - Which of the following INNDs would the above relation satisfy?
       - Exmployees[Dep] $\subseteq$ Departments[Name] `True`
-      - Exmployees[Name] $\subseteq$ Departments[Mgr] `No`
+      - Exmployees[Name] $\subseteq$ Departments[Mgr] `False`
         - See: Linda or Susan
       - Departments[Mgr] $\subseteq$ Employees[Name] `True`
-      - Departments[Mgr,Name] $\subseteq$ Employees[Name,Dep] `No`
+      - Departments[Mgr,Name] $\subseteq$ Employees[Name,Dep] `False`
         - See: Linda + Sales
 - Basic SQL constraints
   | Constraint Keyword(s) | Purpose                              |
@@ -1902,7 +1913,7 @@ CAST( term AS <type> )
     - Except for `NOT NULL` and `PRIMARY KEY`
 - `NOT NULL`
   - Declaring an attribute as `NOT NULL` disallows null values for that attribute
-    ```sql
+  ```sql
     CREATE TABLE Account (
       accnum  VARCHAR(12) NOT NULL,
       branch  VARCHAR(30),
@@ -1938,7 +1949,7 @@ CAST( term AS <type> )
     (NULL, 'Edinburgh', 'cust3', 200);
   ```
     - Succeeds because `NULL` values are ignored for `UNIQUE`
-- Compounnd keys
+- Compound keys
   - Compound keys are keys consisting of more than one attribute
   - Compound keys must be declared using a different syntax
   ```sql
@@ -1950,9 +1961,10 @@ CAST( term AS <type> )
     UNIQUE (m_title,m_year)
   );
   ```
-  - Declares the set `{m_title,m_year}` as a key for $Movies$
+  - Declares the set `{m_title, m_year}` as a key for `Movies`
 - Primary keys
   - Essentially `UNIQUE` + `NOT NULL`
+  - Can only declare one primary key per relation
   - So attributes that don't have any duplicates and no `NULL` values
   ```sql
   CREATE TABLE Account (
@@ -1961,6 +1973,7 @@ CAST( term AS <type> )
     custid  VARCHAR(10),
     balance NUMERIC(14,2)
   );
+  
   -- Same as:
   CREATE TABLE Account (
     accnum  VARCHAR(12) NOT NULL UNIQUE,
@@ -2007,9 +2020,9 @@ CAST( term AS <type> )
     ![where Account.CustID is a foreign key for Customer.ID](../images/dbs-foreign-key-del.png)
   - What happens if one deletes `(cust1,John)` from $Customer$?
   - Three approaches are supported in SQL:
-    1. Reject the deletion operation
+    1. Reject the deletion operation (default)
     2. Propogate it to $Account$ by deleting also `(123456,cust1)`
-    3. "Don't know" approach: keep the tuple in $Account$, but set `CustID` value to `NULL`
+    3. "Don't know" approach: keep the tuple in $Account$, but set `CustID` value to `NULL` (this approach is not advisable)
 - Referential integrity and database modifications (2)
   - All of the three approaches are supported in the SQL
     ```sql
@@ -2030,6 +2043,7 @@ CAST( term AS <type> )
          - (The values of the attributes in `<list1>`, for tuples in `<name>` that violate the FK, are set to `NULL`)
 ## Week 7: Entailment of Constraints
 - Implication of constraints
+  - Constraints are FDs or INDs
   - A set $\Sigma$ of constraints **implies / entails** a constraint $\phi$ if
     - **every** instance that satisfies $\Sigma$ also satisfies $\phi$
   - Notation: $\Sigma\models\phi$
@@ -2038,14 +2052,18 @@ CAST( term AS <type> )
   > Given $\Sigma$ and $\phi$, does $\Sigma$ imply $\phi$?
   - Relevant because:
     - We never get the list of all constraints tha hold on a database
+    - We have explicit constraints but they may come with implicit constraints we have not discovered yet
     - The given constraints may look fine, but imply some bad ones
     - The given constraints may look bad, but imply only good ones
 - Axiomatisation of constraints
-  - Set of rules (**axioms**) to derive constraints
+  - Axiomatisation is a set of rules (**axioms**) to derive constraints
     - **Sound**: every derived constraint is implied
+      - Everything that we derive using the syntactic rules is entailed semantically
     - **Complete**: every implied constraint can be derived
+      - Every semantically implied constraint can be derived using syntactic rules
   - A sound and complete axiomatisation gives a procedure $\vdash$ such that
     - $\Sigma\models\phi\iff\Sigma\vdash\phi$
+      - A constraint is implied if and only if we can derive it, adhering to the axiomatisation rules
 - Notation
   - Attributes are denoted by $A,B,C,...$
   - If $A$ and $B$ are attributes, $AB$ denotes the set $\{A,B\}$
@@ -2062,8 +2080,8 @@ CAST( term AS <type> )
   - Can be computed using Armstrong's axioms
   - Example:
     - Closure of $\{A\implies B,B\implies C\}$
-    - $F^+=\{A\implies C\}$
-      - TODO: verify this
+    - Answer: Tuesday lecture from 02/11/2021, 21:13min
+    - We don't need to do this in the exam
 - Closure of attributes / attribute closure
   - The closure $C_F(X)$ of a set $X$ of attributes w.r.t. a set $F$ of FDs
     - Is the set of attributes we can derive from $X$ using the FDs in $F$
@@ -2074,37 +2092,66 @@ CAST( term AS <type> )
     - Second: self-explanatory
     - Third: We can't derive any further attributes from a attribute closure set using the same FDs, we'll get the same set.
   - Solution to the implication problem
-    - $F\models Y\implies Z$ if and only if $Z\subseteqC_F(Y)$
+    - $F\models Y\implies Z$ if and only if $Z\subseteq C_F(Y)$
 - Closure algorithm
   - How to get the attribute closure:
   ![Closure algorithm](../images/dbs-closure-algorithm.png)
+  - Step 1:  we initialise a set of functional dependencies called unused. Start with $\Sigma$ because we haven't used any of these yet
+  - Step 2: we initialise a set of attributes called closure. Start with $X$ because everything in $X$ is trivially in the closure of it (first property of an attribute closure above)
+  - Step 3: While there is an unused functional dependence of the form $Y\rarr Z$ such that its left hand-side ($Y$) is contained in the current closure
+    - Extend the closure by adding the attributes on the right hand-side ($Z$) of the FD to the closure
+    - Remove the FD from `unused`
   - Example
     - Closure of $A$ w.r.t. $\{AB\implies C, A\implies B, CD\implies A\}$
-    - TODO: I don't understand this algorithm because of two reasons:
-      1. What are Y and Z?
-      2. Doesn't the while loop terminate after one iteration since we definitely remove Y -> Z?
-      - Ok, I think this is just a bad notation. I think Paolo uses $Y\implies X$ to refer to a specific FD in F?
+    ![TODO](../images/dbs-closure-of-a.png)
+      - TODO: explain this
+  - Runtime of closure algorithm: lecture from Tue 02/11/21, ~last 10min
 - Keys, candidate keys, and prime attributes
   - Let $R$ be a relation with a set of attributes $U$ and FDs $F$
-  - $X\subseteq U$ is a key for $R$ if $F\models X\implies U$
-    - TODO: I don't get this
-  - Equivalently, $X$ is a key if $C_F(X)=U$
-    - TODO: Why?
+  - $X\subseteq U$ is a key for $R$ if $\Sigma\models X\rarr U$
+    - Intuively, this is saying: the value for the attributes in $X$ determine the value of the the attributes in $U$
+    - Since $U$ is the set of all attributes in the relation, and $X$ determines all values $U$, $X$ is a key
+  - Equivalently, $X$ is a key if $C_{\Sigma}(X)=U$
+    - If the closure of $X$ with respect to the given FDs is exactly the set of all attributes $U$
+      - Q: Why is that the case?
+      - A:
+        ![TODO](../images/dbs-closure-entailment.png)
   - Candidate keys
     - Keys $X$ such that, for each $Y\subset X$, $Y$ is not a key
     - Intuitively, keys with a *minimal* set of attributes
+      - A key for which when you remove any of its attributes, it's not a key anymore
   - Prime attribute: an attribute of a candidate key
 - Attribute closure and candidate keys
   - Given a set $F$ of FDs on attributes $U$, how do we compute all candidate keys?
   - Candidate key algorithm
     ![Candidate key algorithm](../images/dbs-candidate-key.png)
-    - TODO: explain this after having watched the lecture
+  - We want to compute the set of all candidate keys (ck) for all functional dependencies $\Sigma$ on a set of attributes $U$
+    1. Initialise the set of candidate keys as the empty set, will be populated with sets of attributes (because each set of attribute is a potential key)
+    2. Build graph G which is a directed graph
+       - Nodes are elements of the powerset of $U$
+       - Considers all possible subsets of $U$ and takes them as nodes of $G$
+       - Put an edge between two (random) nodes $X$ and $Y$ of the graph if the set difference between the two node sets yields a single attribute
+         - I.e. put edges between nodes that differ in only one attribute
+       - Direction of edge goes from bigger set to the smaller one
+    3. Loop that removes nodes from graph until it's empty, once empty we are done
+       1. Find a node in that does not have childen
+       2. Compute the closure for that node (which is a set of attributes)
+       3. If what we obtain is the whole set of attributes, it means that we have found a candidate key $\rarr$ add it to set `ck`
+       4. Delete that node and all its ancestors from $G$ because if we add attributes to this key, it's not a minimal key anymore
+       5. Else (if closure is not whole set $U$): delete node $X$ from $G$
+    4. Return set of candiate keys cd
 - Implication of INDs
   - Recall inclusion dependencies (INDs)
     - Constraints of the form $R[X]\subseteq S[Y]$
       - Where $R,S$ are relations and $X,Y$ are **sequences** of attributes
+        - Q: What is a sequence?
+        - A: An ordered list.
   - Given a set of INDs, what other INDs can we infer from it?
     ![Sound and complete derivation procedures for INDs](../images/dbs-inds-implication.png)
+    - Projection: means that we can take project two different sequences of attributes on the relations if the size of the sequence is the same, and the subset property still holds
+      - E.g. $R[A,B,C]\subseteq S[F,G,L]$ $\rarr$ $R[B,C]\subseteq S[G,L]$
+      - So in photo, $X$ and $W$ don't necessarily refer to single attributes, they are sequences of attributes as stated earlier
+    - Premutation: can change order of LHS as long as you do it for the RHS in the same manner
 - FDs and INDs together
   - We have established:
     - Given a set $F$ of FDs and a FD $F$, we can decide whether $F\models f$
@@ -2115,7 +2162,7 @@ CAST( term AS <type> )
     - The implication problem is still undecidable
   - Unary inclusion dependencies (UINDs)
     - They are INDs of the form $R[A]\subseteq S[B]$ where $A,B$ are attributes
-    - The implication problem for FDs and UINDs is decidaable in PTIME
+    - The implication problem for FDs and UINDs is decidable in PTIME
 - Further reading
   - Abiteeboul, Vianu, Hill: Foundations of Databases. Addison-Wesley, 1995
     - Algorithm for checking implication of INDs
@@ -2125,6 +2172,9 @@ CAST( term AS <type> )
 ## Week 7: Normal Forms
 - Bad design
 ![Example of a badly designed database](../images/dbs-bad.png)
+  - We have a relation, and a given set of functional dependencies
+    - Set of FDs says:
+      - E.g. for Title $\rarr$ Director: if we have two rows with the same title, then they need to have the same director too
   - Redundancy
     - Many facts are repeated
       - For every showing we list both director and title
@@ -2149,6 +2199,7 @@ CAST( term AS <type> )
   > 1. $Y\subseteq X$ (the FD is trivial), or
   > 2. $X$ is a key.
   - A database is in BCND if all relations are in BCNF
+  - Determnine if a set of functional dependencies & delation is in BCNF: lecture 1 from 09/11/21, 22min in (TODO)
 - Decompositions
   - Given a set of attributes $U$ and a set of FDs $F$, a *decomposition* of $(U,F)$ is a set
     $$(U_1,F_1),...,(U_n,F_n)$$
@@ -2174,6 +2225,7 @@ CAST( term AS <type> )
   - Can be often represented compactly as a set of FDs $F'$ over $V$ s.t.
     ![Projection of FDs in compact representation](../images/dbs-projection-of-fds-compact.png)
 - BCNF decomposition algorithm
+  - **BCNF is examinable, the decomposition algorithm is not.**
   - *Input*: A set of attributes $U$ and a set of FDs $F$
   - *Output*: A database schema $S$
   ```python
@@ -2203,11 +2255,11 @@ CAST( term AS <type> )
 - BCNF and dependency preservation
   - Take the relation $Lectures$
     - Attributes $U$: **C**lass, **P**rofessor, **T**ime
-    - FDs $F=\{C\rarrP,PT\rarr C\}$
+    - FDs $F=\{C\rarr P,PT\rarr C\}$
   - $(CPT, F)$ is not in BCNF:
     - $(C\rarr P)\in F$ is non-trivial and $C$ is not a key
   - If we decompose using the BCNF algorithm we get
-    $$(CP, C\rarr P)\ and\ (CT,\varnothing)$$
+    $$(CP, C\rarr P) and (CT,\varnothing)$$
   - We lose the constraint $PT\rarr C$
 - Third Normal Form (3NF)
   - A looser form of BCNF
@@ -2215,26 +2267,31 @@ CAST( term AS <type> )
     1. $Y\subseteq X$ (the FD is trivial), or
     2. $X$ is a key, or
     3. All of the attributes in $Y$ are prime
-       - TODO: what does it mean to be prime?
+       - Q: What does it mean to be prime?
+       - A: The RHS of FDs are allowed to be prime. It is ok for a FD to be non-trivial, to have its LHS not a key, as long as all the attributes in the RHS are prime. They are attributes that belong to some candidate key. Compute all the candidate keys over the schema and all the attributes that are in these keys qualify for 3NF.
   - Intuition: in 3NF FDs where the left hand-side is not a key are allowed as long as the right hand-side consists only of prime attributes
   - Every schema in BCNF is also in 3NF
 - 3NF and redundancy
   - Consider again the relation $Lectures$
     - Attributes $U$: **C**lass, **P**rofessor, **T**ime
-    - FDs $F=\{C\rarrP,PT\rarr C\}$
+    - FDs $F=\{C\rarr P,PT\rarr C\}$
   - $(CPT,F)$ is in 3NF: $PT$ is a *candidate key*, so $P$ is prime
   - More redundancy than in BCNF
     - Each time a class appears in a tuple, the professor's name is repeated
     - We tolerate this because there is no BCNF deomposition that preserves dependencies
+- Trade-off BCNF vs 3NF
+  - Do we want 0 redundancy (BCNF) but potential dependency loss, or 0 dependency loss but some necesssary redundancy?
 - Minimal covers
   - Let $F$ and $G$ be sets of FDs
   - $G$ is a *cover* of $F$ if $G^+=F^+$
     - TODO: what does the `+` denote?
   - A cover is *minimal* if:
     - Each FD in $G$ has the form $X\rarr A$
+      - That is, RHS consists of a single attribute
     - No proper subset of $G$ is a cover
       - We cannot remove FDs without losing equivalence to $F$
-      - TODO: what's a proper subset?
+        - Q: What's a proper subset again?
+        - A: A subset that has strictly fewer elements.
     - For $(X\rarr A\in G$ and $X'\subset X$, $A\notin C_F(X')$
       - We cannot remove attributes from the left hand-side of FDs in $G$
   - UNtuition: $G$ is small representation of all FDs in $F$
@@ -2245,11 +2302,12 @@ CAST( term AS <type> )
   2. Minimise the LHS of each FD
     - Check whether attributes in the LHS can be removed
     - For $(X\rarr A)\in F$ and $X'\subset X$ check whether $A\in C_F(X')$
-      - TODO: what's $C_F(X')$?
-       - If yes, replace $X\rarr A$ by $X'\rarr A$ and repeat
+     - If yes, replace $X\rarr A$ by $X'\rarr A$ and repeat
+     - Q: What's $C_F(X')$?
+     - A: It's the closure of $X'$.
   3. Delete redundant FDs
     - For each $(X\rarr A)\in F$, check whether $F-\{X\rarr A\}\models X\rarr A$
-- Finding minimal covers: example
+- Finding minimal covers: example (covered and explaineds in lecture 2 from 09/11/21, ~20min in)
   ![Minimal cover algorithm](../images/dbs-minimal-cover-algorithm.png)
 - 3NF synthesis algorithm
   - Input: A set of attributes $U$ and a set of FDs $F$
@@ -2261,7 +2319,11 @@ CAST( term AS <type> )
     - Lossless-join
     - Dependency-preserving
 - Example: apply the 3NF algorithm to the $Lectures$ schema (it's already in 3NF, but let's do it anyway)
-  - TODO
+  - Covered in lecture 2 from 09/11/21, ~35min in
+- Another example
+  - Covered in lecture 2 from 09/11/21, ~48min in
+  - TODO: left as exercise
+    - Not in 3NF because only candidate key if CD (compute this yourself, as an exercise)
 - Schema design: summary
   - Given the set of attributes $U$ and the set of FDs $F$
   - Find a **lossless**, **dependency-preserving** decomposition into:
@@ -2269,3 +2331,367 @@ CAST( term AS <type> )
     - 3NF is BCND decomposition cannot be founds
 - Data administrators may decide to de-normalise tables to reduce the number of joins
   - TODO: what does this mean?
+## Week 8: SQL Constraints and Triggers
+- **Triggers are non-examinable**
+  - Constraints are though
+- Check constraints (1)
+  - Syntax: `CHECK ( conditional-expression )`
+  - An update or insertion is *rejected* if the condition does not evaluate to true
+  - Example
+    ```sql
+    CREATE TABLE Products (
+        pcode   INTEGER PRIMARY KEY,
+        pname   VARCHAR(10),
+        pdesc   VARCHAR(20),
+        ptype   VARCHAR(20),
+        price   NUMERIC(6,2) CHECK ( price > 0),
+        CHECK ( ptype IN ('BOOK', 'MOVIE', 'MUSIC'))
+    );
+    ```
+    - Checks that the price is greater than $0$ and that the product is a book, movie, or music
+- Check constraints (2)
+  - SQL allows queries in `CHECK`
+    - Not implemented in PostgreSQL
+  - Another example
+    ```sql
+    CREATE TABLE Invoices (
+        invid   INTEGER PRIMARY KEY,
+        ordid   INTEGER NOT NULL UNIQUE,
+        amount  NUMERIC(8,2) CHECK ( amount > 0 ),
+        issued  DATE,
+        due     DATE,
+        CHECK ( ordid IN SELECT ordid FROM Orders ),
+        CHECK ( due >= issued )
+    );
+    ```
+    - Check that `ordid` is contained in `Orders`
+    - Check that the due date of an invoice is later than the issue date
+- Domain constraints (1)
+  - A **domain** is essentially a data type with optional constraints
+  - Syntax
+    ```sql
+    CREATE DOMAIN name datatype [ DEFAULT value ] [ constraint ]
+    ```
+    - where `constraint`is `NOT NULL | CHECK ( conditional-expression )`
+  - In the `CHECK` expression, use `VALUE` to refer to the value being tested
+  - Example
+    ```sql
+    CREATE DOMAIN posnumber NUMERIC(10,2)
+        CHECK ( VALUE > 0);
+
+    CREATE DOMAIN category VARCHAR(20)
+        CHECK ( VALUE IN ('BOOK', 'MUSIC', 'MOVIE') );
+    ```
+  - Can then use the domains as you would declare data types:
+    ```sql
+    CREATE TABLE Products (
+        pcode   INTEGER PRIMARY KEY,
+        pname   VARCHAR(10),
+        pdesc   VARCHAR(20),
+        ptype   category,
+        price   posnumber
+    );
+
+    CREATE TABLE Invoices (
+        invid   INTEGER PRIMARY KEY,
+        ordid   INTEGER NOT NULL UNIQUE,
+        amount  posnumber,
+        issued  DATE,
+        due     DATE,
+        CHECK ( ordid IN SELECT ordid FROM Orders ),
+        CHECK ( due >= issued )
+    );
+    ```
+- Assertions
+  - Assertions are essentially a `CHECK` constraint not bound to a specific table
+  - Syntax: `CREATE ASSERTION name CHECK ( condition )`
+  - Example
+    ```sql
+    CREATE ASSERTION too_many_customers
+        CHECK ( ( SELECT COUNT(*)
+                  FROM   customers ) <= 1000 ) ;
+    ```
+  - Assertions are standard SQL
+  - Not implemented in any of the currently available DBMSs
+  - The problem is allowing queries in `CHECK`
+- Triggers
+  - Triggers are used to specify an action to executre if certain events took place
+  - **Event**: a change to the database that **activates** the trigger
+    - An insertion, a deletion, or an update
+  - **Condition**: a query or test checked when the trigger is activated
+    - For a query: empty is false, non-empty is true
+  - **Action**: a procedure executred when the condition is true
+    - Can refer to old/new values of modified tuples
+    - Can examine answers to the condition query
+    - Can execute new queries
+    - Can make changes to the database
+      - Both data and schema
+    - Can be executred before / after the event for each row or for each statement
+- Triggers: example 1
+  - Suppose we have a schema
+    ```sql
+    Products : pcode, pname, price
+    Orders   : ordid, odate, ocust, final (bool)
+    Details  : ordid, pcode, qty
+    Prices   : ordid, pcode, price
+    ```
+  - Goal: whenever a new detail for an order is inserted we want to save the price of the corresponding products
+    ```sql
+    CREATE TRIGGER save_price AFTER INSERT ON details
+      REFERENCING NEW TABLE AS inserted
+      FOR EACH STATEMENT
+      WHEN TRUE
+      BEGIN
+        INSERT INTO prices(ordid,pcode,price)
+        SELECT I.ordid, I.pcode, P.price
+        FROM   inserted I JOIN products P
+               ON I.pcode = P.pcode
+      END ;
+    ```
+    - TODO: explanation after lecture
+- Triggers: example 2
+  - Suppose we have a schema
+    ```sql
+    Products : pcode, pname, price
+    Orders   : ordid, odate, ocust, final (bool)
+    Details  : ordid, pcode, qty
+    Prices   : ordid, pcode, price
+    Invoices : invid (serial), ordid, amount, issued, due
+    ```
+  - Goal: whenever an order becomes `final` we want to generate an invoice for it
+    - TODO: what is final? What does that meaaaan? Hä?
+    ```sql
+  CREATE TRIGGER invoice_order
+    AFTER UPDATE OF final ON orders
+    REFERENCING OLD ROW AS oldrow
+                NEW ROW AS newrow
+    FOR EACH ROW
+    WHEN oldrow.final = FALSE AND newrow.final = TRUE
+    BEGIN
+      INSERT INTO invoices(ordid,amount,issued,due)
+      SELECT O.ordid, SUM(D.qty * P.price),
+             O.odate, O.odate+7d
+      FROM orders O, details D, prices P
+      WHERE O.ordid = newrow.ordid
+        AND O.ordid = D.ordid
+        AND D.ordid = P.ordid
+        AND D.pcode = P.pcode
+    END ;
+    ```
+    - TODO: explain after lecture
+- Triggers in real systems
+  - In PostgreSQL (and similarly for other DBMSs):
+    ![Trigger syntax in PostgreSQL](../images/dbs-trigger-real-system.png)
+- Triggers for database consistency
+  | Constraints                      | Triggers                        |
+  | -------------------------------- | ------------------------------- |
+  | Protection against any statement | Activated by specific statement |
+  | Defined declaratively            | Defined operationally           |
+  | Easier to understand             | Effect may be obscure           |
+  | Easier to optimise               | More flexibility                |
+- Other uses of triggers
+  - Alert users
+  - Logging events
+  - Gather statistics
+  - Replication
+  - Workflow management
+  - Business rules enforcement
+- Caution with triggers
+  - An event may activate more than one trigger
+  - Activated triggers are processed in some **arbitrary** order
+  - Actions can activate other triggers: we get a chain
+  - *Recursive trigger*
+    - The action directly/indirectly activates the same trigger
+      - Collegions of triggers can have unpredictable effects
+## Week 8: Transaction Management
+- A *transaction* is a sequence of operations on database objects
+  - All operations together form a *single logical unit*
+- Example
+  - Transfor £100 from account A to account B
+    ```python
+    1. Read balance from A into local buffer x
+    2. x = x - 100
+    3. Write new balance x to A
+    4. Read balance from B into local buffer y
+    5. y = y + 100
+    6. Write new balance y to B
+    ```
+- Life-cycle of a transaction
+  ![Life-cycle of a transaction](../images/dbs-transaction-lifecycle.png)
+  | Stage               | Meaning                                       |
+  | ------------------- | --------------------------------------------- |
+  | Active              | Normal execution state                        |
+  | Partially Committed | Last statement executed                       |
+  | Failed              | Normal execution cannot proceed               |
+  | Aborted             | Rolled-back. Previous database state restored |
+  | Committed           | Successful completion. Changes are permanent  |
+
+  - Schedules
+    - A *schedule* is a sequence $S$ of operations from a set of transactions such that the order of operations in each transaction is **the same** as in $S$
+      - TODO: in simpler wording?
+    - A schedule is *serial* if all operations of each transaction are executed before or after all operationso f another transaction
+    ![TODO](../images/dbs-schedules.png)
+      - TODO: explain this after lecture
+- Concurrency
+  - Typically, more than one transaction runs on a system at the same time
+  - Each transaction consists of many I/O and CPU operations
+  - We don't want to wait for a transaction to completely finish before excuting another
+    - More efficient this way
+  - Concurrent execution
+    - The operations of different transactionns are **interleaved**
+      - Increases throughput
+      - Reduces responnse time
+- The ACID properties
+  - **A**tomicity
+    - Either all operations are carried out or none are
+  - **C**onsistency
+    - Successful execution of a transaction leaves the database in a coherent state
+  - **I**solation
+    - Each transaction is protected from the effects of other transactions excuted concurrently
+  - **D**urability
+    - On successful completion, changes persist
+- Motivating example
+  - $T_1$: transfer £100 from account A to account B
+  - $T_2$: transfer 10% from account A to account B
+  ![TODO](../images/dbs-trans-motivating-example.png)
+  - There are different ways of executing the transactions:
+  ![TODO](../images/dbs-trans-serial-1.png)
+  ![TODO](../images/dbs-trans-serial-2.png)
+  ![TODO](../images/dbs-trans-conc.png)
+- Transaction model
+  - The only important operations in schedulring are **read** and **write**
+    - $r(A)$ read data item $A$
+    - $w(A)$ write data item $A$
+  - Other operations do not affect the schedule
+  - We represent transactions by a sequence of read/write operations
+  - The transactions in the `motivating example` above can be represented as:
+    - $T_1:r(A),w(A),r(B),w(B)$
+    - $T_2:r(A),w(A),r(B),w(B)$
+- Transaction model: schedules
+  - The schedules in the `motivating example` are represented as
+    ![TODO](../images/dbs-transaction-schedules.png)
+- Serialisability
+  - Two operations (from *different* transactions) are **conflicting** if
+    - They refer to the same data item, and
+    - At least one of them is a write
+      - Bc if they both just read, then that's no problem
+  - Two **consecutive** non-conflicting operations ina  schedule can be *swapped*
+  - A schedule is **conflict serialisable** if it can be transformed into a serial schedule by a sequence of swap operations
+- Precedence graph
+  - Captures all potential conflicts between transactions in a schedule
+    - Each node is a transaction
+    - There is an edge from $T_i$ to $T_j$ (for $T_i\neq T_j$ if an action of $T_i$ **precedes** and **conflicts** with one of $T_j$'s actions
+    > A schedule is *conflict serialisable* if and only if its precedence graph is acyclic
+      - TODO: acyclic?
+  - An equivalent serial schedule is given by any **topological sort** over the precedence graph
+    - TODO: topological sort?
+- Precedence graph: example
+  ![TODO](../images/dbs-precedence.png)
+- Schedules with aborted transaction (1)
+  - We assumed transactions commit successfully after the last operations
+  - But `abort` and `commit` must be taken explicitly into account
+  ![TODO](../images/dbs-trans-abort.png)
+  - $T_2$ reads uncommited changes made by $T_1$
+  - But $T_2$ has not yet committed
+  - We can recover by aborting also $T_2$
+    - Called a *cascading abort*
+- Schedules with aborted transactions (2)
+  ![TODO](../images/dbs-trans-abort-2.png)
+  - $T_2$ reads uncommited changes made by $T_1$
+  - But $T_2$ has already committed
+  - The schedule is **unrecoverable**
+  - Recoverable schedules without cascading aborts
+    - Transactions commit only after, and if, all transactions whose changes they read have committed
+- Lock-based concurrency control
+  - Lock
+    - Bookkeeping object associated with a data item
+    - Tells whether the data item is available for read and/or write
+    - Owner: transaction currently operating on the data item
+  - Shared lock
+    - Data item is available for read to owner
+    - Can be acquired by more than one transaction
+  - Exclusive lock
+    - Data item is available for read/write to owner
+    - Cannot be acquired by other transactions
+  - Two locks on the same data item are **conflicting** if one of them is exclusive
+- Transaction model with locks
+  - Operations:
+    | Operation | Purpose                         | Mnemonic      |
+    | --------- | ------------------------------- | ------------- |
+    | $s(A)$    | shared lock on A is acquired    | s = shared    |
+    | $x(A)$    | exclusive lock on A is acquired | x = X-clusive |
+    | $u(A)$    | lock on A is released           | u = unlock    |
+    | Abort     | transaction aborts              |               |
+    | Commit    | transaction commits             |               |
+  - In a schedule:
+    - A transaction cannot acquire a lock on $A$ before all exclusive locks on $A$ have been released
+    - A transaction cannot acquire an exclusive lock on $A$ before all locks on $A$ have been released
+- Examples of schedules with locking
+  ![TODO](../images/dbs-locking.png)
+  - TODO: explain after lecture
+- Two-Phase Locking (2PL)
+  1. Before reading/writing a data item, a transaction must acquire a shared/exclusive lock on it
+  2. A transaction cannot request additional locks once it releases **any** lock
+  - Each transaction has
+    - *Growing phase* when locks are acquired
+    - *Shrinking phase* when locks are released
+  - Every completed schedule of *committed* transactions that follow the 2PL protocol is conflict serialisable
+- 2PL and aborted transactions
+  ![TODO](../images/dbs-2pl-abort.png)
+  - $T_1$ and $T_2$ follow 2PL
+  - BUt $T_1$ cannot be undone
+  - The schedule is **unrecoverable**
+- Strict 2PL
+  1. Before reading/writing a data item a transaction must acquire a shared/exclusive lock on it
+  2. **All locks held by a transaction are released when the transaction is completed** (aborts or commits)
+  - Ensures that
+    - The schedule is always *recoverable*
+    - All aborted transactions can be rolled back *without cascading aborts*
+    - The schedule consisting of the committed transactions is *conflict serialisable*
+- Deadlocks
+  - Deadlock describes the sitaution when a transaction requesting a lock must wait until all conflicting locks are released
+  - We may get a *cycle of "waits"*
+  ![TODO](../images/dbs-trans-waits.png)
+- Deadlock prevention
+  - Each transaction is assigned a **priority** using a *timestamp*:
+    - The older a transaction is, the higher priority it has
+  - Suppose $T_j$ requests a lock and $T_j$ holds a conflicting lock
+  - Two policies to prevent deadlocks in this situation:
+    - *Wait-die*: $T_i$ waits if it has higher priority, otherwise aborted
+    - *Wound-wait*: $T_j$ aborted if $T_i$ has higher priority, otherwise $T_i$ waits
+  - In both schemes / policies, the higher priority transaction is never aborted
+  - **Starvation**: a transaction keeps being aborted because it never has sufficiently high priority
+    - *Solution*: restart aborted transactions with their initial timestamp
+- Deadlock detection
+  - Waits-for graph
+    - Nodes are active transactions
+    - There is an edge from $T_i$ to $T_j$ (with $T_i\neq T_j$) if $T_i$ waits for $T_j$ to release a (conflicting) lock
+    - Each cycle represents a deadlock
+  - Recovering from deadlocks
+    - Choose a minimal set of transactions such that rolling them back will make the waits-for graph acyclic
+- Crash recovery
+  - The log (a.k.a **trail** or **journal**) records every action executed on the database
+  - Each log record has unique ID called *log sequence number* (LSN)
+  - Fiels in a log record:
+    | Field   | Meaning                    |
+    | ------- | -------------------------- |
+    | LSN     | ID of the record           |
+    | prevLSN | LSN of previous log record |
+    | transID | ID of the transaction      |
+    | type    | type of action recorded    |
+    | before  | value before the change    |
+    | after   | value after the change     |
+    - TODO: value of what in before/after?
+  - The state of the database is periodically recorded as a **checkpoint**
+- ARIES
+  - Is a recovery algorithm used in major DBMSs
+  - Works in three phases
+  ![TODO](../images/dbs-aries.png)
+  - Principles behind ARIES
+    - Write-Ahead Logging
+      - Before writing a change to disk, a corresponding log record miust be inserted and the log forced to stable storable
+    - Repeating history during Redo
+      - Actions before the crash are retraced to bring the database to the state it was when the system crashed
+    - Loggin changes during Undo
+      - Changes made while undoing transactions are also logged (protection from further crashes)
+### Week 9: 

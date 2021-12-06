@@ -18,5 +18,8 @@ course:
   - [ ] Exam questions (TODO)
 
 
+
+- [ ] BCNF example exercise on slide 6
+
 - [ ] Text write-up on differences between relational algebra and relational calculus
 - [ ] That one exam question even Mikey wasn't able to solve

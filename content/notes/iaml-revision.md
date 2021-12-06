@@ -8,6 +8,10 @@ course:
     - IAML
 ---
 
+- [ ] Resolve todos
+- [ ] Add how to calculate std dev, covariance, and correlation coefficient [link](https://byjus.com/jee/correlation-coefficient/)
+- [ ] Revise how to find eigenvectors and eigenvalues for a matrix
+
 - [ ] Refine lecture write-up to text
   - [ ] Add orbit cards
   - [ ] Do recommended readings to fill up details
@@ -15,6 +19,13 @@ course:
 - [ ] Go through each piazza post related to a topic
 - [ ] Go through each lab
 - [ ] Go through each tutorial
+
+Gaussian mixture models: class notes from thurs 4/11/21 -> exercise after 14min
+  - Check errata for the lecture, changes formula!
+    - The case for when it's not only in a 2d space
+    - if we have k models, p(class_k) = 1/k for random first assignment
+      - Then need to update it
+  - $|\Sigma|$ denotes the determinant of the covariance matrix -> have a Python script ready which computes the determinant for you
 
 
 ## Further Material

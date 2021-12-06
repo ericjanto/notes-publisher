@@ -9,4 +9,3 @@ template: page
 | IAML    | Introductory Applied Machine Learning |
 | ILP     | Informatics Large Practical           |
 | DBS     | Introduction to Databases             |
-| PI      | Professional Issues                   |
