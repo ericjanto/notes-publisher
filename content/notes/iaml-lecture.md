@@ -610,7 +610,7 @@ to-heading: 6
   - We keep track of the counts (how pure/unpure the subset is, like `3 yes / 1 no`)
   - We keep them at the nodes
   - These numbers are important because sometimes we want to prune the tree
-    - E.g. we stop after some node even though it's note a leaf
+    - E.g. we stop after some node even though it's not a leaf
       - Maybe because there's a missing attribute in the input
     - Can then just use counts to decide for yes or no
 - ID3 Algorithm
@@ -647,7 +647,7 @@ to-heading: 6
     - $p_{(+)}/p_{(-)}$ = $\%$ of positive / negative examples in $S$
   - Interpretation: assume item $X$ belongs to $S$
     - How many bits do we need to tell if $X$ is positive or negative
-      - Entropy actually in $[0,1]$ so better to think of this as "how many fractions of a bit do we need"
+      - Entropy range is $[0,1]$ so better to think of this as "how many fractions of a bit do we need"
     - It's weird to think of fractional bits but it basically just *quantifies the uncertainty* about whether a randomly picked item is positive or negative
     ![Example of how to calculate the entropy](../images/iaml-entropy-calc.png)
     ![Entropy plotted depending on the value of p_+: if there's 50% of positives, impurity is v high and entropy is 1. Note how the entropy plot is symmetric.](../images/iaml-entropy-plot.png)
@@ -683,15 +683,15 @@ to-heading: 6
     - Yes: can *always* classify training examples perfectly
       - We just keep splitting until each node contains 1 example
     - No: Doesn't work on new data as well
-  - Once we haev split up the data to a very fine-grained level and we have singleton subsets, we don't have confidence at all in our predictions
-    - because really, all we're saying is any data point that falls into that leaf is positive just because we haev seen 1 positive example in our training data $\rarr$ seems foolish
+  - Once we have split up the data to a very fine-grained level and we have singleton subsets, we don't have confidence at all in our predictions
+    - because really, all we're saying is any data point that falls into that leaf is positive just because we have seen 1 positive example in our training data $\rarr$ seems foolish
     ![Infograhic shows that overfitted trees will not perform well on testing data](../images/iaml-purity.png)
       - Accuracy on training data keeps increasing with tree size
       - Test data not, after while, the accuracy will decrease with increasing tree size
         - Called **overfitting**
           - Decision tree has become too tailored to the training data
             - Captures the nosie in that training data but the noise is not repeated in the test data
-      - If we want to build a good decision tree, that is one that works on predictions well too, we want to stop building it before it becomes too specific to your training data
+      - If we want to build a good decision tree, i.e. one that works on predictions well too, we want to stop building it before it becomes too specific to your training data
 - Decision tree pruning
   - If we want to build a good decision tree, that is one that works on predictions well too, we want to stop building it before it becomes too specific to your training data
     - I.e. avoid overfitting
@@ -729,8 +729,8 @@ to-heading: 6
     ![To get the corresponding DNF: Take all paths with positive leaves as conjunctions of their nodes and disjunct them](../images/iaml-tree-dnf.png)
 - Decision trees on continuous attributes
   - Decision trees can also deal with continuous-valued attributes:
-    - DT doesn'T split based on value
-    - Instead, it tries to pick a **threshold**
+    - DT doesn't split based on value
+    - Instead, it tries to pick a *threshold*
     - Will go through all possible values for threshold
       - Split on those thresholds ("take all instances where their specific `attribute_value` > threshold")
         - Will split data into two parts, one part contains all instances are lower than threshold, other part the larger instances
@@ -754,7 +754,7 @@ to-heading: 6
       - E.g. the stock price of a company tomorrow
   - Don't have classes anymore, which comes with 2 difficulties:
     1. How do you do precitions once you've sorted the data?
-    2. HOw do yo define entropy now that yuo don't have classes?
+    2. How do you define entropy now that yuo don't have classes?
   - INstead of trying to maximise the entropy, or the gain, we try to find subsets such taht each subset has *the smallest variance of whatever it is you're trying to predict*
     - More on this in a few lectures time
 - Pros and cons of decision trees
