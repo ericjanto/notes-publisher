@@ -1394,14 +1394,14 @@ to-heading: 6
     g = ∇E
     if e1 ≥ e: # this move would increase the error, so decrease step size and check again
       η = η/2
-    else: # it's a good step so cautiously increase the
+    else: # it's a good step so cautiously increase the step size
       η = 1.01 * η; w = w1; g = g1; e = e1
   return w
   ```
   - Finds the *local* minimum of $E$
 - Batch vs online learning
   - So far, we have considered functions where we sum up terms which each depend on only one training instance
-  - The gradient algorithm we considered go through all the training instances before changing the parameters
+  - The gradient algorithm we considered goes through all the training instances before changing the parameters
     - That's a huge amount of calculations
     - Surely, we can get a gradient that is "good enough" from fewer instances, e.g. a couple of thousand? Or maybe even from just one?
 - **Batch learning**
@@ -1420,8 +1420,8 @@ to-heading: 6
 - Batch and online are opposites of the spectrum, all vs one instance but could also go inbetween, e.g. $10%$ of all instances
 - Batch gradient descent algorithm
   ![TODO](../images/iaml-batch-gradient.png)
-  - Basically what we've seen before
-  - But we're emphasising that the overall error is the some of all the different instances ($\Sigma$)
+  - Exactly what we've seen before, just written differently
+  - We're emphasising that the overall error is the sum of all the different instances ($\Sigma$)
 - Online gradient descent algorithm
   ```python
   initialise w
@@ -1440,7 +1440,7 @@ to-heading: 6
   - There are other variants of online gradient descent
 - Gradient descent problems
   - Setting the step size $\eta$
-    - Have talked about this before, recall too slow / skipping minima dilemma
+    - Have talked about this before, recall the "too slow / skipping minima"-dilemma
   - Shallow valleys
     - Typical gradient descent can be fooled in several ways, which is why more sophisticated methods aree used when possible
     - One problem:
@@ -1451,7 +1451,7 @@ to-heading: 6
 
       $$\bf{d}_t=\beta*\bf{d}_{t-1} + (1-\beta)\eta\nabla E(\bf{w}_t)$$
       - The direction we're moving is some parameter $\beta$ times the direction we have moved before $\bf{d}_{t-1}$ plus $1-\beta$ times the direction the gradient tells you you should be moving into
-      - So if we set $\beta=9$ that'd mean that we pay $9$ times more attention to how we moved previously as you are to the current gradient input
+      - So if we set $\beta=9$ that'd mean that we pay $9$ times more attention to how we moved previously as to the current gradient input
       - This works because the bottom of the valley gets augmented by previous move components
     - Though now you have to set both $\eta$ and $\beta$. Can be difficult and irritating
   - Highly curved error surface
@@ -1469,23 +1469,24 @@ to-heading: 6
 
     ![TODO](../images/iaml-local-minima.png)
     - Certain nice functions, such as squared error, logistic regression likelihood are *convex*, meaning that the second derivative is always positive
-      - This implies that any local minimum is global
+      - This implies that any local minimum is also the global minimum
     - There is no great solution to this problem
       - It is a fundamental problem
       - Usually the best you can do is rerun the optimiser multiple times from different random starting points
-- Take-away: use fancy first-order methods (e.g. quasi-Newton, CG) for moderate amounts of data, stochastic gradient for large amounts of data
+- Take-away: use fancy first-order batch-learning methods (e.g. quasi-Newton, CG) for moderate amounts of data, online-learning stochastic gradient for large amounts of data
 **Regularisation**
 - Regularisation is a general approach to add a "complexity parameter" to a learning algorithm
   - Minimised complexity is usually better if the error is the same
+    - (Occam's Razor)
   - Smoothes out the solution
   - Requires that the **model** parameters are continuous
     - I.e., for regression it works, for decision trees not
-      - We have dis-continuous parameters, we are cutting
+      - For DT, we have dis-continuous parameters, we are cutting
   - If we penalise polynomials that have large values for their coefficients we will get less wiggly solutions
     ![TODO](../images/iaml-regularisation.png)
   - Adding this multiple of the size of weights $\lambda|\bf{w}|^2$ is known as *ridge regression*
   - Rather than using a discrete control parameter like $M$ (model order) we can use a continuous parameter $\lambda$
-  - Caution: don't shink the bias term!
+  - Caution: don't shrink the bias term!
     - That's the one that corresponds to the all $1$ feature
 - Regularised loss function
   ![TODO](../images/iaml-reg-loss-function.png)
@@ -1551,8 +1552,9 @@ to-heading: 6
   2. The "kernel trick"
 - SVMs are a linear classifier
   - This means it's a linear combination of parameters
-  - Like logistic regression and preceptron
-    - TODO: What's perceptron
+  - Like logistic regression and perceptron
+    - Q: What's perceptron?
+    - A: Will talk about this in the neural networks section.
 - Linear algebra to remember:
   ![TODO](../images/iaml-lin-alg.png)
 - Recall what a separating hyperplane is
@@ -1562,7 +1564,7 @@ to-heading: 6
         - Notice that for this topic we use $-1$ rather than $0$ for the negative class as it'll be convenient for the maths
   - Then, we have a hyperplane $\bf{w}^T\bf{x}+w_0=0$
     ![TODO](../images/iaml-sep-hyperplane.png)
-  - = decision boundary
+  - That hyperplane is the decision boundary
 - SVM: Intuition
   ![TODO](../images/iaml-hyperplanes-compared.png)
   - Right one is crap because the minimum distance to the closest point is smaller $\rarr$ we want to maximise it
@@ -1578,7 +1580,7 @@ to-heading: 6
       - Define $\bf{z}$ as the point on the hyperplane closest to the origin
       - $\bf{z}$ must be proportional to $\bf{w}$ because $\bf{w}$ is *normal* to the hyperplane
         - Normal = perpendicular
-      - By definition of $b$, we have the norm oof $\bf{z}$ given by
+      - By definition of $b$, we have the norm of $\bf{z}$ given by
         $$||\bf{z}||=b$$
       - So
         $$b\frac{\bf{w}}{||\bf{w}||}=\bf{z}$$
@@ -1589,20 +1591,20 @@ to-heading: 6
     - Substituting we get
       ![TODO](../images/iaml-margin-subst.png)
     - Remember $||\bf{w}||=\sqrt{\bf{w}^T\bf{w}}$
-    - Now  we have  the distance from the origin to the hyperrplane!
+    - Now  we have  the distance from the origin to the hyperplane!
     ![TODO](../images/iaml-distance-to-hyperplane.png)
     - Now we want $c$, the distance from $\bf{x}$ to the hyperplane
       - $\bf{x}$ is some random datapoint
     - It's clear that $c=|b-a|$, where $a$ is the length of the projection of $\bf{x}$ onto $\bf{w}$
-      $$a=frac{\bf{w}^T\bf{x}}{||\bf{w}||}$$
+      $$a=\frac{\bf{w}^T\bf{x}}{||\bf{w}||}$$
     - The perpendicular distance from a point $\bf{x}$ to the hyperplane $\bf{w}^T\bf{x}+w_0=0$ is
       ![TODO](../images/iaml-perpendicular-dist-hyperplane.png)
     - The **margin** is the distance from the **closest** training point to the hyperplane:
-      ![TODO](../images/iaml-margin-formula.png,)
+      ![TODO](../images/iaml-margin-formula.png)
   - Removing the scale
     - Note that $\bf{w},w_0$ and $(c\bf{w},cw_0)$ define the same hyperplane
       - Because the hyperplane is defined by $\bf{w}$ which is a vector that is perpendicular to the hyperplane
-      - It doesn't matter, how long that vecotr is, the hyperplane will be the same
+      - It doesn't matter, how long that vector is, the hyperplane will be the same
       - The scale is arbitrary
     - This is because we predict class $y=1$ if $\bf{w}^T\bf{x}+w_0≥0$
       - That's the same thing as saying $c\bf{w}^T\bf{x}+cw_0≥0$
@@ -1629,7 +1631,7 @@ to-heading: 6
       ![TODO](../images/iaml-margin-opt-4.png)
       - This works because if $y_i=-1$ then it turns the inequality sign around
     - Finially, note that maximising $\frac{1}{||\bf{w}||}$ is the same thing as minimising $||\bf{w}||^2$
-  - The SVM optiisation problem
+  - The SVM optimisation problem
     - So the SVM weights are determined by solving the optimisation problem:
       ![TODO](../images/iaml-svm-opt.png)
     - Solving this will require maths that we don't have in this course, but will go through solution
@@ -1666,7 +1668,7 @@ to-heading: 6
     - Why?
     - Solution: don't require that we classify all points correctly $\rarr$ give **slack**
       - Allow the algorithm to choose to ignore some of the points
-    - This is obviously dangerrous (algorithm could just ignore all of them) so we need to give a penalty for doing so
+    - This is obviously dangerous (algorithm could just ignore all of them) so we need to give a penalty for doing so
     - Slack
       ![TODO](../images/iaml-svm-penalty.png)
         - There is an O that is on the wrong side of the decision boundary
@@ -1680,7 +1682,7 @@ to-heading: 6
         - subject to the constraints:
         
         ![TODO](../images/iaml-svm-new-opt-constraints.png)
-          - We essentially say that we can adjust the constraint be the amoung we move points
+          - We essentially say that we can adjust the constraint by the amount we move points
       - Usually set $k=1$
       - $C$ is a trade-off parameter
         - It says "how important do we consider these slcak vairables compared to the norm of the weight vector
