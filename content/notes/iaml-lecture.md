@@ -755,7 +755,7 @@ to-heading: 6
   - Don't have classes anymore, which comes with 2 difficulties:
     1. How do you do precitions once you've sorted the data?
     2. How do you define entropy now that yuo don't have classes?
-  - INstead of trying to maximise the entropy, or the gain, we try to find subsets such taht each subset has *the smallest variance of whatever it is you're trying to predict*
+  - Instead of trying to maximise the entropy, or the gain, we try to find subsets that each subset has *the smallest variance of whatever it is you're trying to predict*
     - More on this in a few lectures time
 - Pros and cons of decision trees
   | Pro                                                                              | Con                                                                                                            |
@@ -768,12 +768,12 @@ to-heading: 6
 
 - Random decision forest
   - This is a generalisation algorithm of ID3
-  - Basic idea: instead of growing on DT on our data set, we're going to grow $k$ different DTs
+  - Basic idea: instead of growing one DT on our data set, we're going to grow $k$ different DTs
     - Randomise input to get different trees
     - Take set of examples
     - Pick random subset $S_r$
     - Use $S_k$ to build full decision tree (whitout pruning)
-      - ONly difference: when splitting, don't use all attributes but a subset
+      - Only difference: when splitting, don't use all attributes but a subset
     - Repeat for $r=1...k$
   - Given new data point $X$:
     - Classify $X$ using each of the trees $T_1...T_k$
@@ -782,8 +782,8 @@ to-heading: 6
 - Recall the what the term *training data* refers to: $\{x_i,y_i\}$
   - We have data points $x_i$ and their true label $y_i$
     - A specific tuple of $x_i$ and $y_i$ is called an example, e.g. $\{x_1,y_1\}$
-      - Q: Is it actually the tuple or just x_i that is the example?
-      - A: The tuple. It's an example of what datapoint $x_i$ is classified as ($y_i$)
+      - Q: Is it actually the tuple or just $x_i$ that is the example?
+      - A: The tuple. It's an example of what datapoint $x_i$ is classified as ($y_i$).
   - We use these examples to train our predictor
 - Future data: $\{x_i,?\}$
   - We have examples that our classifier has never seen before
@@ -797,12 +797,12 @@ to-heading: 6
     - Predictor is too complex
       - Too flexible, overfits to small data branches
       - Fits "noise" in the training data
-      - Predicts patterns that only eist in the training data
+      - Predicts patterns that only exist in the training data
     - Predictor $F$ overfits data if
       - We can find another predictor $F'$ which makes more mistakes on training data: $E_{train}(F') > E_{train}(F)$
         - $E_{train}$ is the error rate on the training set
       - But fewer mistakes on unseen future data: $E_{gen}(F') < E_{gen}(F)$
-        - $E_{gen}$ is the error rate on the geneeralised, future data
+        - $E_{gen}$ is the error rate on the generalised, future data
   - Underfitting
     - Predictor is too simplistic
       - It's not flexible enough, too rigid
@@ -849,11 +849,11 @@ to-heading: 6
     - Predict values for testing set, compute testing error
     - This gives us an *estimate* of the true generalisation error
       - Only meaningful if the testing set is an *unbiased* sample from $p(x,y)$:
-        - $lim_{n\rarr\infty}=E_{test}=E_{gen}$, by the law of large numbers
+        - $lim_{n\rarr\infty}E_{test}=E_{gen}$, by the law of large numbers
         > Law of large numbers: the more $n$ in the testing set, the closer is $E_{test}$ to $E_{gen}$
         - That "if unbiased" means "if the testing set is representative of the future data input"
 - Confidence interval for future error  
-  - We don't knoe exactly *how close* the $E_{test}$ will be to $E_{gen}$
+  - We don't know exactly *how close* the $E_{test}$ will be to $E_{gen}$
     - Since it depends on the testing set size $n$
   - So we create a *confidence interval* such that $\%$ of future test sets fall within that interval
     - E.g. $p=95$
@@ -871,7 +871,7 @@ to-heading: 6
 - Future error rate
   - That's just the number of misclassified instances divided by the sample size
     $$E_{future}=\frac{|misclassified|}{n}$$
-  - E_{future} follows a Gaussian distribution, so:
+  - $E_{future}$ follows a Gaussian distribution, so:
     - $\mu=E$
     - $\sigma^2=\frac{E(1-E)}{n}$
   - The $p\%$ confidence interval for the future error is:
@@ -898,7 +898,7 @@ to-heading: 6
       - So we want a large testing set because large $n_{test}\rarr$ tight confidence interval
     - On the other hand, we want to learn the classifier as accurately as possible
       - Large training set: large $n_{train}\rarr$ better estimates
-    - Unfortunately, we only have so many data isntances, training and testing data cannot overlap:
+    - Unfortunately, we only have so many data instances, training and testing data cannot overlap:
       $$n_{train}+n_{test}=n_{total}$$
         - $n_{total}$ is a constant, a fixed number, a exhaustible resource
   - Solution: cross-validation
@@ -913,13 +913,13 @@ to-heading: 6
         - Only once for training and once for testing
       - We effectively use every point both for testing and training but **never at the same time**
         - This reduces the chance of getting a biased testing set
-  - k-fold crodd-validation
-    - In general, we don't split the data into just 2 sets bu in $k$ sets
+  - k-fold cross-validation
+    - In general, we don't split the data into just 2 sets but in $k$ sets
       - $k=5$ or $k=10$ are conventional values for $k$
       - E.g. $5$-fold cross-validation would look like this:
 
         ![Visualisation of how 5-fold cross-validation works](../images/iaml-five-fold-validation.png)
-      - To get estimated error, avergae the results over $5$ folds
+      - To get estimated error, average the results over $5$ folds
       - To build the final classifier we're going to use in practice, take $100\%$ of the data
         - Cannot compute estimated error for that classifier as there's no data left for testing
           - But typically, it would not be greater than the previously computed average error of the k-fold cross-validation
@@ -928,10 +928,10 @@ to-heading: 6
       - n = total number of instances
       - Subsets which are of size $1$ (just one instance each)
     - This is cross-validation at its limit
-    | Pros                                                                | Cons                                                   |
-    | ------------------------------------------------------------------- | ------------------------------------------------------ |
-    | Best possible classifier learned since we use n-1 training examples | High computational cost: re-learn everything $n$ times |
-    |                                                                     | Classes are not balanced in training / test sets       |
+    | Pros                                                                  | Cons                                                   |
+    | --------------------------------------------------------------------- | ------------------------------------------------------ |
+    | Best possible classifier learned since we use $n-1$ training examples | High computational cost: re-learn everything $n$ times |
+    |                                                                       | Classes are not balanced in training / test sets       |
 - Stratified sampling
   - Problems with leave-one-out:
     - Training / testing sets have classes in different proportions
@@ -946,7 +946,7 @@ to-heading: 6
     2. Assemble ith part from all classes to make the ith fold
     ```
 - Evaluation measures
-  - There are lots ways for deciding if
+  - There are lots ways for deciding if ... TODO: transfer rest from written notes
 ## Week 4: Linear Regression
 - The Regression Problem
   - Compare it to the classification problem:
@@ -955,8 +955,8 @@ to-heading: 6
     | -------------------------------- | ---------------------------------- |
     | Target of prediction is discrete | Target of prediction is continuous |
 
-  - Training data: Set $\mathcal{D}$ of pairs ($\bf{x}_1,y_i$) for $i=1,...,n$
-    - $\bf{x_i}$ is a vector
+  - Training data: Set $\mathcal{D}$ of pairs ($\bf{x}_i,\bf{y}_i$) for $i=1,...,n$
+    - $\bf{x}_i$ is a vector
     - $y_i$ is the expected output of your prediction
     - Where $x_1\in\mathbb{R}^D$ and $y_i\in\mathbb{R}$
       - First expression just means that all elements from the vector are drawn from the real numbers ($D$ is the dimension of the vector, number of elements)
@@ -964,7 +964,7 @@ to-heading: 6
 - The Linear Model
   - The linear model is shown below, the equation on the top:
   
-  ![Linear regressoin model](../images/iaml-linear-model.png)
+  ![Linear regression model](../images/iaml-linear-model.png)
 
   - Equation explained
     - $\bf{x}$ is the input data
@@ -1007,14 +1007,14 @@ to-heading: 6
     - Instead, we use a *loss function*
       - Also called *error* function
     - Loss function $O(\bf{w})$
-      - It minimise our loss w.r.t. $\bf{w}$
+      - It minimises our loss w.r.t. $\bf{w}$
       - At its minimum, $\hat{\bf{y}}$ looks like $\bf{y}$
         - That is, want our prediction $\hat{\bf{y}}$ to look like the training expected output
       - A common choice for the loss function is the *squared error*:
 
         ![TODO](../images/iaml-loss-function-squared-error.png)
 
-      - In the picture below, it's the jum of squared length of black sticks
+      - In the picture below, it's the sum of squared length of black sticks
         - Each black stick is called a *residual*
           - i.e. each $$y_i-\bf{w}^T\bf{x}_i$$
         
@@ -1034,7 +1034,7 @@ to-heading: 6
         ![TODO](../images/iaml-minimising-loss-function.png)
         - It's called the pseudo-inverse because it's not an actual inverse but it acts like one
           - In particular because it works like an inverse
-        - If there are no features, $\phi$ is just going to be a column vector of $1$s
+        - If there are no features, $\bf{\phi}$ is just going to be a column vector of $1$s
   - Probabilistic interpretation of $O(\bf{w})$
     - Assume that $y=\bf{w}^T\bf{x}+\epsilon$
       - Where $\epsilon~N(0,\sigma^2))$
@@ -1104,14 +1104,14 @@ to-heading: 6
   - The general form of it:
     - Set $\phi_i(\bf{x})=exp(-\frac{1}{2}|\bf{x}-\bf{c}_i|^2/\alpha^2)$
       - Has two parameters
-        - $\alpha$: the same for every one of te RBF
+        - $\alpha$: the same for every one of the RBF
         - $\bf{c_i}$: the centre
     - The RBF is taking the distance from the data points $\bf{x}$ to the centre $\bf{c}_i$ and squares it, and then taking the exponential of it.
       - Can think of $\alpha$ as a width
     - Need to pick a certain number of those centre points in prior
       - How to do that is a matter of knowledge about the data, there are no general heuristics
       - Often, choosing a subset of the datapoints as centres turns out to be quite effective $\rarr$ but there are no theoretical results about that, just a practical insight!
-  - After transform, can use the pseudo-inverse to find our model $\hat\bf{w}$
+  - After transform, can use the pseudo-inverse to find our model $\hat{\bf{w}}$
   - In general, original data points that are close to the centre will have high values in the RBF
   - RBF disadvantages/ cons (TODO: write this out)
 
@@ -1122,7 +1122,7 @@ to-heading: 6
     - Just means that in linear classifiers, the decision boundary is a line
   - For each class, there is a *region* of feature space in which the classifier selects one class over the other
   - The decision boundary is the boundary of this region
-    - I.e. where that two clsases are "connected"
+    - I.e. where that two classes are "connected"
 
 ![TODO](../images/iaml-two-class-classifier.png)
 - In a two-class linear classifier, we learn a function to discriminate the two classes:
@@ -1148,7 +1148,7 @@ to-heading: 6
       - So we add a dimension with $1$
     - $\bf{w}=(w_0,w_1,...,w_d)$
       - Added $w_0$
-  - We will want a linear, probabilisitic model:
+  - We will want a linear, probabilistic model:
 
     $$P(y=1|\bf{x})=f(\bf{w}^T\bf{x})$$
   - $f$ is a (to-be-defined) function which squashes $\bf{w}^T\bf{x}$ to be between $[0,1]$
@@ -1172,14 +1172,14 @@ to-heading: 6
       - $z$ is the input of the squashing function $\sigma$
       - Hence, the decision boundary is given by $\bf{w}^T\bf{x}=0$
         - This makes sense! $0.5$ is where we can't decide whether an input belongs to class $A$ or $B$, it's the "middle" of probabilities
-    - Decisionn boundary is a $M-1$ hyperplane for a $M$ dimensional problem
+    - Decision boundary is a $M-1$ hyperplane for a $M$ dimensional problem
   - Let's temporarily define $\tilde{\bf{w}}=(w_1,w_2,...,w_d)$
     - I.e. exclude the bias $w_0$
   - The bias parameter $w_0$ shifts the position of the hyperplane (decision boundary) but does not alter the angle  / orientation in space (since it's not multiplied with any input)
   - The direction of the vector $\tilde{\bf{w}}$ affects the angle of the hyperplane
     - The hyperplane is perpendicular to $\tilde{\bf{w}}$
   - The magnitude of the vector $\tilde{\bf{w}}$ affects how certain the classifications are
-    - Magnitude of $\tilde{\bf{w}} = number of elements
+    - Magnitude of $\tilde{\bf{w}}$ = number of elements
   - For small $\tilde{\bf{w}}$ most of the probabilities within the region of the decision boundary will be near to $0.5$
     - Corresponds to steepening the curve of $\sigma$
   - For large $\tilde{\bf{w}}$ probabilities in the same region will be close to $1$ or $0$
@@ -1207,7 +1207,8 @@ to-heading: 6
 
     $$\frac{\partial L}{\partial w_j}=\Sigma^n_{i=1}(y_i-\sigma(\bf{w}^T\bf{x}_i))x_{ij}$$
 
-    - TODO: what's L?
+    - Q: What's L?
+    - A: The log likelihood from ealier!
   - Unfortunately, we cannot maximise $L(\bf{w})$ explicitly as we did for linear regression
     - Need to use a numerical optimisation method, we'll see it later.
   - General structure of regression for learning algorithms:
@@ -1232,7 +1233,7 @@ to-heading: 6
   - XOR becomes linearly separable if we apply a non-linear transformation $\phi(\bf{x})$ of the input – but what is one?
     - TODO: find such non-linear transformation
 - Generative and Discriminative Models
-  - Recall that with Naive Bayes, we model how a class "generated" the feature vector $p(\bf{w}|y)$
+  - Recall that with Naïve Bayes, we model how a class "generated" the feature vector $p(\bf{w}|y)$
     - Then we could classify using
       
       $$p(y|\bf{x})\propto p(\bf{x}|y)p(y)$$
@@ -1242,7 +1243,7 @@ to-heading: 6
     - We model the output given the input directly
     - This is a *discriminative approach*
   - Discriminative advantage: Why spend effort modelling $p(\bf{x})$? Seems a waste, we're always  given it as input
-  - Generative advantage: Can be good with missing data (remember how Naive Bayes handles missing data (TODO))
+  - Generative advantage: Can be good with missing data (remember how Naïve Bayes handles missing data by being able to just ignore such attributes)
     - Also good for detecting outliers
     - Also, sometimes we really do want to generate the input
       - TODO: when?
@@ -1252,7 +1253,7 @@ to-heading: 6
     - TODO: explain this slide
 - Multiclass Classification
   - Create a different weight vector $\bf{w}_k$ for each class, to classify into $k$ and not-$k$
-  - Then use the "softmax" function
+  - Then use the *softmax* function
 
     ![TODO](../images/iaml-softmax.png)
 
@@ -1263,11 +1264,11 @@ to-heading: 6
   - Logistic regression is algorithmically more complicated than linear regression
   - Why don't we just use linear regression with 0/1 targets?
     - Seems like a reasonable idea, linear regression predicts numeric outputs so if we have a data set with 0/1 targets and inputs, can just predict 0 and 1s as numeric outputs
-      - -> not good idea though:
+      - $\rarr$ not good idea though:
 
-    ![Magenta: logistic regression; green: least-squares regression](../images/iaml-least-squares.png)
+    ![Green logistic regression; magenta: least-squares linear regression](../images/iaml-least-squares.png)
 
-    - If we have data like this, we can see that the group of outliers drags the linear regression noticable, whereas on the green line (logistic regression) it has very little effect
+    - If we have data like this, we can see that the group of outliers noticably drags the linear regression, whereas on the green line (logistic regression) it has very little effect
 ## Week 5: Optimisation and Regularisation
 **Optimisation**
 - We're talking about optimisation in ML
@@ -1301,13 +1302,13 @@ to-heading: 6
 - Role of smoothness
   - If $E$ is completely unconstrained, minimisation is impossible
     - Q: What does unconstrained mean?
-    - A: Basically, if the plot of the error is not a nice curve
+    - A: Basically, if the plot of the error is not a nice curve.
 
   ![TODO](../images/iaml-smoothness.png)
 
   - There is no NP-complete algorithm that will find the minimum of the error
   - All we could do is search through all possible values $\bf{w}$
-  - However, key idea: if $E$ is continuous, then measuring $E(\bf{w}) gives information about $E$ at many nearby values$
+  - However, key idea: if $E$ is continuous, then measuring $E(\bf{w})$ gives information about $E$ at many nearby values
 - Role of derivatives
   - Idea:
     - Assume we are at some point in the error space
@@ -1326,16 +1327,16 @@ to-heading: 6
       - Sometimes we use the alternate notation $\frac{\partial E}{\partial \bf{w}}$
 
     - It points in the direction of the steepest error descent in the weight space
-    - Three crucial questiosn:
+    - Three crucial questions:
       1. How do we compute the gradient $\nabla E$ efficiently?
       2. Once we have the gradient, how do we use it to minimise the error?
       3. Where will we end up in weight space?
  - Numerical optimisation
-  - Numerical optimisation algorithms try to solve the general problem
+   - Numerical optimisation algorithms try to solve the general problem
 
     ![TODO](../images/iaml-numerical-optimisation.png)
       - Tries to minimise the error function w.r.t $\bf{w}$
-  - Most commonly, a numerical optimisation procedure takes two inputs:
+   - Most commonly, a numerical optimisation procedure takes two inputs:
     1. A procedure that computes $E(\bf{w})$
     2. A procedure that computes the partial derivative $\frac{\partial E}{\partial w_j}$
  - How numerical optimisation algorithms work
@@ -1432,7 +1433,7 @@ to-heading: 6
   ```
   - Key point: if we're going to move after each instance, how do we pick the instance?
     - This one uses a uniform random integer in the length of the training set
-      - At each step, we pick one isntance at random and then we make a move
+      - At each step, we pick one instance at random and then we make a move
       - (Means we could pick the same instance in a row which might not be optimal)
   - This version of the online gradient descent method is called *stochastic gradient ascent*
     - Because we have picked the training instance randomly
@@ -2071,7 +2072,7 @@ the values which guide our use of them
     - Need to handle missing data: fill-in or create a special distance
     - Sensitive to class-outliers (mislabeled training instances)
     - Sensitive to lots of errelevant attributes (they affect the distance)
-      - Similar to Naive Bayes, DTs are not as prone to it
+      - Similar to Naïve Bayes, DTs are not as prone to it
     - Computationally expensive
       - Spcace: need to store all training examples
       - Time: need to compute distance to all examples: $O(nd)$
@@ -2380,7 +2381,7 @@ the values which guide our use of them
       - K-means
     - Soft clustering: clusters may overlap
       - Strength of association between clusters and instances
-- Probabilisically-grounded way of doing soft clustering
+- Probabilistically-grounded way of doing soft clustering
   - Means we're using probabilistic models
   - Each cluster corresponds to a probability distribution in our d-dimensional space
   - And the points are viewed as samples from that probabilitiy distribution

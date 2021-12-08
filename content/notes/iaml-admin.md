@@ -30,10 +30,10 @@ All values below are in minutes.
 
 ## Revision Week
 
-|         | Quiz | Tutorial | Past Papers | Class Notes | Class Slides | Total |
-| ------- | ---- | -------- | ----------- | ----------- | ------------ | ----- |
-| Monday  | 25   | 80       | 90          | 85          | 35           | 315   |
-| Tuesday |      |          |             |             |              |       |
+|         | Read notes | Quiz | Tutorial | Past Papers | Class Slides | External Materials | Total |
+| ------- | ---------- | ---- | -------- | ----------- | ------------ | ------------------ | ----- |
+| Monday  | 10         | 25   | 70       | 90          | 120          | 0                  | 315   |
+| Tuesday | 45         | 70   | 120      | 140         | 15           | 10                 | 425   |
 
 
 
