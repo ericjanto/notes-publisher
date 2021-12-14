@@ -1685,20 +1685,20 @@ to-heading: 6
           - We essentially say that we can adjust the constraint by the amount we move points
       - Usually set $k=1$
       - $C$ is a trade-off parameter
-        - It says "how important do we consider these slcak vairables compared to the norm of the weight vector
+        - It says "how important do we consider these slack vairables compared to the norm of the weight vector
       - Large $C$ gives a large penalty to errors
       - Solution has some form, but support vectors also include all where $\xi_i\neq 0$
 - Regularisation
   - Recall ridge regression
   - Our max margin + slack optimisation problem is to minimise
     ![TODO](../images/iaml-svm-new-opt.png)
-  - This looks even more like rideg regression than the non-slack problem:
+  - This looks even more like ridge regression than the non-slack problem:
     - $C(\Sigma_{i=1}^n\xi_i)^k$ measures how well we fit the data
-    - $||\bf{w}||^2$ penalises weight vectors with a lagrge norm
+    - $||\bf{w}||^2$ penalises weight vectors with a large norm
   - So $C$ can be viewed as a regularisation parameter
     - Like $\lambda$ in ridge regression or regularised logistic regression
   - We need to make this tradeoff if data set not linearly separable
-  - You're allowedd to make this tradeoff even when the data set is separable!
+  - You're allowed to make this tradeoff even when the data set is separable!
     - Why you might want slack in a separable data set
       ![TODO](../images/iaml-separable-slack.png)
 - Optimmisation problems: comparing the SVM and logistic regression
@@ -1713,14 +1713,14 @@ to-heading: 6
     - Using basis expansion
     - But in an SVM, the basis expansion is implemented in a very special  way, using something called a *kernel*
     - The reason for this is that kernels can be faster to compute with if the expanded feature space is very  high dimensional (even infinite!)
-    - This is aa fairly advanced topic mathematically, so we will just go through a high-level version
+    - This is a fairly advanced topic mathematically, so we will just go through a high-level version
   - Kernel
     - A kernel is in some sense an alternate "API" for specifying to the classifier what your expanded feature space is
     - Up to now, we have always given the classifier a new set of training vectors $\phi(\bf{x}_i)$ for all $i$
       - E.g. just as a list of numbers
       ![TODO](../images/iaml-r.png)
       - We transform from one dimension $d$ to another dimension $D$
-      - If $D$ is large, this will be expenive; if $D$ is infinite, this will be impossible
+      - If $D$ is large, this will be expensive; if $D$ is infinite, this will be impossible
         - D is the dimension
   - Recall what we do when we expand into a new feature-space:
     - Transform $\bf(x)$ to $\phi(\bf{x})$
@@ -1739,7 +1739,7 @@ to-heading: 6
   - Using a linear kernel $$k(\bf{x}_i,\bf{x}_j) = \bf{x}^T\bf{x}_i$$ we can rewrite this as:
     ![TODO](../images/iaml-vector-distance-rewrite.png)
   - Any kernel gives you an associated distance measure this way
-    - Think of a kernal as an indirect way of specifyying distances
+    - Think of a kernel as an indirect way of specifying distances
     - In our new feature space you can think of the kernel as telling the classifier "I've got two points, tell me how far apart they are in the transformed feature space" and the kernel gives a measure of that
     - Works on infinite feature spaces because we never really deal with the infinite number if we're using kernels, they allow us to only focus on a very specialised part of it
 - Kernelised max margin
@@ -1765,7 +1765,7 @@ to-heading: 6
     - I.e. it can be shown that no $\phi$ that maps into a finite-dimensional space will give you this kernel
     - We can *never* calculate $\phi(\bf{x})$ but the algorithm only needs us to calculate $k$ for different pairs of points
 - SVMs in practice
-  - There are theoretical results but we don't ocver them
+  - There are theoretical results but we don't cover them
   - However, in practice, cross-validation methods are commonly used
   - Example applications
     - Digit recognition
@@ -1788,7 +1788,7 @@ to-heading: 6
     - Good empirical results on many  problems
     - Appears to avoid overfitting in high dimensional spaces
 ## Week 6: Ethics and Machine Learning
-- ML and AI are increasinnngly in use for problems that affect people
+- ML and AI are increasingly in use for problems that affect people
   - Applications in healthcare, law enforcement, ..., which may have direct effects on people's lives
 - Going to talk about:
   1. Ethical benefits and harms linked to data practices
@@ -1903,7 +1903,7 @@ the values which guide our use of them
 - Nearest-neighbor classification
   - Use the intuition to classify a new point $x$
     - Find the most similar training example $x'$
-    - Predict its calss $y'$
+    - Predict its class $y'$
   - Voronoi tessellation
     ![TODO](../images/iaml-knn-voronoi.png)
     - We *partition* the entire space into regions
@@ -2148,7 +2148,7 @@ the values which guide our use of them
       - If data is not sparse, the inverted lists are just going to be as long as the number of elements in examples so would not be any benefit using inverted lists
 ## Week 7: K-Means
 - Clustering
-  - About discorver the underlying structure of the data
+  - About discovering the underlying structure of the data
     - Unsupervised task, not predicting anything specific
     - We're trying to understand the data
   - What sub-populations exist in the data? Can answer one family of questions which have to do with subpopulations of the data
@@ -2424,7 +2424,7 @@ the values which guide our use of them
     - Need to know source to estimate $(\mu_a,\sigma_a^2)$ and $(\mu_b,\sigma_b^2)$
   - EM algorithm
     - Guesses both classes and model parameters iteratively
-    - Start with two randomly places Gaussians $(\mu_a,\sigma_a^2)$, $(\mu_b,\sigma_b^2)$
+    - Start with two randomly placed Gaussians $(\mu_a,\sigma_a^2)$, $(\mu_b,\sigma_b^2)$
       - Random points in space
       - A and b are just the two classes, yellow and blue
     - **E-step**: for each point: $P(b|x_i)=$ does it look like it came from $b$?
@@ -2669,7 +2669,7 @@ the values which guide our use of them
     - Principal components = eigenvectors with largest eigenvalues
 - Finding principal components
   - Finding eigenvectors
-  - [TODO](../images/iaml-finding-pc.png)
+  - ![TODO](../images/iaml-finding-pc.png)
 - Projecting to new dimensions
   - $\bf{e_1}...\bf{e_m}$ are new dimension vectors
   - Have instance $\bf{x}=\{x_1...x_d\}$ (original coordinates)
