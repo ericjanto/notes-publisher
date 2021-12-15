@@ -464,7 +464,7 @@ to-heading: 6
 ## Week 2: Relational Algebra
 
 - SQL
-  - Base on two languages: relational calculus and relational algebra
+  - Based on two languages: relational calculus and relational algebra
     - The latter is a theoretical language
 - Data model refined
   - A *relation* is a set of *records* over the same *set* of attribute names
@@ -2583,8 +2583,10 @@ CAST( term AS <type> )
     - There is an edge from $T_i$ to $T_j$ (for $T_i\neq T_j$ if an action of $T_i$ **precedes** and **conflicts** with one of $T_j$'s actions
     > A schedule is *conflict serialisable* if and only if its precedence graph is acyclic
       - TODO: acyclic?
+      - -> means that there are no cycles within the graph
   - An equivalent serial schedule is given by any **topological sort** over the precedence graph
     - TODO: topological sort?
+      - Means getting all the total orders that are consistent with the underlying partial orders prescribed by the precedence graph
 - Precedence graph: example
   ![TODO](../images/dbs-precedence.png)
 - Schedules with aborted transaction (1)
@@ -2639,7 +2641,7 @@ CAST( term AS <type> )
 - 2PL and aborted transactions
   ![TODO](../images/dbs-2pl-abort.png)
   - $T_1$ and $T_2$ follow 2PL
-  - BUt $T_1$ cannot be undone
+  - BUt $T_2$ cannot be undone since it has been committed already
   - The schedule is **unrecoverable**
 - Strict 2PL
   1. Before reading/writing a data item a transaction must acquire a shared/exclusive lock on it
@@ -2669,7 +2671,7 @@ CAST( term AS <type> )
     - Each cycle represents a deadlock
   - Recovering from deadlocks
     - Choose a minimal set of transactions such that rolling them back will make the waits-for graph acyclic
-- Crash recovery
+- Crash recovery (**non-examinable**)
   - The log (a.k.a **trail** or **journal**) records every action executed on the database
   - Each log record has unique ID called *log sequence number* (LSN)
   - Fiels in a log record:
@@ -2683,7 +2685,7 @@ CAST( term AS <type> )
     | after   | value after the change     |
     - TODO: value of what in before/after?
   - The state of the database is periodically recorded as a **checkpoint**
-- ARIES
+- ARIES (**non-examinable**)
   - Is a recovery algorithm used in major DBMSs
   - Works in three phases
   ![TODO](../images/dbs-aries.png)
@@ -2694,4 +2696,77 @@ CAST( term AS <type> )
       - Actions before the crash are retraced to bring the database to the state it was when the system crashed
     - Loggin changes during Undo
       - Changes made while undoing transactions are also logged (protection from further crashes)
-### Week 9: 
+## Week 9: PL / SQL
+- Using SQL from applications
+  - Embedded SQL is the use of SQL commands within a *host language* program
+  - All major programming languages provide APIs and drivers to
+    - Establish a *connection* with a database
+    - Execute SQL commands/transactions
+    - Convert SQL data types to appropriate ones
+  - Simple rule: if you know SQL and the host programming language then you know embedded SQL
+- Cursors
+  - They allow a programming language to *operate on collections of rows*
+  - Cursors are defined in the SQL standard
+  - Cursor declaration:
+  ```sql
+  DECLARE cursorname CURSOR FOR query
+  ```
+  - A cursor is essentially a *pointer* to a row in a table
+  ```
+  OPEN  : position the cursor just before the first row
+  FETCH : retrieve the next row
+  CLOSE : dispose of the cursor
+  ```
+- Transactions
+  - For a psycopg2 connection (but very similar for other languages):
+    - A *transaction* is started before executing the first command: if `commit()` is not called, changes will be lost
+    - `rollback()` reverts to the start of any pending transaction
+    - Closing without committing causes an *implicit rollback*
+- Dynamic SQL
+  - Statements where some values are known only at runtime
+    - E.g. because they are provided by the user
+  - SQL injection
+    - User input can contain malicious SQL statements
+    - To avoid these from harming:
+      - Set appropriate permissions on the database
+      - Use *read-only* transactions for queries
+      - Always *validate* user input within the application
+## Week 10: The NULL Value
+- `NULL`: all-purpose marker to represent incomplete information
+- Main source of problems and inconsistencies
+- What does `NULL` mean?
+  - Depending on the context:
+    - *Missing value*: there is a value, but it is currently *unknown*
+    - *Non-applicable*: there is no value (*undefined*)
+  - But it also behaves as:
+    - *Constant*: like any other value
+    - *Unknown*: a truth-value in addition to `True` and `False`
+- Meta-incompleteness
+  - We never really know what `NULL` means because the meaning is ultimately defined by the applicationn
+  - But we must know how `NULL` *behaves* according to the Standard and this behaviour depends on the context in which it is used
+- Missing value vs Non-applicable
+  ![TODO](../images/dbs-null.png)
+  - There is no way of knowing whether a `NULL` here means that
+    - There is a currently unknown value for phone (*missing value*), or
+    - There is no value for phone (*non-applicable value*)
+- `NULL` and schema design
+  - ...
+- `NULL` and constraints
+  - Nulls are not allowed in primary keys
+  - Nulls seem to behave as distinct missing values in `UNIQUE`
+- `NULL` and arithmetic operations
+  - Every arithmetic operation that involves a `NULL` results in NULL`
+  - Observe that `SELECT NULL/0` also returns `NULL` instead of throwing a `DIVISION BY ZERO` error!
+  - Here, `NULL` is treated as an *undefined* value
+- `NULL` and aggregation
+  - Aggregate functions ignore nulls
+  - Except for `COUNT(*)`
+  - Aggregation (except `COUNT`) on an empty bag results in `NULL`
+- `NULL` and set operations
+  - `NULL` is treated like any other value
+- `NULL` in selection conditions
+  - See slide 9, `NULL` makes all comparisons evaluate to false
+  ![TODO](../images/dbs-null-selection.png)
+- `NULL` and comparisons
+  - `SELECT 1=NULL OR TRUE AS result;` $\rarr$ results in a row of `t`(for true) since `NULL` is treated as a truth-value
+- Inner and outer join: slide 12ff
