@@ -28,7 +28,7 @@ All values below are in minutes.
 |           | Read notes | Exercises | Past Papers | Lecture Watch | Total |
 | --------- | ---------- | --------- | ----------- | ------------- | ----- |
 | Tuesday   | 0          | 0         | 0           | 210           | 210   |
-| Wednesday | 0          | 0         | 0           | 45            | 45    |
+| Wednesday | 0          | 180       | 0           | 45            | 225   |
 | Thursday  | 0          | 0         | 0           | 0             | 0     |
 | Friday    | 0          | 0         | 0           | 0             | 0     |
 | Saturday  | 0          | 0         | 0           | 0             | 0     |

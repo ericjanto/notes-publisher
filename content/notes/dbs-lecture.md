@@ -466,7 +466,7 @@ to-heading: 6
 - SQL
   - Based on two languages: relational calculus and relational algebra
     - The latter is a theoretical language
-- Data model refined
+- Data model for RA
   - A *relation* is a set of *records* over the same *set* of attribute names
   - A *record* is a *total function* from attribute names to values
     - Total means that the function is defined for all possible input values
@@ -647,7 +647,7 @@ to-heading: 6
     - $\cap$ can be expressed in terms of difference:
 
       $$A\cap B\equiv A-(A-B)$$
-      - This makes sense since we take all the elements which are in B$ but not in $A$ ($A-B$) and remove them from $A$
+      - This makes sense since we take all the elements which are in $B$ but not in $A$ ($A-B$) and remove them from $A$
   - Other derived operations
 
     ![Derived relational algebra operations. Only syntactic sugar](../images/dbs-derived-operations.png)
@@ -682,7 +682,7 @@ to-heading: 6
 ## Week 3: Propositional Logic
 
 - Logic
-  - Logics are formal languages fro
+  - Logics are formal languages for
     - Representing *what we know* about the world
     - Reasoning about this knowledge (draw conclusions from it)
   - Logics consist of two components:
@@ -1149,7 +1149,7 @@ to-heading: 6
         - $A\mapsto x_A\equiv\eta(A)=x_A$
   - Renaming
     - $\rho_{old\rarr new}(E)$
-      - Recall: $E$ is our RAexpression
+      - Recall: $E$ is our RA expression
       1. Translate $E$ to FOL formula $\varphi$
       2. If there is no mapping for $new$ in $\eta$, add $\{new\mapsto x_{new}\}$
       3. Replace every occurrence of $\eta(new)$ in $\varphi$ with a *fresh* variable
@@ -1835,7 +1835,7 @@ CAST( term AS <type> )
 ## Week 6: Database Constraints
 - Integrity constraints
   - Databases are often required to satisfy some integrity constraints
-  - Such constraints determin what tuples can be stored in the database
+  - Such constraints determine what tuples can be stored in the database
   - Instances that satisfy the constraints are called *legal*
   - Common constraints: *keys* and *foreign keys*
     - These are special cases of more general constraints
