@@ -1,3 +1,9 @@
+## Notes publisher
+This project implemented a simple website publisher for Markdown notes. The aim was to take my University notes and serve them via a website for my classmates to study.
+
+Notable features include a file-browser navigation menu as well as a filter for different courses.
+
+## About
 This is a compendium of the courses I have taken in the past years or am taking at the moment at Edinburgh Uni.
 
 Most of these notes are written for my future self, for revision. That's why my note-taking style is best described with "not concise but overexplained"; I want to increase the chance of re-learning material by just reading it and having a lot of context—you might find this approach not as useful as I do.
